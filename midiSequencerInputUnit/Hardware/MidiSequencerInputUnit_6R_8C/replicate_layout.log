@@ -1,0 +1,152 @@
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 303:Plugin executed on: 'linux'
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 304:Plugin executed with python version: '3.8.10 (default, Jun 22 2022, 20:18:18) \n[GCC 9.4.0]'
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 305:KiCad build version: 6.0.7-f9a2dced07~116~ubuntu20.04.1
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 306:Plugin version: 1.2.1
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 307:Frame repr: <wx._core.Frame object at 0x7fcd7c15f8b0>
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 331:Preparing replicator with SW76 as a reference
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.replicate_layout 106:getting a list of all footprints on board
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 359:source anchor footprint is 'SW76'
+Located on: ['swCol7']
+With filenames: ['swCol.kicad_sch']
+With sheet_id:['swCol7']
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 366:Corresponding footprints are 
+[('SW2', ['swCol8']), ('SW26', ['swCol10']), ('SW14', ['swCol9']), ('SW62', ['swCol12']), ('SW88', ['swCol14']), ('SW50', ['swCol13']), ('SW76', ['swCol7']), ('SW38', ['swCol11'])]
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 378:Showing dialog
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.replicate_layout 344:constructing a list of sheets suitable for replication on level:'swCol7', file:'swCol.kicad_sch'
+08-31 16:29:32 com_github_MitjaNemec_ReplicateLayout.replicate_layout 381:suitable sheets are:[['swCol10'], ['swCol11'], ['swCol12'], ['swCol13'], ['swCol14'], ['swCol8'], ['swCol9']]
+08-31 16:29:35 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1112:Level selected: ['swCol7']
+08-31 16:29:37 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 384:Toolbar position: wx.Point(1659, 165)
+08-31 16:29:37 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 390:Dialog position: wx.Point(1295, 165)
+08-31 16:29:41 com_github_MitjaNemec_ReplicateLayout.replicate_layout 344:constructing a list of sheets suitable for replication on level:'swCol7', file:'swCol.kicad_sch'
+08-31 16:29:41 com_github_MitjaNemec_ReplicateLayout.replicate_layout 381:suitable sheets are:[['swCol10'], ['swCol11'], ['swCol12'], ['swCol13'], ['swCol14'], ['swCol8'], ['swCol9']]
+08-31 16:29:44 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1112:Level selected: ['swCol7']
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 344:constructing a list of sheets suitable for replication on level:'swCol7', file:'swCol.kicad_sch'
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 381:suitable sheets are:[['swCol10'], ['swCol11'], ['swCol12'], ['swCol13'], ['swCol14'], ['swCol8'], ['swCol9']]
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 157:Replicating layout
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 154:Starting replication of sheets: [['swCol10'], ['swCol11'], ['swCol12'], ['swCol13'], ['swCol14'], ['swCol8'], ['swCol9']]
+on level: ['swCol7']
+with tracks=True, zone=True, text=True, text=True, containing=False, remove=True, locked footprints=False, by_group=False
+08-31 16:30:16 root 243:updating GUI message: 'Preparing for replication'
+08-31 16:30:16 root 248:updating GUI with: 0
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 224:Getting the list of source footprints
+08-31 16:30:16 root 248:updating GUI with: 0
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 239:Getting the list of all the remaining footprints
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 244:Getting nets local to source footprints
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 247:Getting source bounding box
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 251:Getting source tracks
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 266:Getting source zones
+08-31 16:30:16 root 248:updating GUI with: 62
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 275:Getting source text items
+08-31 16:30:16 root 248:updating GUI with: 75
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 284:Getting source drawing items
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 186:Removing tracks and zones, before footprint placement
+08-31 16:30:16 root 243:updating GUI message: 'Removing zones and tracks'
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:150010933, Right:183680933
+08-31 16:30:16 root 248:updating GUI with: 14
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:226210933, Right:259880933
+08-31 16:30:16 root 248:updating GUI with: 28
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:302410933, Right:336080933
+08-31 16:30:16 root 248:updating GUI with: 42
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:264310933, Right:297980933
+08-31 16:30:16 root 248:updating GUI with: 57
+08-31 16:30:16 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:188110933, Right:221780933
+08-31 16:30:17 root 248:updating GUI with: 71
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:73810933, Right:107480933
+08-31 16:30:17 root 248:updating GUI with: 85
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:111910933, Right:145580933
+08-31 16:30:17 root 243:updating GUI message: 'Replicating footprints'
+08-31 16:30:17 root 248:updating GUI with: 0
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 678:Replicating footprints
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 684:Replicating footprints on sheet ['swCol10']
+08-31 16:30:17 root 248:updating GUI with: 6
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 684:Replicating footprints on sheet ['swCol11']
+08-31 16:30:17 root 248:updating GUI with: 15
+08-31 16:30:17 root 248:updating GUI with: 25
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 684:Replicating footprints on sheet ['swCol12']
+08-31 16:30:17 root 248:updating GUI with: 36
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 684:Replicating footprints on sheet ['swCol13']
+08-31 16:30:17 root 248:updating GUI with: 46
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 684:Replicating footprints on sheet ['swCol14']
+08-31 16:30:17 root 248:updating GUI with: 57
+08-31 16:30:17 root 248:updating GUI with: 68
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 684:Replicating footprints on sheet ['swCol8']
+08-31 16:30:17 root 248:updating GUI with: 79
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 684:Replicating footprints on sheet ['swCol9']
+08-31 16:30:17 root 248:updating GUI with: 91
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 194:Removing tracks and zones, after footprint placement
+08-31 16:30:17 root 243:updating GUI message: 'Removing zones and tracks'
+08-31 16:30:17 root 248:updating GUI with: 0
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:150010933, Right:183680933
+08-31 16:30:17 root 248:updating GUI with: 14
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:226210933, Right:259880933
+08-31 16:30:17 root 248:updating GUI with: 28
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:302410933, Right:336080933
+08-31 16:30:17 root 248:updating GUI with: 42
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:264310933, Right:297980933
+08-31 16:30:17 root 248:updating GUI with: 57
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:188110933, Right:221780933
+08-31 16:30:17 root 248:updating GUI with: 71
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:73810933, Right:107480933
+08-31 16:30:17 root 248:updating GUI with: 85
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1086:Remove bounding box top:87670006, bottom:197540006, Left:111910933, Right:145580933
+08-31 16:30:17 root 243:updating GUI message: 'Replicating tracks'
+08-31 16:30:17 root 248:updating GUI with: 0
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 844:Replicating tracks
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 850:Replicating tracks on sheet ['swCol10']
+08-31 16:30:17 root 248:updating GUI with: 1
+08-31 16:30:17 root 248:updating GUI with: 9
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 850:Replicating tracks on sheet ['swCol11']
+08-31 16:30:17 root 248:updating GUI with: 14
+08-31 16:30:17 root 248:updating GUI with: 22
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 850:Replicating tracks on sheet ['swCol12']
+08-31 16:30:17 root 248:updating GUI with: 28
+08-31 16:30:17 root 248:updating GUI with: 35
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 850:Replicating tracks on sheet ['swCol13']
+08-31 16:30:17 root 248:updating GUI with: 42
+08-31 16:30:17 root 248:updating GUI with: 51
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 850:Replicating tracks on sheet ['swCol14']
+08-31 16:30:17 root 248:updating GUI with: 57
+08-31 16:30:17 root 248:updating GUI with: 64
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 850:Replicating tracks on sheet ['swCol8']
+08-31 16:30:17 root 248:updating GUI with: 71
+08-31 16:30:17 root 248:updating GUI with: 80
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 850:Replicating tracks on sheet ['swCol9']
+08-31 16:30:17 root 248:updating GUI with: 85
+08-31 16:30:17 root 248:updating GUI with: 93
+08-31 16:30:17 root 243:updating GUI message: 'Replicating zones'
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 909:Replicating zones
+08-31 16:30:17 root 248:updating GUI with: 0
+08-31 16:30:17 com_github_MitjaNemec_ReplicateLayout.replicate_layout 916:Replicating zones on sheet ['swCol10']
+08-31 16:30:20 root 248:updating GUI with: 14
+08-31 16:30:20 com_github_MitjaNemec_ReplicateLayout.replicate_layout 916:Replicating zones on sheet ['swCol11']
+08-31 16:30:22 root 248:updating GUI with: 28
+08-31 16:30:22 com_github_MitjaNemec_ReplicateLayout.replicate_layout 916:Replicating zones on sheet ['swCol12']
+08-31 16:30:24 root 248:updating GUI with: 42
+08-31 16:30:24 com_github_MitjaNemec_ReplicateLayout.replicate_layout 916:Replicating zones on sheet ['swCol13']
+08-31 16:30:27 root 248:updating GUI with: 57
+08-31 16:30:27 com_github_MitjaNemec_ReplicateLayout.replicate_layout 916:Replicating zones on sheet ['swCol14']
+08-31 16:30:29 root 248:updating GUI with: 71
+08-31 16:30:29 com_github_MitjaNemec_ReplicateLayout.replicate_layout 916:Replicating zones on sheet ['swCol8']
+08-31 16:30:31 root 248:updating GUI with: 85
+08-31 16:30:31 com_github_MitjaNemec_ReplicateLayout.replicate_layout 916:Replicating zones on sheet ['swCol9']
+08-31 16:30:33 root 243:updating GUI message: 'Replicating text'
+08-31 16:30:33 root 248:updating GUI with: 0
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 985:Replicating text
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 992:Replicating text on sheet ['swCol10']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 992:Replicating text on sheet ['swCol11']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 992:Replicating text on sheet ['swCol12']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 992:Replicating text on sheet ['swCol13']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 992:Replicating text on sheet ['swCol14']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 992:Replicating text on sheet ['swCol8']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 992:Replicating text on sheet ['swCol9']
+08-31 16:30:33 root 243:updating GUI message: 'Replicating drawings'
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1032:Replicating drawings
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1038:Replicating drawings on sheet ['swCol10']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1038:Replicating drawings on sheet ['swCol11']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1038:Replicating drawings on sheet ['swCol12']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1038:Replicating drawings on sheet ['swCol13']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1038:Replicating drawings on sheet ['swCol14']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1038:Replicating drawings on sheet ['swCol8']
+08-31 16:30:33 com_github_MitjaNemec_ReplicateLayout.replicate_layout 1038:Replicating drawings on sheet ['swCol9']
+08-31 16:30:33 root 243:updating GUI message: 'Removing duplicates'
+08-31 16:30:55 com_github_MitjaNemec_ReplicateLayout.action_replicate_layout 177:Replication complete

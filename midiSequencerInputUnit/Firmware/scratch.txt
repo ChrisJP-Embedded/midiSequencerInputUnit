@@ -1,0 +1,145 @@
+        if(hasNewAppInput)
+        {
+            hasNewAppInput = false;
+            ESP_LOGI(LOG_TAG, "sending test file!");
+            //-----------------------------------------------------------------------
+            //-------- ABLE TO SEND 512 BYTES MAXIMUM WITH MTU SET TO 517 -----------
+            //-----------------------------------------------------------------------
+            if(isConnectedToTargetDevice) 
+            {
+                for( uint32_t a = 0 ; a < 100000; ++a)
+                {
+                        while(Var == false) { vTaskDelay(1);};
+                        if(ble_gattc_write_flat(connectionHandle, characteristic_1->chr.val_handle, file, 512, bleDoneISR, NULL) == 0)
+                        {
+                            ESP_LOGI(LOG_TAG, "Host side sent long write");
+                        }
+                        else{
+                            ESP_LOGI(LOG_TAG, "FAULT WITH WRITE LONG");
+                        }
+                        Var = false;
+
+                }
+            }else ESP_LOGI(LOG_TAG, "Not connected!");
+
+
+
+            void initGuiMenuSystem(char (*fileNamesPtr)[], uint8_t * numFiles)
+{
+    numFileNames = numFiles;
+    fileNames = fileNamesPtr;
+
+    createDefaultProjectName();
+
+    //menuManagerPtr[0].funcPtr = createDefaultProjectName;
+
+    fillScreenWithColour(screenColourBlack);
+    updateMenuPage();
+    resetMenuIndicator();
+}
+
+//**** Public
+void menuHandler(uint8_t systemState, uint8_t * menuInputBuffer)
+{
+    if(menuInputBuffer != NULL)
+    {
+        processMenuUserInput(*menuInputBuffer);
+    }
+
+    //This flag is set TRUE on system start,
+    //after that it is set locally as a 
+    //result of 'processMenuUserInput'
+    if(menuData.updateMenuPageFlag == true)
+    {
+        menuData.updateMenuPageFlag = false;
+        fillScreenWithColour(screenColourBlack);
+        updateMenuPage();
+        resetMenuIndicator();
+    }
+}
+
+//**** Private
+static uint8_t createDefaultProjectName(void)
+{
+    //This function is called when the user begins a new project
+    //it generates a temporary default project name and assigns 
+    //that name string to the appropriate paramater pointer.
+
+    uint8_t uniqueID = 0;
+    uint16_t idx = 0;
+    param_t *paramPtr = NULL;
+    bool doneFlag = true;
+
+    //Clear out any previous data that may be lurking
+    memset(currentProjectName, 0, MAX_PROJECT_NAME_LENGTH);
+
+    //The project name menu item is always the
+    //base idx of the 'start_new_project', so find that base idx
+    while (menuManagerPtr[idx].menuPageCode != state_new_project) idx++;
+
+    //Abort ifthe param for that idx isn't a string
+    if(menuManagerPtr[idx].paramType != param_string) return 1;
+
+    while(1)
+    {
+        snprintf(currentProjectName, MAX_PROJECT_NAME_LENGTH, "Proj%d", uniqueID);
+
+        for(uint8_t a = 0; a < *numFileNames; ++a)
+        {
+            if(strcmp(currentProjectName, &fileNames[a][0]) == 0) //if already exists
+            {
+                ++uniqueID;
+                doneFlag = false;
+                break;
+            }
+        }
+
+        if(doneFlag == true || uniqueID > 200) break;
+    }
+
+    if(uniqueID > 200)
+    {
+        menuManagerPtr[idx].paramPtr = NULL;
+        return 1;
+    } 
+    else
+    {
+        ESP_LOGI(LOG_TAG, "Generated new project name: '%s'", currentProjectName);
+        menuManagerPtr[idx].paramPtr = currentProjectName;
+        return 0;
+    }
+}
+
+
+static void managePointersAndInsertNewEventNodeIntoLinkedList(sequencerGridItem_t ** newEventNodePtr, sequencerGridItem_t * nextPtr,
+                                                                sequencerGridItem_t * prevPtr, sequencerGridItem_t ** insertLocationPtr)
+{
+    sequencerGridItem_t * prevHeadNodePtr =  NULL;
+
+    if((*insertLocationPtr)->prevPtr == NULL)
+    {
+        //Insertion location is the current head of the linked list
+        prevHeadNodePtr = *insertLocationPtr;
+        *insertLocationPtr = newEventNodePtr;
+
+        (*newEventNodePtr)->nextPtr = prevHeadNodePtr;
+        (*newEventNodePtr)->prevPtr = NULL;    
+
+        prevHeadNodePtr->prevPtr = newEventNodePtr;
+    }
+    else
+    { 
+        //Insertion location is within body of linked list
+        prevHeadNodePtr = *insertLocationPtr;
+        *insertLocationPtr = newEventNodePtr;
+
+        (*newEventNodePtr)->nextPtr = prevHeadNodePtr;
+        (*newEventNodePtr)->prevPtr = prevHeadNodePtr->prevPtr;  
+
+        prevHeadNodePtr->prevPtr->nextPtr = *insertLocationPtr; 
+
+        prevHeadNodePtr->prevPtr = newEventNodePtr;
+    }
+}
+
+
