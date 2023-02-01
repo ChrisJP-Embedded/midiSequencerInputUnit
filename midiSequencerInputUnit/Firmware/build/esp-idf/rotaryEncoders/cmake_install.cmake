@@ -1,4 +1,4 @@
-# Install script for directory: /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/components/rotaryEncoders
+# Install script for directory: /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/components/rotaryEncoders
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

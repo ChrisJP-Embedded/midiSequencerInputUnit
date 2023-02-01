@@ -1,4 +1,4 @@
-# Install script for directory: /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware
+# Install script for directory: /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/build/esp-idf/cmake_install.cmake")
+  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/cmake_install.cmake")
 
 endif()
 
@@ -51,5 +51,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

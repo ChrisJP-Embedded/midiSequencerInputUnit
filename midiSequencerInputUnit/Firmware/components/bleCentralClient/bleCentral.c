@@ -8,10 +8,6 @@
 #include "console/console.h"
 #include "services/gap/ble_svc_gap.h"
 #include "include/bleCentClient.h"
-<<<<<<< HEAD
-
-=======
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
 #include "bleCentPrivate.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -22,13 +18,7 @@
 #define SUCCESS 0
 #define FAIL    1
 #define CONNECTION_MAX_RETRIES 10
-<<<<<<< HEAD
 
-
-=======
-#define LOG_TAG "bleCentralComponent"
-
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
 static char * addr_str(const void *addr);
 static void blecent_scan(void);
 static uint8_t initNimBle(void);
@@ -40,7 +30,6 @@ static void discoveryProcessComplete(const struct peer *peer, int status, void *
 
 void ble_store_config_init(void);
 
-<<<<<<< HEAD
 
 //********* Target service UUID - The central will scan for advertisements, if any found 
 //********* advertisement includes the target service uuid a connection request will be made
@@ -61,27 +50,7 @@ QueueHandle_t g_BleToHostQueueHandle;
 
 volatile bool isConnectedToTargetDevice = false;
 volatile bool Var = false;
-=======
 
-//********* Target service UUID - The central will scan for advertisements, if any found 
-//********* advertisement includes the target service uuid a connection request will be made
-static const ble_uuid128_t targetServiceUUID128 = BLE_UUID128_INIT(0x2d, 0x71, 0xa2, 0x59, 0xb4, 0x58, 0xc8, 0x12, 0x99, 0x99, 0x43, 0x95, 0x12, 0x2f, 0x46, 0x59);
-
-//********* Target characteristic UUID
-static const ble_uuid128_t char0_uuid128 = BLE_UUID128_INIT(0xf6, 0x6d, 0xc9, 0x07, 0x71, 0x00, 0x16, 0xb0, 0xe1, 0x45, 0x7e, 0x89, 0x9e, 0x65, 0x3a, 0x5c);
-
-//********* Target characteristic UUID
-static const ble_uuid128_t char1_uuid128 = BLE_UUID128_INIT(0xf7, 0x6d, 0xc9, 0x07, 0x71, 0x00, 0x16, 0xb0, 0xe1, 0x45, 0x7e, 0x89, 0x9e, 0x65, 0x3a, 0x5c);
-
-volatile uint16_t connectionHandle;
-const struct peer_chr * characteristic_0 = NULL;
-const struct peer_chr * characteristic_1 = NULL;
-
-QueueHandle_t appToBleQueue;
-QueueHandle_t bleToAppQueue;
-
-volatile bool isConnectedToTargetDevice = false;
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
 
 //*********************************
 //This is the BLE central RTOS task
@@ -112,7 +81,6 @@ int bleDoneISR(uint16_t conn_handle, const struct ble_gatt_error *error, struct 
 //*************************************
 void bleCentAPI_task(void * param)
 {
-<<<<<<< HEAD
     uint8_t state = 0;
     uint8_t * localDataPtr = NULL;
     uint32_t localDataLength = 0;
@@ -124,11 +92,6 @@ void bleCentAPI_task(void * param)
     //Used for ALL app to BLE comms
     HostToBleQueueItem_t g_HostToBleQueueHandleItem;
 
-=======
-    bool hasNewAppInput = false;
-    appToBleQueueItem_t appToBleQueueItemBuffer;
-    uint8_t test[20] = {2,3,4,5};
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
     uint8_t responseForApp;
 
     //SEND QUEUE ITEM TO APP
@@ -137,11 +100,7 @@ void bleCentAPI_task(void * param)
     initNimBle();
 
     //Just a dummy packet to indicate that the task started successfully
-<<<<<<< HEAD
     if(xQueueSend(g_BleToHostQueueHandle, &responseForApp, pdMS_TO_TICKS(5000)) == pdFALSE)
-=======
-    if(xQueueSendToBack(bleToAppQueue, (void*)&responseForApp, pdMS_TO_TICKS(5000)) == pdFALSE)
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
     {
         ESP_LOGE(LOG_TAG, "Failure adding item to g_BleToHostQueueHandle - ble task startup failed, deleting task");
         vTaskDelete(NULL); //Delete *this* task
@@ -149,7 +108,6 @@ void bleCentAPI_task(void * param)
 
     while(1)
     {
-<<<<<<< HEAD
 
         if(uxQueueMessagesWaiting(g_HostToBleQueueHandle))
         {
@@ -157,48 +115,6 @@ void bleCentAPI_task(void * param)
             if(xQueueReceive(g_HostToBleQueueHandle, &g_HostToBleQueueHandleItem, 0) == 1)
             {
                 ESP_LOGI(LOG_TAG, "New queue item recieved from system level");
-=======
-        if(uxQueueMessagesWaiting(appToBleQueue))
-        {
-            //Receieve from queue - dont wait for data to become available
-            if(xQueueReceive(appToBleQueue, &appToBleQueueItemBuffer, 0) == 1)
-            {
-                ESP_LOGI(LOG_TAG, "New queue item recieved from system level");
-                hasNewAppInput = true;
-            }
-        }
-
-
-        if(hasNewAppInput)
-        {
-            hasNewAppInput = false;
-
-            switch(appToBleQueueItemBuffer.opcode)
-            {
-
-                case shutdownBle:
-                    goto shutdown_task;
-                    break;
-
-                case writeToPeripheral:
-
-                    break;
-
-                case longWriteToPeripheral:
-                    break;
-
-                case readFromPeripheral:
-                    break;
-
-                case stopPlayback:
-                    break;
-
-                case startPlayback:
-                    break;
-
-                default:
-                    break;
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
 
                 if(g_HostToBleQueueHandleItem.opcode == 0x55)
                 {
@@ -207,8 +123,6 @@ void bleCentAPI_task(void * param)
                 }
             }
         }
-
-<<<<<<< HEAD
 
 
         switch(state)
@@ -258,28 +172,13 @@ void bleCentAPI_task(void * param)
 
 
         vTaskDelay(1);
-=======
-        if(isConnectedToTargetDevice)
-        {
-            if(ble_gattc_write_flat(connectionHandle, characteristic_0->chr.val_handle, test, 4, NULL, NULL) != 0)
-            {
-                ESP_LOGE(LOG_TAG, "Call to ble_gattc_write_flat() failed!");
-                vTaskDelay(pdMS_TO_TICKS(5000));
-            }
-        }
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
     }
 
-
-<<<<<<< HEAD
     nimble_port_freertos_deinit();
 
     responseForApp = 0x00;  //some number or enum to say connection failed
     if(xQueueSendToBack(g_BleToHostQueueHandle, (void*)&responseForApp, pdMS_TO_TICKS(1000)) == pdFALSE)
-=======
-    responseForApp = 0x00;  //some number or enum to say connection failed
-    if(xQueueSendToBack(bleToAppQueue, (void*)&responseForApp, pdMS_TO_TICKS(1000)) == pdFALSE)
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
+
     {
         ESP_LOGE(LOG_TAG, "Failed to add item to g_BleToHostQueueHandle, ble task deleted");
     }
@@ -323,21 +222,7 @@ static uint8_t initNimBle(void)
     ble_store_config_init();
 
     nimble_port_freertos_init(blecent_host_task);
-<<<<<<< HEAD
-=======
-/*
-    while(isConnectedToTargetDevice == false)
-    {
-        numRetries++;
-        vTaskDelay(pdMS_TO_TICKS(500));
-        if(numRetries >= CONNECTION_MAX_RETRIES)
-        {
-            nimble_port_freertos_deinit();
-            return 1;
-        }
-    }
-*/
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
+
     return 0;
 }
 
@@ -379,10 +264,6 @@ static void discoveryProcessComplete(const struct peer *peer, int status, void *
 
     isConnectedToTargetDevice = true;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
     return;
     
     error:
@@ -464,15 +345,10 @@ static void connectIfTargetFound(const struct ble_gap_disc_desc *disc)
 
     if(retVal == 0) return; //Target service UUID not found - abort!
 
-<<<<<<< HEAD
+
     //------------------------------------------------------------
     //---- To reach here we must have found the target device ----
     //------------------------------------------------------------
-=======
-    //*********************************************************
-    //** To reach here we must have found the target device ***
-    //*********************************************************
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
 
     //Scanning must be stopped before a connection can be initiated
     retVal = ble_gap_disc_cancel();
@@ -536,15 +412,9 @@ static int gapEventHander(struct ble_gap_event *event, void *arg)
             /* A new connection was established or a connection attempt failed. */
             if (event->connect.status == 0) 
             {
-<<<<<<< HEAD
                 //--------------------------------
                 //---- SUCCESSFULLY CONNECTED ----
                 //--------------------------------
-=======
-                //*********************************
-                //**** SUCCESSFULLY CONNECTED *****
-                //*********************************
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
                 
                 MODLOG_DFLT(INFO, "Connection established ");
 
@@ -569,15 +439,12 @@ static int gapEventHander(struct ble_gap_event *event, void *arg)
                     MODLOG_DFLT(ERROR, "Failed to discover services; retVal=%d\n", retVal);
                     return 0;
                 }
-<<<<<<< HEAD
 
                 //IMPORTANT
                 //Increase default mtu (23)
                 //to maximum allowed by esp32 (517)
                 ble_att_set_preferred_mtu(517);
                 ble_gattc_exchange_mtu(event->connect.conn_handle, NULL, NULL);
-=======
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
             } 
             else 
             {
@@ -663,15 +530,10 @@ static void blecent_on_sync(void)
     retVal = ble_hs_util_ensure_addr(0);
     assert(retVal == 0); //Error handling (update)
 
-<<<<<<< HEAD
     //----------------------------------------------------
     //---- START SCANNING FOR ADVERTISING PERIPHERALS ----
     //----------------------------------------------------
-=======
-    //****************************************************
-    //**** START SCANNING FOR ADVERTISING PERIPHERALS ****
-    //****************************************************
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
+
 
     /* Figure out address to use while advertising (no privacy for now) */
     retVal = ble_hs_id_infer_auto(0, &own_addr_type);

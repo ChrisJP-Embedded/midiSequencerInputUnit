@@ -1,4 +1,4 @@
-/* * Data converted from /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded

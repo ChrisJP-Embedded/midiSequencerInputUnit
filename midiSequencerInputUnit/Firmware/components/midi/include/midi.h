@@ -16,6 +16,8 @@
 #define MIDI_TIME_SIG_MSG_NUM_BYTES 3
 #define MIDI_SET_TEMPO_MSG_NUM_BYTES 3
 
+#define MIDI_META_MESSAGE_SIZE 3
+
 extern const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES];     // A midi file ALWAYS starts with these four bytes
 extern const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES];    // Midi file track data ALWAYS starts with these four bytes
 extern const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES];                // A track chunk is always expected to be terminated with endOfTrackBytes

@@ -38,13 +38,7 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-<<<<<<< HEAD
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/build/esp-idf/soc/esp32s3/cmake_install.cmake")
-=======
-  # Include the install script for each subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/build/esp-idf/soc/esp32s3/cmake_install.cmake")
-
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
+  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/soc/esp32s3/cmake_install.cmake")
 endif()
 

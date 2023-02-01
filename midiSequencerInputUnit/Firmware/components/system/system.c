@@ -101,7 +101,6 @@ void system_EntryPoint(void)
     ledDrivers_init();
     resetSequencerGrid(MIDI_SEQUENCER_PPQ, 4);
 
-    ledDrivers_gridTestDemo();
 
     while (1)
     {
@@ -224,38 +223,38 @@ void system_EntryPoint(void)
             //addNewNoteToGrid(2, 0x90, 0x37, 60, 3, true); //shouldnt appear   
 
             ESP_LOGI(LOG_TAG, "Updating LEDS");
+            printAllLinkedListEventNodesFromBase(0x34);
+            printAllLinkedListEventNodesFromBase(0x37);
+            printAllLinkedListEventNodesFromBase(0x39);
+            vTaskDelay(pdMS_TO_TICKS(5000));
             updateGridLEDs(0x34, 0);
+            vTaskDelay(pdMS_TO_TICKS(5000));
 
 
-            vTaskDelay(1); // Smash idle
 
             ProjectSettings.midiFileSizeBytes = gridDataToMidiFile((uint8_t *)(midiFileBufferBASEPtr + MIDI_FILE_TRACK_HEADER_OFFSET));
             ProjectSettings.midiFileSizeBytes += MIDI_FILE_TRACK_HEADER_OFFSET + 8;
 
-            printEntireMidiFileContentToConsole((uint8_t *)midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes);
-
-            while(1){vTaskDelay(pdMS_TO_TICKS(3000));};
 
             fileSys_writeFile(ProjectSettings.fileName, (uint8_t *)midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes, false);
 
             fileSys_readFile(ProjectSettings.fileName, (uint8_t *)midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes, true);
 
-            printEntireMidiFileContentToConsole((uint8_t *)midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes);
-
-            vTaskDelay(1); // Smash idle
-
             midiFileToGrid((uint8_t *)(midiFileBufferBASEPtr + MIDI_FILE_TRACK_HEADER_OFFSET + 8));
 
-            vTaskDelay(1); // Smash idle
 
             ESP_LOGI(LOG_TAG, "Update sequencer grid LEDS");
+            printAllLinkedListEventNodesFromBase(0x34);
+            printAllLinkedListEventNodesFromBase(0x37);
+            printAllLinkedListEventNodesFromBase(0x39);
 
+            ledDrivers_blankOutEntireGrid();
+            vTaskDelay(pdMS_TO_TICKS(5000));
             updateGridLEDs(0x34, 0);
 
-            ProjectSettings.midiFileSizeBytes = gridDataToMidiFile((uint8_t *)(midiFileBufferBASEPtr + MIDI_FILE_TRACK_HEADER_OFFSET));
-            ProjectSettings.midiFileSizeBytes += MIDI_FILE_TRACK_HEADER_OFFSET + 8;
 
-            printEntireMidiFileContentToConsole((uint8_t *)midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes);
+
+            vTaskDelay(1); // Smash idle
         }
 
         RxMenuEvent.eventOpcode = 0;
@@ -281,60 +280,8 @@ static void initRTOSTasks(void)
     g_SwitchMatrixQueueHandle = xQueueCreate(10, sizeof(SwitchMatrixQueueItem_t));
     assert(g_SwitchMatrixQueueHandle != NULL);
 
-<<<<<<< HEAD
     g_SwitchMatrixTaskHandle = xTaskCreateStaticPinnedToCore(
         switchMatrix_TaskEntryPoint, "switchMatrixTask", MATRIX_SCANNER_TASK_STACK_SIZE, NULL, 1, g_SwitchMatrixTaskStack, &g_SwitchMatrixTaskBuffer, 0);
-=======
-/*
-    switchMatrixEventQueue = xQueueCreate(10, sizeof(switchEventQueueItem_t));
-    if(switchMatrixEventQueue == 0)
-    {
-        ESP_LOGE(LOG_TAG, "Queue creation failed");
-        return 1;
-    }
-    // Create a seperate task to manage scanning of the switch matrix, the queue 'keyEventQueue'
-    // will be used to send key press co-ordiantes to the main loop for processing.
-    keyMatrixEventDetection_task = xTaskCreateStaticPinnedToCore(
-        switchMatrixTask, "keyMatrixScan_t", MATRIX_SCANNER_TASK_STACK_SIZE, NULL, 2, matrixKeyScannerTaskStack, &xTaskBuffer_matrixKeyScanner, 0);
-
-    //Wait for the task to push an item to its queue before suspending..
-    if(xQueueReceive(switchMatrixEventQueue, &switchMatrixQueueItem, pdMS_TO_TICKS(5000)) == pdTRUE)
-    {
-        vTaskSuspend(keyMatrixEventDetection_task);
-    } 
-    else
-    {
-        ESP_LOGE(LOG_TAG, "Switch matrix event detection task failed to create");
-        return 1;
-    }
-*/
-
-
-    appToBleQueue = xQueueCreate(10, sizeof(uint8_t));
-    bleToAppQueue = xQueueCreate(10, sizeof(uint8_t));
-    if((bleToAppQueue == 0) || (bleToAppQueue == 0))
-    {
-        ESP_LOGE(LOG_TAG, "Bluetooth queue creation failure");
-        return 1;
-    }
-
-    bluetoothGattClient_task = xTaskCreateStaticPinnedToCore( bleCentAPI_task, "bleClient_t", BLE_CLIENT_TASK_STACK_SIZE,
-                                                              NULL, 1, bleClientTaskStack, &xTaskBuffer_bleClient, 1);
-
-    //See the ble component for more info on system ble usage
-    if(xQueueReceive(bleToAppQueue, &btQueueItem, pdMS_TO_TICKS(5000)) == pdTRUE) 
-    {
-        //Expecting a dummy packet!
-    }
-    else 
-    {
-        ESP_LOGE(LOG_TAG, "Bluetooth client task failed to create");
-        return 1; 
-    }
-
-    return 0;
-}
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
 
     //---------------------------------------------------
     //------------- BLUETOOTH TASK SETUP ----------------

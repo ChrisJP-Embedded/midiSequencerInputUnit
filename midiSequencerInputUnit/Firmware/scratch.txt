@@ -1,145 +1,149 @@
-        if(hasNewAppInput)
+//This function updates all rgbs leds of the switch matrix 
+
+    SequencerGridItem_t * tempPtr = NULL;
+    SequencerGridItem_t * searchPtr = NULL;
+    bool abortCurrentRow = false;
+    bool runOncePerRow = false;
+    uint16_t numGridSteps = 0;
+    uint8_t relativeRow = 0;
+    uint16_t relativeColumn = 0;
+    rgbLedColour_t gridRGBCodes[48] = {rgb_off};
+
+    //This system uses an array of linked lists, one for each of the possible 128 midi notes.
+    //Each of these linked lists hold data for one row of the sequencer grid matrix data.
+    //The number of columns in the sequencer grid martrix is dynamic, growing with the project.
+
+    //The pysical hardware grid is a matrix of 48 switches, made up of 6 rows of 8 columns
+    //Each switch has its own assosiated RGB led, this function controlls the led driver for the hardware grid.
+
+    //As the physical grid is limited in size, only a 6x8 'window'
+    //of the larger 128xN (N = dynamic num columns) can be displayed
+
+    //The input arguments 'rowOffset' and 'columnOffset' and relative to 0x0 on the physical grid.
+
+    //Example: rowOffset = 5, columnOffset = 8.
+    //The physical hardware grid will be displaying rows 5 -> 10 and columns 8 -> 15.
+    //The code below look look for event nodes that have grid coordinates within that
+    //window, setting rgb colours as appropriate (each node has an rgbColour member)
+
+    for(uint8_t idx = rowOffset; idx < (rowOffset + NUM_SEQUENCER_HARDWARE_ROWS + 1); ++idx)
+    { 
+        runOncePerRow = true; //set flag for current row
+
+        if(g_GridData.gridLinkedListHeadPtrs[idx] != NULL)
         {
-            hasNewAppInput = false;
-            ESP_LOGI(LOG_TAG, "sending test file!");
-            //-----------------------------------------------------------------------
-            //-------- ABLE TO SEND 512 BYTES MAXIMUM WITH MTU SET TO 517 -----------
-            //-----------------------------------------------------------------------
-            if(isConnectedToTargetDevice) 
+            //We get here is the linked list for the current
+            //row has at least one or more event nodes.
+
+            if(g_GridData.gridLinkedListTailPtrs[idx] == NULL)
             {
-                for( uint32_t a = 0 ; a < 100000; ++a)
+                //Shouldn't be possible under normal operation
+                ESP_LOGE(LOG_TAG, "Error: Unexpected NULL ptr in 'updateGridLEDs'");
+                return;
+            }
+
+            //Now we need to find out if any of the list nodes,
+            //fall within the column range speicifed by 'columnOffset'
+
+            //If TRUE this linked list may contain event nodes which
+            //fall within the target window and will need to be searched
+            if(g_GridData.gridLinkedListTailPtrs[idx]->column >= columnOffset)
+            {
+                tempPtr = g_GridData.gridLinkedListHeadPtrs[idx];
+
+                //Now search for first event node to fall within window, if one exists
+                findEventsWithinWindow:
+
+                //If TRUE, the event node pointed at by tempPtr DOES NOT fall within the target window
+                if((tempPtr->column >= columnOffset) && (tempPtr->column < columnOffset + NUM_GRID_COLUMNS_PER_ROW) == false)
                 {
-                        while(Var == false) { vTaskDelay(1);};
-                        if(ble_gattc_write_flat(connectionHandle, characteristic_1->chr.val_handle, file, 512, bleDoneISR, NULL) == 0)
-                        {
-                            ESP_LOGI(LOG_TAG, "Host side sent long write");
-                        }
-                        else{
-                            ESP_LOGI(LOG_TAG, "FAULT WITH WRITE LONG");
-                        }
-                        Var = false;
-
+                    if(tempPtr->nextPtr !=  NULL)
+                    {
+                        //current node coordinates didnt fall within
+                        //target window so move onto next node in the list
+                        tempPtr = tempPtr->nextPtr;
+                        goto findEventsWithinWindow;
+                    }
+                    else
+                    {
+                        //end of linked list
+                        abortCurrentRow = true;
+                    }
                 }
-            }else ESP_LOGI(LOG_TAG, "Not connected!");
+                //The end of the list hasnt been reached, but we are no longer within the target window
+                else if(tempPtr->column > (columnOffset + NUM_GRID_COLUMNS_PER_ROW)) abortCurrentRow = true;
 
+                if(!abortCurrentRow)
+                {
+                    //We reach here if a target node has been found 
+                    //to exist within the specified grid window
 
+                    //If everything worked 'tempGridItemPtr' should now be pointing to the first
+                    //item for the specified row that falls within the target grid area. There
+                    //may be a single item or multiple items that fall within the target grid area
 
-            void initGuiMenuSystem(char (*fileNamesPtr)[], uint8_t * numFiles)
-{
-    numFileNames = numFiles;
-    fileNames = fileNamesPtr;
+                    //remove offset to get zero base hardware column num
+                    relativeColumn = tempPtr->column - columnOffset;
+        
+                    if((CLEAR_LOWER_NIBBLE(tempPtr->statusByte) == MIDI_NOTE_OFF_MSG) && (tempPtr->column > columnOffset) && (runOncePerRow))
+                    {
+                        //We only get here when the first event node in the current linked list is a note off event
+                        //while note-off events are not themselves displayed, if the relativeColumn is greater than zero
+                        //it means we have an existing note duration that overruns into the target window.
+                        //Any grid steps that are a note duration overrun must be displayed.
+                        runOncePerRow = false;
+                        numGridSteps = tempPtr->column - columnOffset;
 
-    createDefaultProjectName();
+                        for(uint8_t a = 0; a <= numGridSteps; ++a)
+                        {
+                            //Set the colour of the grid coordinates that make up the note duration overrun
+                            gridRGBCodes[0 + (relativeRow * NUM_GRID_COLUMNS_PER_ROW) + a] = rgb_green;
+                        }
+                    }
+                    else if(CLEAR_LOWER_NIBBLE(tempPtr->statusByte) == MIDI_NOTE_ON_MSG)
+                    {
+                        //A note-on event has been found within the target window
+                        //we must now find the duration of that note off event in steps
+                        runOncePerRow = false;
+                        //Search for and get pointer to corresponding note-off
+                        searchPtr = getPointerToCorespondingNoteOffEventNode(tempPtr);
+                        if(searchPtr != NULL) 
+                        {
+                            //We get here if the corresponding note-off to 
+                            //the current note-on event has been found to exist
+                            numGridSteps = searchPtr->column - tempPtr->column;
+                        }
+                        else
+                        {
+                            //Couldnt find corresponding note off event (SHOULD NOT REACH HERE)
+                            numGridSteps = 1; //illuminate the coordinate of the note-on event itself
+                            ESP_LOGE(LOG_TAG, "Error: Unable to find expected corresponding note-off in 'updateGridLEDs'");
+                        } 
 
-    //menuManagerPtr[0].funcPtr = createDefaultProjectName;
+                        for(uint8_t a = 0; a < numGridSteps; ++a)
+                        {
+                            //Set the colour of the grid coordinates that make up the current notes duration
+                            gridRGBCodes[relativeColumn + (relativeRow * NUM_GRID_COLUMNS_PER_ROW) + a] = rgb_green;
+                        }
 
-    fillScreenWithColour(screenColourBlack);
-    updateMenuPage();
-    resetMenuIndicator();
-}
+                        tempPtr = searchPtr;
+                    }
 
-//**** Public
-void menuHandler(uint8_t systemState, uint8_t * menuInputBuffer)
-{
-    if(menuInputBuffer != NULL)
-    {
-        processMenuUserInput(*menuInputBuffer);
-    }
-
-    //This flag is set TRUE on system start,
-    //after that it is set locally as a 
-    //result of 'processMenuUserInput'
-    if(menuData.updateMenuPageFlag == true)
-    {
-        menuData.updateMenuPageFlag = false;
-        fillScreenWithColour(screenColourBlack);
-        updateMenuPage();
-        resetMenuIndicator();
-    }
-}
-
-//**** Private
-static uint8_t createDefaultProjectName(void)
-{
-    //This function is called when the user begins a new project
-    //it generates a temporary default project name and assigns 
-    //that name string to the appropriate paramater pointer.
-
-    uint8_t uniqueID = 0;
-    uint16_t idx = 0;
-    param_t *paramPtr = NULL;
-    bool doneFlag = true;
-
-    //Clear out any previous data that may be lurking
-    memset(currentProjectName, 0, MAX_PROJECT_NAME_LENGTH);
-
-    //The project name menu item is always the
-    //base idx of the 'start_new_project', so find that base idx
-    while (menuManagerPtr[idx].menuPageCode != state_new_project) idx++;
-
-    //Abort ifthe param for that idx isn't a string
-    if(menuManagerPtr[idx].paramType != param_string) return 1;
-
-    while(1)
-    {
-        snprintf(currentProjectName, MAX_PROJECT_NAME_LENGTH, "Proj%d", uniqueID);
-
-        for(uint8_t a = 0; a < *numFileNames; ++a)
-        {
-            if(strcmp(currentProjectName, &fileNames[a][0]) == 0) //if already exists
-            {
-                ++uniqueID;
-                doneFlag = false;
-                break;
+                    if(tempPtr->nextPtr !=  NULL)
+                    {
+                        //Still more nodes to process
+                        tempPtr = tempPtr->nextPtr;
+                        goto findEventsWithinWindow;
+                    }
+                }
             }
         }
-
-        if(doneFlag == true || uniqueID > 200) break;
+        abortCurrentRow = false; //reset flag for next row
+        ++relativeRow; //Increment zero offset hardware row
     }
 
-    if(uniqueID > 200)
+    ledDrivers_writeEntireGrid(gridRGBCodes);
+    for(uint8_t a = 0; a < 48; ++a)
     {
-        menuManagerPtr[idx].paramPtr = NULL;
-        return 1;
-    } 
-    else
-    {
-        ESP_LOGI(LOG_TAG, "Generated new project name: '%s'", currentProjectName);
-        menuManagerPtr[idx].paramPtr = currentProjectName;
-        return 0;
+        ESP_LOGI(LOG_TAG, "Rgb grid code: %0x", gridRGBCodes[a]);
     }
-}
-
-
-static void managePointersAndInsertNewEventNodeIntoLinkedList(sequencerGridItem_t ** newEventNodePtr, sequencerGridItem_t * nextPtr,
-                                                                sequencerGridItem_t * prevPtr, sequencerGridItem_t ** insertLocationPtr)
-{
-    sequencerGridItem_t * prevHeadNodePtr =  NULL;
-
-    if((*insertLocationPtr)->prevPtr == NULL)
-    {
-        //Insertion location is the current head of the linked list
-        prevHeadNodePtr = *insertLocationPtr;
-        *insertLocationPtr = newEventNodePtr;
-
-        (*newEventNodePtr)->nextPtr = prevHeadNodePtr;
-        (*newEventNodePtr)->prevPtr = NULL;    
-
-        prevHeadNodePtr->prevPtr = newEventNodePtr;
-    }
-    else
-    { 
-        //Insertion location is within body of linked list
-        prevHeadNodePtr = *insertLocationPtr;
-        *insertLocationPtr = newEventNodePtr;
-
-        (*newEventNodePtr)->nextPtr = prevHeadNodePtr;
-        (*newEventNodePtr)->prevPtr = prevHeadNodePtr->prevPtr;  
-
-        prevHeadNodePtr->prevPtr->nextPtr = *insertLocationPtr; 
-
-        prevHeadNodePtr->prevPtr = newEventNodePtr;
-    }
-}
-
-

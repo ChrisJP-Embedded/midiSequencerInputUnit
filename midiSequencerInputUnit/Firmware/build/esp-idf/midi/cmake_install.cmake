@@ -1,8 +1,4 @@
-<<<<<<< HEAD:Firmware/build/esp-idf/midi/cmake_install.cmake
-# Install script for directory: /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/components/midi
-=======
-# Install script for directory: /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/components/IPSDisplayDriver
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing):Firmware/build/esp-idf/IPSDisplayDriver/cmake_install.cmake
+# Install script for directory: /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/components/midi
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

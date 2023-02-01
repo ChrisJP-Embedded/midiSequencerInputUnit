@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:Firmware/build/esp-idf/esp_app_format/cmake_install.cmake
 # Install script for directory: /home/synth002/esp/esp-idf-v5.0/components/esp_app_format
-========
-# Install script for directory: /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/components/bleCentralClient
->>>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing):Firmware/build/esp-idf/bleCentralClient/cmake_install.cmake
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-73cfd3e1fa361291a27a055ce6bc57ac  /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/build/bootloader/bootloader.bin
-=======
-ffee945dd6c8a55118e50314c90916d0  /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit_Firmware_NimBLEStack/Firmware/build/bootloader/bootloader.bin
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
+b7a2bcf78317a653416f3988b07b4767  /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/bootloader/bootloader.bin

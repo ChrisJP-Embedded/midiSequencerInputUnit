@@ -62,24 +62,14 @@ $<TARGET_FILE:__idf_touch_element>
 $<TARGET_FILE:__idf_ulp>
 $<TARGET_FILE:__idf_usb>
 $<TARGET_FILE:__idf_wifi_provisioning>
-<<<<<<< HEAD
 $<TARGET_FILE:__idf_ipsDisplay>
 $<TARGET_FILE:__idf_rotaryEncoders>
 $<TARGET_FILE:__idf_guiMenu>
 $<TARGET_FILE:__idf_ledDrivers>
-=======
-$<TARGET_FILE:__idf_IPSDisplayDriver>
-$<TARGET_FILE:__idf_RotaryEncoders>
-$<TARGET_FILE:__idf_systemMenu>
-$<TARGET_FILE:__idf_LP5862LedDriver>
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
 $<TARGET_FILE:__idf_switchMatrix>
 $<TARGET_FILE:__idf_esp_littlefs>
 $<TARGET_FILE:__idf_fileSys>
 $<TARGET_FILE:__idf_bleCentralClient>
-<<<<<<< HEAD
 $<TARGET_FILE:__idf_midi>
-=======
->>>>>>> 2e307e5 (Started to plumb in bt central (gattServer) using Ning NimBLE stack - ongoing)
 $<TARGET_FILE:__idf_system>
 $<TARGET_FILE:__idf_main>

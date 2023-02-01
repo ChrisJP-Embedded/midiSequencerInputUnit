@@ -22,7 +22,6 @@
 
 SequencerGridData_t g_GridData;
 
-uint32_t gridLinkedListHeadPtrsToMidiFile(uint8_t * fileBuffer);
 void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset);
 static int32_t readMidiFileDeltaTime(uint8_t **deltaTimeBase);
 static uint8_t generateDeltaTimesForCurrentGrid(void);
@@ -35,7 +34,7 @@ static void managePointersAndInsertNewEventNodeIntoLinkedList(SequencerGridItem_
 static void managePointersAndAppendNewEventNodeIntoLinkedList(SequencerGridItem_t * newEventNodePtr, uint8_t listIdx);
 static uint8_t appendNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps, bool autoAddNoteOff);
 static uint8_t insertNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps, bool autoAddNoteOff);
-static int8_t processMidiFileMetaMessage(uint8_t **midiFilePtr);
+static int8_t processMidiFileMetaMessage(uint8_t *metaMsgPtr);
 static void freePreviousGridLinkedListHeadPtrs(void);
 
 
@@ -695,6 +694,8 @@ uint32_t gridDataToMidiFile(uint8_t * fileBuffer)
 }
 
 
+
+
 uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
 {
     //This function converts a midi file track chunk to runtime grid data.
@@ -705,7 +706,9 @@ uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
     uint16_t totalColumnCount = 0;
     uint8_t statusByte;
     uint8_t midiVoiceMsgData[2];
+    int8_t metaMsgLength;
     bool corruptFileDetected = false;
+
 
     if(midiFileDataPtr == NULL)
     {
@@ -733,18 +736,29 @@ uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
 
         if(statusByte == MIDI_META_MSG) //--- Meta Message Type ---//
         {
-            midiFileDataPtr += 1; //increment file ptr to meta status byte
-            if(processMidiFileMetaMessage(&midiFileDataPtr) < 0)
+            metaMsgLength = processMidiFileMetaMessage(midiFileDataPtr);
+
+            if(metaMsgLength == 0)
+            {
+                break; //End of file detected
+            }
+            else if(metaMsgLength < 0)
             {
                 corruptFileDetected = true;
                 break;
             }
+            else
+            {
+                //Ignore meta messages for now but we still need to increment
+                //the file pointer onto the next event in the midi file.
+                midiFileDataPtr += metaMsgLength + MIDI_META_MESSAGE_SIZE;
+            }
         }
         else if((statusByte >= VOICE_MSG_STATUS_RANGE_MIN) && (statusByte <= VOICE_MSG_STATUS_RANGE_MAX)) //--- Voice Message Type ---//
         {
-
             for(uint8_t a = 0; a < MAX_MIDI_VOICE_MSG_DATA_BYTES; ++a)
             {
+                ++midiFileDataPtr;
                 midiVoiceMsgData[a] = *midiFileDataPtr;
             }
             ++midiFileDataPtr;
@@ -774,12 +788,12 @@ uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
 
                         addNewNoteToGrid(totalColumnCount, statusByte, midiVoiceMsgData[0], midiVoiceMsgData[1], 0, false);
                         
-                        ESP_LOGI(LOG_TAG, "\n");
-                        ESP_LOGI(LOG_TAG, "New %s midi event detected..", (CLEAR_LOWER_NIBBLE(statusByte) == 0x90) ? "Note-On" : "Note-Off");
-                        ESP_LOGI(LOG_TAG, "Event delta-time: %ld", currentDeltaTime);
-                        ESP_LOGI(LOG_TAG, "NoteNumber (decimal): %d, (hex): %0x", midiVoiceMsgData[0], midiVoiceMsgData[0]);
-                        ESP_LOGI(LOG_TAG, "Velocity (decimal): %d, (hex): %0x", midiVoiceMsgData[1], midiVoiceMsgData[1]);
-                        ESP_LOGI(LOG_TAG, "TotalColumnCount: %d", totalColumnCount);
+                        //ESP_LOGI(LOG_TAG, "\n");
+                        //ESP_LOGI(LOG_TAG, "New %s midi event detected..", (CLEAR_LOWER_NIBBLE(statusByte) == 0x90) ? "Note-On" : "Note-Off");
+                        //ESP_LOGI(LOG_TAG, "Event delta-time: %ld", currentDeltaTime);
+                        //ESP_LOGI(LOG_TAG, "NoteNumber (decimal): %d, (hex): %0x", midiVoiceMsgData[0], midiVoiceMsgData[0]);
+                        //ESP_LOGI(LOG_TAG, "Velocity (decimal): %d, (hex): %0x", midiVoiceMsgData[1], midiVoiceMsgData[1]);
+                        //ESP_LOGI(LOG_TAG, "TotalColumnCount: %d", totalColumnCount);
                     }
                     else
                     {
@@ -852,8 +866,7 @@ uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
     if(corruptFileDetected)
     {
         ESP_LOGE(LOG_TAG, "Error: Corrupt midi file detected, aborting 'midiFileToGrid'");
-        g_GridData.totalGridColumns = 0;
-        return 1;
+        assert(0);
     }
     else
     {
@@ -1079,39 +1092,41 @@ static int32_t readMidiFileDeltaTime(uint8_t **midiFilePtr)
 }
 
 
-static int8_t processMidiFileMetaMessage(uint8_t **midiFilePtr)
+static int8_t processMidiFileMetaMessage(uint8_t *metaMsgPtr)
 {
-    //This function deals with midi meta event messages.
-    //It expects a pointer to a file pointer which points
-    //at a meta message status byte. The function processes
-    //meta messages and any assosiated data bytes.
-    //A double pointer is used for auto-incrementing the 
-    //original file pointer, since the function is called 
-    //during the processing of a midi file and meta 
-    //messages have variable length.
+    //This function processes a midi meta message, it
+    //expects a pointer to the base of a meta message
 
-    //Meta messages ONLY exist in midi FILES, they are
-    //never sent or revieved over midi physical layer
+    //This function is called during while converting 
+    //an existing midi file to grid data. 
 
-    if(*midiFilePtr == NULL || midiFilePtr == NULL)
-    {
-        ESP_LOGE(LOG_TAG, "Error: Unexpected NULL ptr recieved as input to 'processMidiFileMetaMessage'");
-        return -1;
-    }
+    //A meta message has the follow byte structure:
+    //meta_message[0] = 0xFF (indicates meta message)  <- ****input ptr should be currently pointing here****
+    //meta_message[1] = meta status byte
+    //meta_message[2] = length byte (number of bytes that follow)
+    
+    //RETURNS:
+
+    //ON SUCCESS: the length of the meta message (an EOF meta
+    //message is the only meta message with a length of zero)
+
+    //ON FAILURE: if the meta message is not recognized the
+    //return value will be -1, indicating corrupt data.
+
+
+    assert(metaMsgPtr != NULL);
+    assert(*metaMsgPtr == 0xFF);
 
     uint8_t metaMsgLengthInBytes;
-    uint8_t metaStatusByte = **midiFilePtr;
-    uint8_t * metaDataPtr = NULL;
+    uint8_t metaStatusByte;
 
-    *midiFilePtr += 1; //increment file ptr to meta message length
-    metaMsgLengthInBytes = **midiFilePtr; //get number of data bytes assosiated with thing meta event
-    if(metaStatusByte != metaEvent_endOfTrack)
-    {
-        *midiFilePtr += 1; //increment pointer onto meta message data byte
-        metaDataPtr = *midiFilePtr; //grab local copy of pointer to meta data bytes base addr
-        *midiFilePtr += metaMsgLengthInBytes; //file ptr now points to delta-time base of next event
-    } 
+    metaMsgPtr += 1;
+    metaStatusByte = *metaMsgPtr;
+    metaMsgPtr += 1; 
+    metaMsgLengthInBytes = *metaMsgPtr;
 
+
+    //Check meta message status byte
     switch (metaStatusByte)
     {
         case metaEvent_deviceName:
@@ -1147,7 +1162,6 @@ static int8_t processMidiFileMetaMessage(uint8_t **midiFilePtr)
         case metaEvent_endOfTrack:
             //Single byte
             ESP_LOGI(LOG_TAG, "metaEvent_endOfTrack detected");
-            return 1;
             break;
 
         case metaEvent_setTempo:
@@ -1178,10 +1192,10 @@ static int8_t processMidiFileMetaMessage(uint8_t **midiFilePtr)
 
         default:
             ESP_LOGE(LOG_TAG, "Error: Unrecognized meta message status byte");
-            return -1;
+            return -1; //Corrupt data detected
             break;
     }
 
-    return 0;
+    return metaMsgLengthInBytes;
 }
 
