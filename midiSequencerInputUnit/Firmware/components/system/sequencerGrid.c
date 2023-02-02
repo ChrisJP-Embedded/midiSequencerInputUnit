@@ -3,18 +3,15 @@
 #include "esp_log.h"
 #include "memory.h"
 #include "malloc.h"
+#include "genericMacros.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
 #include "sequencerGrid.h"
 #include "esp_task_wdt.h"
-#include "midi.h"
+#include "midiHelper.h"
 
-#define CLEAR_UPPER_NIBBLE(x)   (x & 0x0F)
-#define CLEAR_LOWER_NIBBLE(x)   (x & 0xF0)
-#define CLEAR_MSBIT_IN_BYTE(x)  (x & 0x7F)
-#define GET_MSBIT_IN_BYTE(x)    (x & 0x80)
 
 #define LOG_TAG "sequencerGrid"
 #define TEMPO_IN_MICRO 500000
@@ -23,7 +20,6 @@
 SequencerGridData_t g_GridData;
 
 void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset);
-static int32_t readMidiFileDeltaTime(uint8_t **deltaTimeBase);
 static uint8_t generateDeltaTimesForCurrentGrid(void);
 static void deleteEventNode(SequencerGridItem_t ** eventNodePtr);
 static bool doesThisGridCoordinateFallWithinAnExistingNoteDuration(uint16_t columnNum, uint8_t midiNoteNum);
@@ -34,7 +30,6 @@ static void managePointersAndInsertNewEventNodeIntoLinkedList(SequencerGridItem_
 static void managePointersAndAppendNewEventNodeIntoLinkedList(SequencerGridItem_t * newEventNodePtr, uint8_t listIdx);
 static uint8_t appendNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps, bool autoAddNoteOff);
 static uint8_t insertNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps, bool autoAddNoteOff);
-static int8_t processMidiFileMetaMessage(uint8_t *metaMsgPtr);
 static void freePreviousGridLinkedListHeadPtrs(void);
 
 
@@ -119,8 +114,7 @@ uint8_t addNewNoteToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiNot
     {
         //For each grid co-ordinate there may be multiple nodes/events
         //but events with duplicate midiStatusBytes are NOT ALLOWED.
-        ESP_LOGE(LOG_TAG, "Error: Duplicate events at same coordinates not allowed");
-        return 1;
+        assert(0);
     }
     
     if(g_GridData.gridLinkedListHeadPtrs[midiNoteNumber] != NULL)
@@ -145,10 +139,9 @@ uint8_t addNewNoteToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiNot
     return err;
 }
 
-static uint8_t appendNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, 
-                                    uint8_t midiVelocity, uint8_t durationInSteps, bool autoAddNoteOff)
+static uint8_t appendNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps, bool autoAddNoteOff)
 {
-    if(midiNoteNumber >= TOTAL_MIDI_NOTES) return 1;
+    assert(midiNoteNumber < TOTAL_MIDI_NOTES);
 
     SequencerGridItem_t * newEventNodePtr = NULL;
 
@@ -158,7 +151,7 @@ static uint8_t appendNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t
         //--- We get here if the linked list has no existing nodes ---//
 
         newEventNodePtr = createNewEventNode(statusByte, columnNum, midiNoteNumber, midiVelocity, rgb_green);
-        if(newEventNodePtr == NULL) return 1;
+        assert(newEventNodePtr != NULL);
         managePointersAndAppendNewEventNodeIntoLinkedList(newEventNodePtr, midiNoteNumber);
     }
     else
@@ -166,7 +159,7 @@ static uint8_t appendNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t
         //--- This linked list DOES have existing nodes ---//
 
         newEventNodePtr = createNewEventNode(statusByte, columnNum, midiNoteNumber, midiVelocity, rgb_green);
-        if(newEventNodePtr == NULL) return 1;
+        assert(newEventNodePtr != NULL);
         managePointersAndAppendNewEventNodeIntoLinkedList(newEventNodePtr, midiNoteNumber);
     }
 
@@ -180,7 +173,7 @@ static uint8_t appendNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t
         statusByte = CLEAR_UPPER_NIBBLE(statusByte); //isolate the channel number
         statusByte |= MIDI_NOTE_OFF_MSG; //Set the upper nibble to note-off opcode
         newEventNodePtr =  createNewEventNode(statusByte, (columnNum + durationInSteps), midiNoteNumber, midiVelocity, rgb_off);
-        if(newEventNodePtr == NULL) return 1;
+        assert(newEventNodePtr != NULL);
         managePointersAndAppendNewEventNodeIntoLinkedList(newEventNodePtr, midiNoteNumber);
 
         //Update a record of the total columns in the project
@@ -200,18 +193,11 @@ static uint8_t insertNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t
     //to find the correct location in the linked list and manually insert,
     //ensuring that all pointers are updated correctly
 
-    if(midiNoteNumber >= TOTAL_MIDI_NOTES) return 1;
-
+    assert(midiNoteNumber < TOTAL_MIDI_NOTES);
+    assert(g_GridData.gridLinkedListTailPtrs[midiNoteNumber] != NULL);
 
     SequencerGridItem_t * tempPtr = NULL;
     SequencerGridItem_t * newEventNodePtr = NULL;
-
-
-    if(g_GridData.gridLinkedListTailPtrs[midiNoteNumber] == NULL)
-    {
-        ESP_LOGE(LOG_TAG, "Error: Unexpected NULL ptr in 'insertNewGridData'");
-        return 1;
-    } 
 
     tempPtr = g_GridData.gridLinkedListTailPtrs[midiNoteNumber];
 
@@ -240,7 +226,7 @@ static uint8_t insertNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t
         //We get here if this new event node needs to be inserted at the list head 
         //this means that the global list head ptr array will also need updating
         newEventNodePtr = createNewEventNode(statusByte, columnNum, midiNoteNumber, midiVelocity, rgb_green);
-        if(newEventNodePtr == NULL) return 1;
+        assert(newEventNodePtr != NULL);
         managePointersAndInsertNewEventNodeIntoLinkedList(newEventNodePtr, g_GridData.gridLinkedListHeadPtrs[midiNoteNumber], true);
         tempPtr = newEventNodePtr;
     } 
@@ -248,7 +234,7 @@ static uint8_t insertNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t
     {
         //We get here if the new event node needs to be inserted between two existing nodes
         newEventNodePtr = createNewEventNode(statusByte, columnNum, midiNoteNumber, midiVelocity, rgb_green);
-        if(newEventNodePtr == NULL) return 1;
+        assert(newEventNodePtr != NULL);
         managePointersAndInsertNewEventNodeIntoLinkedList(newEventNodePtr, tempPtr, false);
         tempPtr = newEventNodePtr;
     }
@@ -260,7 +246,7 @@ static uint8_t insertNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t
         statusByte = CLEAR_UPPER_NIBBLE(statusByte); //isolate the channel number
         statusByte |= MIDI_NOTE_OFF_MSG; //Set the upper nibble to note-off opcode
         newEventNodePtr = createNewEventNode(statusByte, (columnNum + durationInSteps), midiNoteNumber, midiVelocity, rgb_off);
-        if(newEventNodePtr == NULL) return 1;
+        assert(newEventNodePtr != NULL);
         managePointersAndInsertNewEventNodeIntoLinkedList(newEventNodePtr, tempPtr, false);
     }
 
@@ -313,14 +299,10 @@ static bool doesThisGridCoordinateFallWithinAnExistingNoteDuration(uint16_t colu
     //This function returns TRUE if the target coordinate falls
     //within an existing note duration on the same row, else false
 
+    assert(g_GridData.gridLinkedListTailPtrs[midiNoteNum]->prevPtr != NULL);
+
     uint16_t nextCol = columnNum;
     uint16_t prevColumn = columnNum;
-
-    if(g_GridData.gridLinkedListTailPtrs[midiNoteNum]->prevPtr == NULL)
-    {
-        ESP_LOGE(LOG_TAG, "Error: Unexpected NULL ptr in 'doesThisGridCoordinateFallWithinAnExistingNoteDuration'");
-        return false;
-    }
 
     //If a note-off exists at the target we know the previous note just ended
     //so the target coordinate does NOT fall within an existing note duration
@@ -347,9 +329,9 @@ static bool doesThisGridCoordinateFallWithinAnExistingNoteDuration(uint16_t colu
     
     if((prevColumn == 0) && (nextCol == g_GridData.totalGridColumns))
     {
-        ESP_LOGE(LOG_TAG, "Error: Unexpected behaviour 'doesThisGridCoordinateFallWithinAnExistingNoteDuration'");
+        //Unexpected behaviour
         ESP_LOGE(LOG_TAG, "While working with coordinate: column: %d, row: %d", columnNum, midiNoteNum);
-        return false;
+        assert(0);
     }
     else goto keepSearchingForNoteDuration;
 
@@ -412,7 +394,7 @@ static SequencerGridItem_t * getPointerToCorespondingNoteOffEventNode(SequencerG
 
 static void managePointersAndAppendNewEventNodeIntoLinkedList(SequencerGridItem_t * newEventNodePtr, uint8_t listIdx)
 {
-    if(newEventNodePtr == NULL) return;
+    assert(newEventNodePtr != NULL);
 
     if(g_GridData.gridLinkedListHeadPtrs[listIdx] == NULL)
     {
@@ -426,8 +408,9 @@ static void managePointersAndAppendNewEventNodeIntoLinkedList(SequencerGridItem_
     {
         if(g_GridData.gridLinkedListTailPtrs[listIdx] == NULL)
         {
-            ESP_LOGE(LOG_TAG, "Error: Unexpected NULL ptr detected whilst attempting to append linked list node");
-            return;
+            //Unexpected NULL ptr detected whilst
+            //attempting to append linked list node
+            assert(0);
         }
         g_GridData.gridLinkedListTailPtrs[listIdx]->nextPtr = newEventNodePtr;
         newEventNodePtr->nextPtr = NULL;
@@ -438,8 +421,8 @@ static void managePointersAndAppendNewEventNodeIntoLinkedList(SequencerGridItem_
 
 static void managePointersAndInsertNewEventNodeIntoLinkedList(SequencerGridItem_t * newEventNodePtr, SequencerGridItem_t * insertLocationPtr, bool isLocationListHeadPtr)
 {
-
-    if(newEventNodePtr == NULL || newEventNodePtr == NULL) return;
+    assert(newEventNodePtr != NULL);
+    assert(insertLocationPtr != NULL);
 
     if(isLocationListHeadPtr) 
     {
@@ -452,8 +435,7 @@ static void managePointersAndInsertNewEventNodeIntoLinkedList(SequencerGridItem_
                 //Shouldnt ever get here under normal operation.
                 //If we got here we iterated through all the 
                 //list header pointers and found no matches
-                ESP_LOGE(LOG_TAG, "Error: Failed to find target list head pointer");
-                return;
+                assert(0);
             }
             else
             {
@@ -478,11 +460,9 @@ static void managePointersAndInsertNewEventNodeIntoLinkedList(SequencerGridItem_
     { 
         //Insertion location is within body of linked list (where the 
         //insert location has existing event nodes adjacent on both 'sides')
-        if(insertLocationPtr->nextPtr == NULL)
-        {
-            ESP_LOGE(LOG_TAG, "Error: Unexpected NULL ptr detected whilst attempting to insert linked list node");
-            return;
-        }
+        //A NULL nextPtr here indicates a system fault
+        assert(insertLocationPtr->nextPtr != NULL);
+
         newEventNodePtr->nextPtr = insertLocationPtr->nextPtr;
         newEventNodePtr->prevPtr = insertLocationPtr;    
         insertLocationPtr->nextPtr->prevPtr = newEventNodePtr;
@@ -544,29 +524,37 @@ static uint8_t generateDeltaTimesForCurrentGrid(void)
 }
 
 
-uint32_t gridDataToMidiFile(uint8_t * fileBuffer)
+uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
 {
-    //Expects a pointer to the BASE of a midi file track chunk.
-    //Converts all grid data to midi events and writes to file buffer.
+    //This function converts the current grid 
+    //data to a valid midi file which can then
+    //be saved. It DOES NOT handle any file system
+    //operations, thats up to the caller to manage.
 
-    if(fileBuffer == NULL) return 0;
+    //It expects a pointer to the BASE of a previously allocated 
+    //midi file buffer to which the new midi file should be written.
+    //Any previously existing data within the file buffer will
+    //be erased before the new file is generated.
+
+    //RETURNS: The size of the newly generated midi file in bytes.
+
+    //TODO: Add checks to make sure file buffer size not exceeded!
 
     register uint32_t buffer;
     uint32_t deltaTime;
-    uint8_t byteCount;
-    uint8_t const * trackChunkBasePtr = fileBuffer;
     SequencerGridItem_t * tempGridItemPtr = NULL;
     uint32_t trackChunkSizeInBytes;
     bool hasMultipleEventsAtSameGridCoordinate = false;
 
-    if(fileBuffer == NULL) return 0; //Abort
+    assert(midiFileBufferPtr != NULL);
+    assert(g_GridData.totalGridColumns > 0);
 
-    //REMOVE ANY SETTING OF DELTA TIME FROM THIS FUNCTION
-    //ONLY EVER WANT IT HAPPENING IN 'generateDeltaTimesForCurrentGrid'
-
+    memset(midiFileBufferPtr, 0, bufferSize);
+    generateEmptyMidiFile(midiFileBufferPtr, g_GridData.sequencerPPQN, 120);
     generateDeltaTimesForCurrentGrid();
 
-    fileBuffer += (MIDI_TRACK_HEADER_NUM_BYTES + MIDI_TRACK_HEADER_NUM_BYTES);
+    const uint8_t * trackChunkBasePtr = (midiFileBufferPtr + MIDI_FILE_TRACK_HEADER_OFFSET);
+    midiFileBufferPtr += MIDI_FILE_MIDI_EVENTS_OFFSET;
 
     for(uint16_t currentTargetColumn = 0; currentTargetColumn <= g_GridData.totalGridColumns; ++currentTargetColumn)
     {
@@ -625,28 +613,28 @@ uint32_t gridDataToMidiFile(uint8_t * fileBuffer)
                     //The LSB of 'buffer' is now the MSB of
                     //the encoded delta-time bytes as they
                     //will appear in the file written below.
-                    byteCount = 0;
-                    while(byteCount < MAX_DELTA_TIME_BYTE_LENGTH)
+                    uint8_t rawDeltaTimeByteCount = 0;
+                    while(rawDeltaTimeByteCount < MIDI_FILE_MAX_DELTA_TIME_NUM_BYTES)
                     {
-                        *fileBuffer = (uint8_t)buffer; //Write encoded delta-time byte to file
-                        ++byteCount;
-                        ++fileBuffer;
+                        *midiFileBufferPtr = (uint8_t)buffer; //Write encoded delta-time byte to file
+                        ++rawDeltaTimeByteCount;
+                        ++midiFileBufferPtr;
                         if (GET_MSBIT_IN_BYTE(buffer)) buffer >>= NUM_BITS_IN_BYTE;
                         else break;
                     }
                 }
                 else
                 {
-                    *fileBuffer = (uint8_t)deltaTime;
-                    ++fileBuffer;
+                    *midiFileBufferPtr = (uint8_t)deltaTime;
+                    ++midiFileBufferPtr;
                 }
 
-                *fileBuffer = tempGridItemPtr->statusByte; //status
-                ++fileBuffer;
-                *fileBuffer = tempGridItemPtr->dataBytes[0]; //note num
-                ++fileBuffer;
-                *fileBuffer = tempGridItemPtr->dataBytes[1]; //velocity
-                ++fileBuffer;
+                *midiFileBufferPtr = tempGridItemPtr->statusByte; //status
+                ++midiFileBufferPtr;
+                *midiFileBufferPtr = tempGridItemPtr->dataBytes[0]; //note num
+                ++midiFileBufferPtr;
+                *midiFileBufferPtr = tempGridItemPtr->dataBytes[1]; //velocity
+                ++midiFileBufferPtr;
 
                 hasMultipleEventsAtSameGridCoordinate = true;
 
@@ -665,64 +653,76 @@ uint32_t gridDataToMidiFile(uint8_t * fileBuffer)
         }
     }
 
-    //Manually add the EOF
-    //midi meta message to file
-    *fileBuffer = MIDI_EOF_EVENT_BYTE0;
-    ++fileBuffer;
-    *fileBuffer = MIDI_EOF_EVENT_BYTE1;
-    ++fileBuffer;
-    *fileBuffer = MIDI_EOF_EVENT_BYTE2;
-    ++fileBuffer;
-    *fileBuffer = MIDI_EOF_EVENT_BYTE3;
-    ++fileBuffer;
+    //Manually add the EOF meta event
+    *midiFileBufferPtr = MIDI_EOF_EVENT_BYTE0;
+    ++midiFileBufferPtr;
+    *midiFileBufferPtr = MIDI_EOF_EVENT_BYTE1;
+    ++midiFileBufferPtr;
+    *midiFileBufferPtr = MIDI_EOF_EVENT_BYTE2;
+    ++midiFileBufferPtr;
+    *midiFileBufferPtr = MIDI_EOF_EVENT_BYTE3;
+    ++midiFileBufferPtr;
 
-    //Calculate the total size of the track chunk
-    //not including the eight bytes header section
-    trackChunkSizeInBytes = fileBuffer - trackChunkBasePtr;
-    trackChunkSizeInBytes -= (MIDI_TRACK_HEADER_NUM_BYTES + MIDI_TRACK_HEADER_NUM_BYTES);
+    //Determine the total size of the midi 
+    //track data NOT including the track header.
+    //The calculated value will then need to be 
+    //written to the 'size' field of the track header.
+    trackChunkSizeInBytes = midiFileBufferPtr - trackChunkBasePtr;
+    trackChunkSizeInBytes -= (MIDI_TRACK_HEADER_NUM_BYTES + MIDI_FILE_TRACK_SIZE_FIELD_NUM_BYTES);
 
-    //Write the size of the track chunk into the four track
-    //length section of the track chunk header section
-    fileBuffer = trackChunkBasePtr + MIDI_TRACK_HEADER_NUM_BYTES;
-    for(int8_t a = (MIDI_FILE_TRACK_CHUNK_SIZE_NUM_BYTES-1); a >= 0 ; --a)
+    //Set the file buffer pointer the the base of
+    //the four byte 'size' field within the track header
+    midiFileBufferPtr = (trackChunkBasePtr + MIDI_TRACK_HEADER_NUM_BYTES);
+
+    //Now write the four byte size field of the track header to file buffer
+    for(int8_t a = (MIDI_FILE_TRACK_SIZE_FIELD_NUM_BYTES-1); a >= 0 ; --a)
     {
-        *fileBuffer =  (uint8_t)(trackChunkSizeInBytes >> (a * NUM_BITS_IN_BYTE));
-        ++fileBuffer;
+        *midiFileBufferPtr =  (uint8_t)(trackChunkSizeInBytes >> (a * NUM_BITS_IN_BYTE));
+        ++midiFileBufferPtr;
     }
 
-    return trackChunkSizeInBytes;
+    return (trackChunkSizeInBytes + MIDI_FILE_MIDI_EVENTS_OFFSET);
 }
 
 
 
 
-uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
+void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
 {
-    //This function converts a midi file track chunk to runtime grid data.
-    //It expects a pointer to the base of the first delta-time of the track chunk.
-    //An END-OF-FILE meta-event is expected as the last midi event in the track chunk.
+    //This function converts an existing midi 
+    //file to a grid compatable data structure.
 
-    int32_t currentDeltaTime = 0;
+    //It expects a pointer to the BASE of
+    //a previously existing midi file.
+
+    //TODO: Add checks to make sure file buffer size not exceeded!
+
+    uint32_t currentDeltaTime = 0;
     uint16_t totalColumnCount = 0;
+    uint8_t deltaTimeNumBytes;
     uint8_t statusByte;
     uint8_t midiVoiceMsgData[2];
     int8_t metaMsgLength;
     bool corruptFileDetected = false;
 
+    assert(midiFileBufferPtr != NULL);
+    assert(getMidiFileFormatType(midiFileBufferPtr) == MIDI_FILE_FORMAT_TYPE0);
 
-    if(midiFileDataPtr == NULL)
-    {
-        ESP_LOGE(LOG_TAG, "Error: Unexpected NULL ptr receieved as input at 'midiFileToGrid'");
-        return 1;
-    }
-
+    //Clear out any previous grid data
     freePreviousGridLinkedListHeadPtrs();
     g_GridData.totalGridColumns = 0;
 
-    while(1) //add a timeout for this
+    //Set the pointer to the BASE of the 
+    //first midi event before processing
+    midiFileBufferPtr += MIDI_FILE_MIDI_EVENTS_OFFSET;
+
+    while(1)
     {
-        currentDeltaTime = readMidiFileDeltaTime(&midiFileDataPtr);
-        if(currentDeltaTime < 0)
+        currentDeltaTime = processMidiFileDeltaTime(midiFileBufferPtr);
+        deltaTimeNumBytes = getDeltaTimeVaraibleLengthNumBytes(currentDeltaTime);
+        //Handle incrementing file ptr after reading current delta-time
+        if(deltaTimeNumBytes <= MIDI_FILE_MAX_DELTA_TIME_NUM_BYTES) midiFileBufferPtr += deltaTimeNumBytes;
+        else
         {
             corruptFileDetected = true;
             break;
@@ -730,13 +730,13 @@ uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
 
         totalColumnCount += currentDeltaTime / ((g_GridData.sequencerPPQN * NUM_QUATERS_IN_WHOLE_NOTE) / g_GridData.projectQuantization);
 
-        statusByte = *midiFileDataPtr;
+        statusByte = *midiFileBufferPtr;
 
         vTaskDelay(1);
 
         if(statusByte == MIDI_META_MSG) //--- Meta Message Type ---//
         {
-            metaMsgLength = processMidiFileMetaMessage(midiFileDataPtr);
+            metaMsgLength = processMidiFileMetaMessage(midiFileBufferPtr);
 
             if(metaMsgLength == 0)
             {
@@ -751,17 +751,17 @@ uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
             {
                 //Ignore meta messages for now but we still need to increment
                 //the file pointer onto the next event in the midi file.
-                midiFileDataPtr += metaMsgLength + MIDI_META_MESSAGE_SIZE;
+                midiFileBufferPtr += metaMsgLength + MIDI_META_MESSAGE_SIZE;
             }
         }
         else if((statusByte >= VOICE_MSG_STATUS_RANGE_MIN) && (statusByte <= VOICE_MSG_STATUS_RANGE_MAX)) //--- Voice Message Type ---//
         {
             for(uint8_t a = 0; a < MAX_MIDI_VOICE_MSG_DATA_BYTES; ++a)
             {
-                ++midiFileDataPtr;
-                midiVoiceMsgData[a] = *midiFileDataPtr;
+                ++midiFileBufferPtr;
+                midiVoiceMsgData[a] = *midiFileBufferPtr;
             }
-            ++midiFileDataPtr;
+            ++midiFileBufferPtr;
 
             //The MIDI spec features 'running status' capability,
             //if the current event type is the event immediately
@@ -808,29 +808,29 @@ uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
                     //Byte[0] = 0xAn
                     //Byte[1] = Note Number
                     //Byte[2] = Pressure Value
-                    midiFileDataPtr += 3;
+                    midiFileBufferPtr += 3;
                     break;
 
                 case 0xB0: //---Control Change---//
                     //Format (n = channel number)
-                    //Byte[0] =  0xBn
+                    //Byte[0] = 0xBn
                     //Byte[1] = Control opcode
                     //Byte[2] = Value
-                    midiFileDataPtr += 3;
+                    midiFileBufferPtr += 3;
                     break;
 
                 case 0xC0: //---Program Change---//
                     //Format (n = channel num)
                     //Byte[0] = 0xCn
                     //Byte[1] = Program value (selects instrument)
-                    midiFileDataPtr += 2;
+                    midiFileBufferPtr += 2;
                     break;
 
                 case 0xD0: //---Channel Pressure---//
                     //Format (n = channel num)
                     //Byte[0] = 0xDn
                     //Byte[1] = Pressure value
-                    midiFileDataPtr += 2;
+                    midiFileBufferPtr += 2;
                     break;
 
                 case 0xE0: //---Pitch Wheel---//
@@ -838,7 +838,7 @@ uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
                     //Byte[0] = 0xEn
                     //Byte[1] = Pitch Value MSB (these two bytes must each have bit 8 removed, concatenate result)
                     //Byte[2] = Pitch Value LSB
-                    midiFileDataPtr += 3;
+                    midiFileBufferPtr += 3;
                     break;
 
                 default: //--- ERROR ---//
@@ -859,20 +859,16 @@ uint8_t midiFileToGrid(uint8_t * midiFileDataPtr)
             corruptFileDetected = true;
             break;
         }
-
-        vTaskDelay(1);
     }
 
     if(corruptFileDetected)
     {
-        ESP_LOGE(LOG_TAG, "Error: Corrupt midi file detected, aborting 'midiFileToGrid'");
         assert(0);
     }
     else
     {
-        ESP_LOGI(LOG_TAG, "midiFileToGrid done, total columns in project: %d", totalColumnCount);
+        ESP_LOGI(LOG_TAG, "midiFileToGrid SUCCESS, total columns in project: %d", totalColumnCount);
         g_GridData.totalGridColumns = ++totalColumnCount; //must account for zero base
-        return 0;
     }
 }
 
@@ -1026,176 +1022,3 @@ void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
 
     ledDrivers_writeEntireGrid(gridRGBCodes);
 }
-
-
-static int32_t readMidiFileDeltaTime(uint8_t **midiFilePtr)
-{
-    //This function processes midi delta-times.
-    //It expects a pointer to a file pointer which 
-    //points at the base byte of a midi delta-time. 
-    //The function processes the encoded delta-time
-    //bytes and returns the final decoded delta-time.
-    
-    //A double pointer is used for auto-incrementing the 
-    //original file pointer, since the function is called 
-    //during the processing of a midi file and delta-times
-    //are variable in length.
-
-    //Delta times are four byte max, variable length values, 
-    //appearing MSB FIRST within the file being read.
-    //Bit 8 of a delta-time byte is a flag - indicating at least one more byte to follow.
-
-    //The final delta-time value is created by removing 
-    //the flag bit from each byte and concatenating the result.
-
-    if(*midiFilePtr == NULL || midiFilePtr == NULL)
-    {
-        ESP_LOGE(LOG_TAG, "Error: Unexpected NULL ptr in 'readMidiFileDeltaTime'");
-        return -1;
-    }
-
-    uint32_t tempStore = 0;
-    uint32_t result = 0;
-    uint8_t numBytes = 0;
-
-    loopDeltaTime: //--- TIGHT LOOP ---//
-
-    tempStore |= **midiFilePtr; //Get first delta-time byte
-
-    if(GET_MSBIT_IN_BYTE(**midiFilePtr))
-    {
-        //We get here if bit 8 of the current delta-time byte
-        //is SET (meaning at least one more delta-time byte)
-
-        //Delta-times are FOUR BYTES max in length
-        if(numBytes < MAX_DELTA_TIME_BYTE_LENGTH) 
-        {
-            tempStore <<= NUM_BITS_IN_BYTE;
-            ++numBytes;
-            *midiFilePtr += 1;
-            goto loopDeltaTime; //--- TIGHT LOOP ---//
-        }
-    }
-
-    //Finished reading all bytes from file,
-    //now need to decode delta-time bytes
-    //into final delta-time value.
-    for (uint8_t a = 0; a <= numBytes; ++a)
-    {
-        //For each delta-time byte we need to remove bit 8 and concatenate the result
-        result |= ((tempStore & (0x0000007F << (a * NUM_BITS_IN_BYTE))) >> ((a ? 1 : 0) * a));
-    }
-
-    *midiFilePtr += 1; //Point to byte immediately after delta time
-
-    return result;
-}
-
-
-static int8_t processMidiFileMetaMessage(uint8_t *metaMsgPtr)
-{
-    //This function processes a midi meta message, it
-    //expects a pointer to the base of a meta message
-
-    //This function is called during while converting 
-    //an existing midi file to grid data. 
-
-    //A meta message has the follow byte structure:
-    //meta_message[0] = 0xFF (indicates meta message)  <- ****input ptr should be currently pointing here****
-    //meta_message[1] = meta status byte
-    //meta_message[2] = length byte (number of bytes that follow)
-    
-    //RETURNS:
-
-    //ON SUCCESS: the length of the meta message (an EOF meta
-    //message is the only meta message with a length of zero)
-
-    //ON FAILURE: if the meta message is not recognized the
-    //return value will be -1, indicating corrupt data.
-
-
-    assert(metaMsgPtr != NULL);
-    assert(*metaMsgPtr == 0xFF);
-
-    uint8_t metaMsgLengthInBytes;
-    uint8_t metaStatusByte;
-
-    metaMsgPtr += 1;
-    metaStatusByte = *metaMsgPtr;
-    metaMsgPtr += 1; 
-    metaMsgLengthInBytes = *metaMsgPtr;
-
-
-    //Check meta message status byte
-    switch (metaStatusByte)
-    {
-        case metaEvent_deviceName:
-            ESP_LOGI(LOG_TAG, "metaEvent_deviceName detected");
-            break;
-
-        case metaEvent_midiPort:
-            ESP_LOGI(LOG_TAG, "metaEvent_midiPort detected");
-            break;
-
-        case metaEvent_sequenceNum:
-            //Two data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_sequenceNum detected");
-            break;
-
-        case metaEvent_cuePoint:
-        case metaEvent_marker:
-        case metaEvent_lyrics:
-        case metaEvent_instrumentName:
-        case metaEvent_trackName:
-        case metaEvent_copyright:
-        case metaEvent_textField:
-            //All meta events of variable length
-            //Not bothered about any of these so just increment file pointer
-            ESP_LOGI(LOG_TAG, "Ignored variable-length meta message");
-            break;
-
-        case metaEvent_channelPrefix:
-            //Single data byte expected
-            ESP_LOGI(LOG_TAG, "metaEvent_channelPrefix detected");
-            break;
-
-        case metaEvent_endOfTrack:
-            //Single byte
-            ESP_LOGI(LOG_TAG, "metaEvent_endOfTrack detected");
-            break;
-
-        case metaEvent_setTempo:
-            //Three data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_setTempo detected");
-            break;
-
-        case metaEvent_smpteOffset:
-            //Five data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_smpteOffset detected (not supported)");
-            break;
-
-        case metaEvent_setTimeSig:
-            //Four data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_setTimeSig detected");
-            break;
-
-        case metaEvent_keySignature:
-            //Two data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_keySignature detected");
-            break;
-
-        case metaEvent_sequencerSpecific:
-            //Custom meta messages for the sequencer
-            //Variable length
-            ESP_LOGE(LOG_TAG, "metaEvent_sequencerSpecific detected");
-            break;
-
-        default:
-            ESP_LOGE(LOG_TAG, "Error: Unrecognized meta message status byte");
-            return -1; //Corrupt data detected
-            break;
-    }
-
-    return metaMsgLengthInBytes;
-}
-

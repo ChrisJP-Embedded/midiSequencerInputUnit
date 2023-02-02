@@ -1,8 +1,8 @@
 {
     "project_name":       "bootloader",
     "project_path":       "/home/synth002/esp/esp-idf-v5.0/components/bootloader/subproject",
-    "build_dir":          "/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/bootloader",
-    "config_file":        "/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/sdkconfig",
+    "build_dir":          "/home/synth002/Desktop/Firmware/build/bootloader",
+    "config_file":        "/home/synth002/Desktop/Firmware/sdkconfig",
     "config_defaults":    "",
     "app_elf":            "bootloader.elf",
     "app_bin":            "bootloader.bin",

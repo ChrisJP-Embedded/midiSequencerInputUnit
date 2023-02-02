@@ -12,13 +12,13 @@
 #include "switchMatrix.h"
 #include "ipsDisplay.h"
 #include "fileSys.h"
-#include "midi.h"
+#include "midiHelper.h"
 
 
 #define LOG_TAG "systemComponent"
-#define MATRIX_SCANNER_TASK_STACK_SIZE 4096           // Still need to tune this stack size
-#define BLE_CLIENT_TASK_STACK_SIZE 8192               // Still need to tune this stack size
-#define PSRAM_FILE_BUFFER_ALLOCATION_SIZE 1024 * 1024 // 1MB (8MB available on this part)
+#define MATRIX_SCANNER_TASK_STACK_SIZE 4096     //Still need to tune this stack size
+#define BLE_CLIENT_TASK_STACK_SIZE 8192         //Still need to tune this stack size
+#define FILE_BUFFER_SIZE 1024 * 1024            //1MB (8MB available on this part)
 
 
 //---- Private ----//
@@ -84,7 +84,7 @@ void system_EntryPoint(void)
     memset(&SwitchMatrixQueueItem, 0, sizeof(SwitchMatrixQueueItem_t));
 
     //Allocate midi file buffer from PSRAM
-    g_midiFileBufferPtr = heap_caps_malloc(PSRAM_FILE_BUFFER_ALLOCATION_SIZE, MALLOC_CAP_SPIRAM);
+    g_midiFileBufferPtr = heap_caps_malloc(FILE_BUFFER_SIZE, MALLOC_CAP_SPIRAM);
     assert(g_midiFileBufferPtr != NULL);
     //Keep a read-only record of the file cache base address
     const uint8_t * const midiFileBufferBASEPtr = g_midiFileBufferPtr;
@@ -94,32 +94,61 @@ void system_EntryPoint(void)
     assert(*FileSysInfo.isPartitionMountedPtr == true);
     
     //Initialize sub-modules
-    initRTOSTasks();
+
     initIPSDisplayDriver();
     rotaryEncoders_init();
     guiMenu_init(FileSysInfo.filenamesPtr, FileSysInfo.numFilesOnPartitionPtr);
     ledDrivers_init();
+    ledDrivers_init();
     resetSequencerGrid(MIDI_SEQUENCER_PPQ, 4);
+    //initRTOSTasks();
 
+    bool hasLoadedGrid = false;
+    uint8_t gridroffset = 0x34;
+    int16_t gridcoffset = 0;
 
     while (1)
     {
         if (uxQueueMessagesWaiting(g_EncodersQueueHandle))
         {
             xQueueReceive(g_EncodersQueueHandle, &menuInputBuffer, 0);
+
+            if(hasLoadedGrid)
+            {
+                if(menuInputBuffer == encoder1_cw)
+                {
+                    gridroffset++;
+                }
+                else if(menuInputBuffer == encoder1_ccw)
+                {
+                    gridroffset--;
+                }
+
+                if(menuInputBuffer == encoder0_cw)
+                {
+                    gridcoffset++;
+                }
+                else if(menuInputBuffer == encoder0_ccw)
+                {
+                    gridcoffset--;
+                    if(gridcoffset < 0) gridcoffset = 0;
+                }
+
+                updateGridLEDs(gridroffset, gridcoffset);
+            }
+
             hasEncoderInput = true;
         }
-
+/*
         if (uxQueueMessagesWaiting(g_SwitchMatrixQueueHandle) && isGridActive)
         {
             xQueueReceive(g_SwitchMatrixQueueHandle, &SwitchMatrixQueueItem, 0);
             hasGridInput = true;
         }
-
+*/
         if (hasEncoderInput)
         {
             hasEncoderInput = false;
-            ESP_LOGI(LOG_TAG, "Menu handler executed");
             RxMenuEvent = guiMenu_interface(menuInputBuffer);
         }
 
@@ -130,10 +159,12 @@ void system_EntryPoint(void)
 
             case 1: //--- New Project: Create new midi template file
                 ESP_LOGI(LOG_TAG, "RxMenuEvent.eventOpcode == 1 (create new project midi template file)");
+                /*
                 if (createNewSequencerProject(midiFileBufferBASEPtr, ProjectSettings.fileName, ProjectSettings.projectTempo, ProjectSettings.quantization) != 0)
                 {
                     ESP_LOGE(LOG_TAG, "Error: failed to create new sequencer project");
                 }
+                */
                 break;
 
             case 2: //--- Save file
@@ -190,17 +221,10 @@ void system_EntryPoint(void)
                 break;
         }
 
-        if (RxMenuEvent.eventOpcode == 1 || RxMenuEvent.eventOpcode == 4)
+        if ((RxMenuEvent.eventOpcode == 1 || RxMenuEvent.eventOpcode == 4) && hasLoadedGrid == false)
         {
             // When starting a new project, or opening an existing project the
             // sequencer grid needs to be reset to its initial (blank) state
-
-            // addNewNoteToGrid(4, 0x90, 0x36, 60, 1, true);
-            // addNewNoteToGrid(3, 0x90, 0x37, 60, 1, true);
-
-            // addNewNoteToGrid(2, 0x90, 0x36, 60, 1, true);
-            // addNewNoteToGrid(1, 0x90, 0x37, 60, 1, true);
-
 
             //addNewNoteToGrid(0, 0x90, 0x37, 60, 4, true);
             addNewNoteToGrid(6, 0x90, 0x37, 60, 2, true);
@@ -223,38 +247,27 @@ void system_EntryPoint(void)
             //addNewNoteToGrid(2, 0x90, 0x37, 60, 3, true); //shouldnt appear   
 
             ESP_LOGI(LOG_TAG, "Updating LEDS");
-            printAllLinkedListEventNodesFromBase(0x34);
-            printAllLinkedListEventNodesFromBase(0x37);
-            printAllLinkedListEventNodesFromBase(0x39);
-            vTaskDelay(pdMS_TO_TICKS(5000));
             updateGridLEDs(0x34, 0);
-            vTaskDelay(pdMS_TO_TICKS(5000));
+            vTaskDelay(pdMS_TO_TICKS(1000));
 
+            ProjectSettings.midiFileSizeBytes = gridDataToMidiFile(midiFileBufferBASEPtr, FILE_BUFFER_SIZE);
 
+            printEntireMidiFileContentToConsole(midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes);
 
-            ProjectSettings.midiFileSizeBytes = gridDataToMidiFile((uint8_t *)(midiFileBufferBASEPtr + MIDI_FILE_TRACK_HEADER_OFFSET));
-            ProjectSettings.midiFileSizeBytes += MIDI_FILE_TRACK_HEADER_OFFSET + 8;
+            fileSys_writeFile(ProjectSettings.fileName, midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes, true);
 
+            ProjectSettings.midiFileSizeBytes = fileSys_readFile(ProjectSettings.fileName, midiFileBufferBASEPtr, 0, true);
 
-            fileSys_writeFile(ProjectSettings.fileName, (uint8_t *)midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes, false);
+            printEntireMidiFileContentToConsole(midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes);
 
-            fileSys_readFile(ProjectSettings.fileName, (uint8_t *)midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes, true);
-
-            midiFileToGrid((uint8_t *)(midiFileBufferBASEPtr + MIDI_FILE_TRACK_HEADER_OFFSET + 8));
+            midiFileToGrid(midiFileBufferBASEPtr, FILE_BUFFER_SIZE);
 
 
             ESP_LOGI(LOG_TAG, "Update sequencer grid LEDS");
-            printAllLinkedListEventNodesFromBase(0x34);
-            printAllLinkedListEventNodesFromBase(0x37);
-            printAllLinkedListEventNodesFromBase(0x39);
 
-            ledDrivers_blankOutEntireGrid();
-            vTaskDelay(pdMS_TO_TICKS(5000));
             updateGridLEDs(0x34, 0);
+            hasLoadedGrid = true;
 
-
-
-            vTaskDelay(1); // Smash idle
         }
 
         RxMenuEvent.eventOpcode = 0;

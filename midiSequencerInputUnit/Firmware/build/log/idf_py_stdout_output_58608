@@ -1,0 +1,9 @@
+[0/1] Re-running CMake...
+-- Project is not inside a git repository, or git repository has no commits; will not use 'git describe' to determine PROJECT_VER.
+-- Building ESP-IDF components for target esp32s3
+Processing 1 dependencies:
+[1/1] idf (5.0.0)
+-- Configuring incomplete, errors occurred!
+See also "/home/synth002/Desktop/Firmware/build/CMakeFiles/CMakeOutput.log".
+FAILED: build.ninja 
+/home/synth002/.espressif/tools/cmake/3.24.0/bin/cmake --regenerate-during-build -S/home/synth002/Desktop/Firmware -B/home/synth002/Desktop/Firmware/build

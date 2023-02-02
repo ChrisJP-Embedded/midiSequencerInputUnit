@@ -1,0 +1,943 @@
+[1/9] Performing build step for 'bootloader'
+[1/1] cd /home/synth002/Desktop/Firmware/build/bootloader/esp-idf/esptool_py && /home/synth002/.espressif/python_env/idf5.0_py3.10_env/bin/python /home/synth002/esp/esp-idf-v5.0/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/synth002/Desktop/Firmware/build/bootloader/bootloader.bin
+Bootloader binary size 0x55d0 bytes. 0x2a30 bytes (33%) free.
+[2/7] Building C object esp-idf/midi/CMakeFiles/__idf_midi.dir/midi.c.obj
+FAILED: esp-idf/midi/CMakeFiles/__idf_midi.dir/midi.c.obj 
+/home/synth002/.espressif/tools/xtensa-esp32s3-elf/esp-2022r1-11.2.0/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-gcc  -I/home/synth002/Desktop/Firmware/build/config -I/home/synth002/Desktop/Firmware/components/midi/include -I/home/synth002/esp/esp-idf-v5.0/components/newlib/platform_include -I/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include -I/home/synth002/esp/esp-idf-v5.0/components/freertos/esp_additions/include/freertos -I/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/portable/xtensa/include -I/home/synth002/esp/esp-idf-v5.0/components/freertos/esp_additions/include -I/home/synth002/esp/esp-idf-v5.0/components/esp_hw_support/include -I/home/synth002/esp/esp-idf-v5.0/components/esp_hw_support/include/soc -I/home/synth002/esp/esp-idf-v5.0/components/esp_hw_support/include/soc/esp32s3 -I/home/synth002/esp/esp-idf-v5.0/components/esp_hw_support/port/esp32s3/. -I/home/synth002/esp/esp-idf-v5.0/components/esp_hw_support/port/esp32s3/private_include -I/home/synth002/esp/esp-idf-v5.0/components/heap/include -I/home/synth002/esp/esp-idf-v5.0/components/log/include -I/home/synth002/esp/esp-idf-v5.0/components/soc/include -I/home/synth002/esp/esp-idf-v5.0/components/soc/esp32s3/. -I/home/synth002/esp/esp-idf-v5.0/components/soc/esp32s3/include -I/home/synth002/esp/esp-idf-v5.0/components/hal/esp32s3/include -I/home/synth002/esp/esp-idf-v5.0/components/hal/include -I/home/synth002/esp/esp-idf-v5.0/components/hal/platform_port/include -I/home/synth002/esp/esp-idf-v5.0/components/esp_rom/include -I/home/synth002/esp/esp-idf-v5.0/components/esp_rom/include/esp32s3 -I/home/synth002/esp/esp-idf-v5.0/components/esp_rom/esp32s3 -I/home/synth002/esp/esp-idf-v5.0/components/esp_common/include -I/home/synth002/esp/esp-idf-v5.0/components/esp_system/include -I/home/synth002/esp/esp-idf-v5.0/components/esp_system/port/soc -I/home/synth002/esp/esp-idf-v5.0/components/esp_system/port/include/private -I/home/synth002/esp/esp-idf-v5.0/components/xtensa/include -I/home/synth002/esp/esp-idf-v5.0/components/xtensa/esp32s3/include -I/home/synth002/esp/esp-idf-v5.0/components/lwip/include -I/home/synth002/esp/esp-idf-v5.0/components/lwip/include/apps -I/home/synth002/esp/esp-idf-v5.0/components/lwip/include/apps/sntp -I/home/synth002/esp/esp-idf-v5.0/components/lwip/lwip/src/include -I/home/synth002/esp/esp-idf-v5.0/components/lwip/port/esp32/include -I/home/synth002/esp/esp-idf-v5.0/components/lwip/port/esp32/include/arch -I/home/synth002/esp/esp-idf-v5.0/components/driver/include -I/home/synth002/esp/esp-idf-v5.0/components/driver/deprecated -I/home/synth002/esp/esp-idf-v5.0/components/driver/esp32s3/include -I/home/synth002/esp/esp-idf-v5.0/components/esp_pm/include -I/home/synth002/esp/esp-idf-v5.0/components/esp_ringbuf/include -mlongcalls  -fdiagnostics-color=always -ffunction-sections -fdata-sections -Wall -Werror=all -Wno-error=unused-function -Wno-error=unused-variable -Wno-error=deprecated-declarations -Wextra -Wno-unused-parameter -Wno-sign-compare -Wno-enum-conversion -gdwarf-4 -ggdb -Og -fmacro-prefix-map=/home/synth002/Desktop/Firmware=. -fmacro-prefix-map=/home/synth002/esp/esp-idf-v5.0=/IDF -fstrict-volatile-bitfields -Wno-error=unused-but-set-variable -fno-jump-tables -fno-tree-switch-conversion -DconfigENABLE_FREERTOS_DEBUG_OCDAWARE=1 -std=gnu17 -Wno-old-style-declaration -D_GNU_SOURCE -DIDF_VER=\"v5.0-dirty\" -DESP_PLATFORM -D_POSIX_READER_WRITER_LOCKS -MD -MT esp-idf/midi/CMakeFiles/__idf_midi.dir/midi.c.obj -MF esp-idf/midi/CMakeFiles/__idf_midi.dir/midi.c.obj.d -o esp-idf/midi/CMakeFiles/__idf_midi.dir/midi.c.obj -c /home/synth002/Desktop/Firmware/components/midi/midi.c
+In file included from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:39:6: error: #error "include FreeRTOS.h" must appear in source files before "include queue.h"
+   39 |     #error "include FreeRTOS.h" must appear in source files before "include queue.h"
+      |      ^~~~~
+In file included from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:48,
+                 from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:39:6: error: #error "include FreeRTOS.h must appear in source files before include task.h"
+   39 |     #error "include FreeRTOS.h must appear in source files before include task.h"
+      |      ^~~~~
+In file included from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:42,
+                 from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:48,
+                 from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:63:6: error: #error "FreeRTOS.h must be included before list.h"
+   63 |     #error "FreeRTOS.h must be included before list.h"
+      |      ^~~~~
+In file included from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:42,
+                 from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:48,
+                 from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:151:25: error: unknown type name 'TickType_t'
+  151 |     configLIST_VOLATILE TickType_t xItemValue;              /*< The value being listed.  In most cases this is used to sort the list in descending order. */
+      |                         ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:163:25: error: unknown type name 'TickType_t'
+  163 |     configLIST_VOLATILE TickType_t xItemValue;
+      |                         ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:175:14: error: unknown type name 'UBaseType_t'
+  175 |     volatile UBaseType_t uxNumberOfItems;
+      |              ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h: In function 'vListInitialise':
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:353:47: error: expected declaration specifiers before 'PRIVILEGED_FUNCTION'
+  353 | void vListInitialise( List_t * const pxList ) PRIVILEGED_FUNCTION;
+      |                                               ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:364:55: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+  364 | void vListInitialiseItem( ListItem_t * const pxItem ) PRIVILEGED_FUNCTION;
+      |                                                       ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:378:54: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+  378 |                   ListItem_t * const pxNewListItem ) PRIVILEGED_FUNCTION;
+      |                                                      ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:400:57: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+  400 |                      ListItem_t * const pxNewListItem ) PRIVILEGED_FUNCTION;
+      |                                                         ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:415:1: error: unknown type name 'UBaseType_t'
+  415 | UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:415:63: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+  415 | UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove ) PRIVILEGED_FUNCTION;
+      |                                                               ^~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:48,
+                 from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:88:1: warning: empty declaration
+   88 | struct tskTaskControlBlock;     /* The old naming convention is used to prevent breaking kernel aware debuggers. */
+      | ^~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:89:38: error: storage class specified for parameter 'TaskHandle_t'
+   89 | typedef struct tskTaskControlBlock * TaskHandle_t;
+      |                                      ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:95:21: error: expected declaration specifiers or '...' before '*' token
+   95 | typedef BaseType_t (* TaskHookFunction_t)( void * );
+      |                     ^
+In file included from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:48,
+                 from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:106:3: error: storage class specified for parameter 'eTaskState'
+  106 | } eTaskState;
+      |   ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:116:3: error: storage class specified for parameter 'eNotifyAction'
+  116 | } eNotifyAction;
+      |   ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:124:5: error: unknown type name 'BaseType_t'
+  124 |     BaseType_t xOverflowCount;
+      |     ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:125:5: error: unknown type name 'TickType_t'
+  125 |     TickType_t xTimeOnEntering;
+      |     ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:126:3: error: storage class specified for parameter 'TimeOut_t'
+  126 | } TimeOut_t;
+      |   ^~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:136:3: error: storage class specified for parameter 'MemoryRegion_t'
+  136 | } MemoryRegion_t;
+      |   ^~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:143:5: error: unknown type name 'TaskFunction_t'
+  143 |     TaskFunction_t pvTaskCode;
+      |     ^~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:145:5: error: unknown type name 'configSTACK_DEPTH_TYPE'
+  145 |     configSTACK_DEPTH_TYPE usStackDepth;
+      |     ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:147:5: error: unknown type name 'UBaseType_t'
+  147 |     UBaseType_t uxPriority;
+      |     ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:148:5: error: unknown type name 'StackType_t'
+  148 |     StackType_t * puxStackBuffer;
+      |     ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:149:5: error: expected specifier-qualifier-list before 'MemoryRegion_t'
+  149 |     MemoryRegion_t xRegions[ portNUM_CONFIGURABLE_REGIONS ];
+      |     ^~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:153:3: error: storage class specified for parameter 'TaskParameters_t'
+  153 | } TaskParameters_t;
+      |   ^~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:159:5: error: expected specifier-qualifier-list before 'TaskHandle_t'
+  159 |     TaskHandle_t xHandle;                            /* The handle of the task to which the rest of the information in the structure relates. */
+      |     ^~~~~~~~~~~~
+In file included from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:48,
+                 from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:171:3: error: storage class specified for parameter 'TaskStatus_t'
+  171 | } TaskStatus_t;
+      |   ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:183:3: error: storage class specified for parameter 'eSleepModeStatus'
+  183 | } eSleepModeStatus;
+      |   ^~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:852:31: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+  852 | void vTaskAllocateMPURegions( TaskHandle_t xTask,
+      |                               ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:853:37: error: type defaults to 'int' in declaration of 'MemoryRegion_t' [-Werror=implicit-int]
+  853 |                               const MemoryRegion_t * const pxRegions ) PRIVILEGED_FUNCTION;
+      |                                     ^~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:853:52: error: expected ';', ',' or ')' before '*' token
+  853 |                               const MemoryRegion_t * const pxRegions ) PRIVILEGED_FUNCTION;
+      |                                                    ^
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:900:19: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+  900 | void vTaskDelete( TaskHandle_t xTaskToDelete ) PRIVILEGED_FUNCTION;
+      |                   ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:959:24: error: unknown type name 'TickType_t'
+  959 | void vTaskDelay( const TickType_t xTicksToDelay ) PRIVILEGED_FUNCTION;
+      |                        ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:959:51: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+  959 | void vTaskDelay( const TickType_t xTicksToDelay ) PRIVILEGED_FUNCTION;
+      |                                                   ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1030:1: error: unknown type name 'BaseType_t'
+ 1030 | BaseType_t xTaskDelayUntil( TickType_t * const pxPreviousWakeTime,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1030:29: error: unknown type name 'TickType_t'
+ 1030 | BaseType_t xTaskDelayUntil( TickType_t * const pxPreviousWakeTime,
+      |                             ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1031:35: error: unknown type name 'TickType_t'
+ 1031 |                             const TickType_t xTimeIncrement ) PRIVILEGED_FUNCTION;
+      |                                   ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1077:1: error: unknown type name 'BaseType_t'
+ 1077 | BaseType_t xTaskAbortDelay( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1077:29: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1077 | BaseType_t xTaskAbortDelay( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      |                             ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1130:1: error: unknown type name 'UBaseType_t'
+ 1130 | UBaseType_t uxTaskPriorityGet( const TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1130:38: error: type defaults to 'int' in declaration of 'TaskHandle_t' [-Werror=implicit-int]
+ 1130 | UBaseType_t uxTaskPriorityGet( const TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      |                                      ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1130:51: error: expected ';', ',' or ')' before 'xTask'
+ 1130 | UBaseType_t uxTaskPriorityGet( const TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      |                                                   ^~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1142:1: error: unknown type name 'UBaseType_t'
+ 1142 | UBaseType_t uxTaskPriorityGetFromISR( const TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1142:45: error: type defaults to 'int' in declaration of 'TaskHandle_t' [-Werror=implicit-int]
+ 1142 | UBaseType_t uxTaskPriorityGetFromISR( const TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      |                                             ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1142:58: error: expected ';', ',' or ')' before 'xTask'
+ 1142 | UBaseType_t uxTaskPriorityGetFromISR( const TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      |                                                          ^~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1164:1: error: expected declaration specifiers before 'eTaskState'
+ 1164 | eTaskState eTaskGetState( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1226:20: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1226 | void vTaskGetInfo( TaskHandle_t xTask,
+      |                    ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1227:20: error: expected declaration specifiers or '...' before 'TaskStatus_t'
+ 1227 |                    TaskStatus_t * pxTaskStatus,
+      |                    ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1228:20: error: unknown type name 'BaseType_t'
+ 1228 |                    BaseType_t xGetFreeStackSpace,
+      |                    ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1229:20: error: expected declaration specifiers or '...' before 'eTaskState'
+ 1229 |                    eTaskState eState ) PRIVILEGED_FUNCTION;
+      |                    ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1277:24: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1277 | void vTaskPrioritySet( TaskHandle_t xTask,
+      |                        ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1278:24: error: unknown type name 'UBaseType_t'
+ 1278 |                        UBaseType_t uxNewPriority ) PRIVILEGED_FUNCTION;
+      |                        ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1335:20: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1335 | void vTaskSuspend( TaskHandle_t xTaskToSuspend ) PRIVILEGED_FUNCTION;
+      |                    ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1390:19: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1390 | void vTaskResume( TaskHandle_t xTaskToResume ) PRIVILEGED_FUNCTION;
+      |                   ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1425:1: error: unknown type name 'BaseType_t'
+ 1425 | BaseType_t xTaskResumeFromISR( TaskHandle_t xTaskToResume ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1425:32: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1425 | BaseType_t xTaskResumeFromISR( TaskHandle_t xTaskToResume ) PRIVILEGED_FUNCTION;
+      |                                ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1468:34: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 1468 | void vTaskStartScheduler( void ) PRIVILEGED_FUNCTION;
+      |                                  ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1530:32: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 1530 | void vTaskEndScheduler( void ) PRIVILEGED_FUNCTION;
+      |                                ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1589:30: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 1589 | void vTaskSuspendAll( void ) PRIVILEGED_FUNCTION;
+      |                              ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1649:1: error: unknown type name 'BaseType_t'
+ 1649 | BaseType_t xTaskResumeAll( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1649:35: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 1649 | BaseType_t xTaskResumeAll( void ) PRIVILEGED_FUNCTION;
+      |                                   ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1670:1: error: unknown type name 'TickType_t'
+ 1670 | TickType_t xTaskGetTickCount( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1670:38: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 1670 | TickType_t xTaskGetTickCount( void ) PRIVILEGED_FUNCTION;
+      |                                      ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1692:1: error: unknown type name 'TickType_t'
+ 1692 | TickType_t xTaskGetTickCountFromISR( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1692:45: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 1692 | TickType_t xTaskGetTickCountFromISR( void ) PRIVILEGED_FUNCTION;
+      |                                             ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1712:1: error: unknown type name 'UBaseType_t'
+ 1712 | UBaseType_t uxTaskGetNumberOfTasks( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1712:44: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 1712 | UBaseType_t uxTaskGetNumberOfTasks( void ) PRIVILEGED_FUNCTION;
+      |                                            ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1731:23: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1731 | char * pcTaskGetName( TaskHandle_t xTaskToQuery ) PRIVILEGED_FUNCTION;     /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+      |                       ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1753:1: error: expected declaration specifiers before 'TaskHandle_t'
+ 1753 | TaskHandle_t xTaskGetHandle( const char * pcNameToQuery ) PRIVILEGED_FUNCTION;     /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+      | ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1779:1: error: unknown type name 'UBaseType_t'
+ 1779 | UBaseType_t uxTaskGetStackHighWaterMark( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1779:42: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1779 | UBaseType_t uxTaskGetStackHighWaterMark( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      |                                          ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1805:1: error: unknown type name 'configSTACK_DEPTH_TYPE'
+ 1805 | configSTACK_DEPTH_TYPE uxTaskGetStackHighWaterMark2( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1805:54: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1805 | configSTACK_DEPTH_TYPE uxTaskGetStackHighWaterMark2( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      |                                                      ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:1820:31: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 1820 | uint8_t* pxTaskGetStackStart( TaskHandle_t xTask) PRIVILEGED_FUNCTION;
+      |                               ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2019:1: error: unknown type name 'BaseType_t'
+ 2019 | BaseType_t xTaskCallApplicationTaskHook( TaskHandle_t xTask,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2019:42: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 2019 | BaseType_t xTaskCallApplicationTaskHook( TaskHandle_t xTask,
+      |                                          ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2029:1: error: expected declaration specifiers before 'TaskHandle_t'
+ 2029 | TaskHandle_t xTaskGetIdleTaskHandle( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2128:1: error: unknown type name 'UBaseType_t'
+ 2128 | UBaseType_t uxTaskGetSystemState( TaskStatus_t * const pxTaskStatusArray,
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2128:35: error: expected declaration specifiers or '...' before 'TaskStatus_t'
+ 2128 | UBaseType_t uxTaskGetSystemState( TaskStatus_t * const pxTaskStatusArray,
+      |                                   ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2129:41: error: unknown type name 'UBaseType_t'
+ 2129 |                                   const UBaseType_t uxArraySize,
+      |                                         ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2178:40: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 2178 | void vTaskList( char * pcWriteBuffer ) PRIVILEGED_FUNCTION;     /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+      |                                        ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2233:51: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 2233 | void vTaskGetRunTimeStats( char * pcWriteBuffer ) PRIVILEGED_FUNCTION;     /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+      |                                                   ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2269:46: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 2269 | uint32_t ulTaskGetIdleRunTimeCounter( void ) PRIVILEGED_FUNCTION;
+      |                                              ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2384:1: error: unknown type name 'BaseType_t'
+ 2384 | BaseType_t xTaskGenericNotify( TaskHandle_t xTaskToNotify,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2384:32: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 2384 | BaseType_t xTaskGenericNotify( TaskHandle_t xTaskToNotify,
+      |                                ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2385:32: error: unknown type name 'UBaseType_t'
+ 2385 |                                UBaseType_t uxIndexToNotify,
+      |                                ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2387:32: error: expected declaration specifiers or '...' before 'eNotifyAction'
+ 2387 |                                eNotifyAction eAction,
+      |                                ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2548:1: error: unknown type name 'BaseType_t'
+ 2548 | BaseType_t xTaskGenericNotifyFromISR( TaskHandle_t xTaskToNotify,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2548:39: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 2548 | BaseType_t xTaskGenericNotifyFromISR( TaskHandle_t xTaskToNotify,
+      |                                       ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2549:39: error: unknown type name 'UBaseType_t'
+ 2549 |                                       UBaseType_t uxIndexToNotify,
+      |                                       ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2551:39: error: expected declaration specifiers or '...' before 'eNotifyAction'
+ 2551 |                                       eNotifyAction eAction,
+      |                                       ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2553:39: error: unknown type name 'BaseType_t'
+ 2553 |                                       BaseType_t * pxHigherPriorityTaskWoken ) PRIVILEGED_FUNCTION;
+      |                                       ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2701:1: error: unknown type name 'BaseType_t'
+ 2701 | BaseType_t xTaskGenericNotifyWait( UBaseType_t uxIndexToWaitOn,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2701:36: error: unknown type name 'UBaseType_t'
+ 2701 | BaseType_t xTaskGenericNotifyWait( UBaseType_t uxIndexToWaitOn,
+      |                                    ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2705:36: error: unknown type name 'TickType_t'
+ 2705 |                                    TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                                    ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2875:37: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 2875 | void vTaskGenericNotifyGiveFromISR( TaskHandle_t xTaskToNotify,
+      |                                     ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2876:37: error: unknown type name 'UBaseType_t'
+ 2876 |                                     UBaseType_t uxIndexToNotify,
+      |                                     ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2877:37: error: unknown type name 'BaseType_t'
+ 2877 |                                     BaseType_t * pxHigherPriorityTaskWoken ) PRIVILEGED_FUNCTION;
+      |                                     ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2985:35: error: unknown type name 'UBaseType_t'
+ 2985 | uint32_t ulTaskGenericNotifyTake( UBaseType_t uxIndexToWaitOn,
+      |                                   ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2986:35: error: unknown type name 'BaseType_t'
+ 2986 |                                   BaseType_t xClearCountOnExit,
+      |                                   ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:2987:35: error: unknown type name 'TickType_t'
+ 2987 |                                   TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                                   ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3054:1: error: unknown type name 'BaseType_t'
+ 3054 | BaseType_t xTaskGenericNotifyStateClear( TaskHandle_t xTask,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3054:42: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 3054 | BaseType_t xTaskGenericNotifyStateClear( TaskHandle_t xTask,
+      |                                          ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3055:42: error: unknown type name 'UBaseType_t'
+ 3055 |                                          UBaseType_t uxIndexToClear ) PRIVILEGED_FUNCTION;
+      |                                          ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3123:41: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 3123 | uint32_t ulTaskGenericNotifyValueClear( TaskHandle_t xTask,
+      |                                         ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3124:41: error: unknown type name 'UBaseType_t'
+ 3124 |                                         UBaseType_t uxIndexToClear,
+      |                                         ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3149:28: error: expected declaration specifiers or '...' before 'TimeOut_t'
+ 3149 | void vTaskSetTimeOutState( TimeOut_t * const pxTimeOut ) PRIVILEGED_FUNCTION;
+      |                            ^~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3238:1: error: unknown type name 'BaseType_t'
+ 3238 | BaseType_t xTaskCheckForTimeOut( TimeOut_t * const pxTimeOut,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3238:34: error: expected declaration specifiers or '...' before 'TimeOut_t'
+ 3238 | BaseType_t xTaskCheckForTimeOut( TimeOut_t * const pxTimeOut,
+      |                                  ^~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3239:34: error: unknown type name 'TickType_t'
+ 3239 |                                  TickType_t * const pxTicksToWait ) PRIVILEGED_FUNCTION;
+      |                                  ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3271:1: error: unknown type name 'BaseType_t'
+ 3271 | BaseType_t xTaskCatchUpTicks( TickType_t xTicksToCatchUp ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3271:31: error: unknown type name 'TickType_t'
+ 3271 | BaseType_t xTaskCatchUpTicks( TickType_t xTicksToCatchUp ) PRIVILEGED_FUNCTION;
+      |                               ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3284:1: error: expected declaration specifiers before 'TaskHandle_t'
+ 3284 | TaskHandle_t xTaskGetCurrentTaskHandleForCPU( BaseType_t cpuid );
+      | ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3297:1: error: expected declaration specifiers before 'TaskHandle_t'
+ 3297 | TaskHandle_t xTaskGetIdleTaskHandleForCPU( UBaseType_t cpuid );
+      | ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3302:1: error: unknown type name 'BaseType_t'
+ 3302 | BaseType_t xTaskGetAffinity( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3302:30: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 3302 | BaseType_t xTaskGetAffinity( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      |                              ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3322:1: error: unknown type name 'BaseType_t'
+ 3322 | BaseType_t xTaskIncrementTick( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3322:39: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3322 | BaseType_t xTaskIncrementTick( void ) PRIVILEGED_FUNCTION;
+      |                                       ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3334:1: error: unknown type name 'BaseType_t'
+ 3334 | BaseType_t xTaskIncrementTickOtherCores( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3334:49: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3334 | BaseType_t xTaskIncrementTickOtherCores( void ) PRIVILEGED_FUNCTION;
+      |                                                 ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3369:35: error: unknown type name 'TickType_t'
+ 3369 |                             const TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                                   ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3369:61: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3369 |                             const TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                                                             ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3371:44: error: unknown type name 'TickType_t'
+ 3371 |                                      const TickType_t xItemValue,
+      |                                            ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3372:44: error: unknown type name 'TickType_t'
+ 3372 |                                      const TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                                            ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3372:70: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3372 |                                      const TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                                                                      ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3386:39: error: unknown type name 'TickType_t'
+ 3386 |                                       TickType_t xTicksToWait,
+      |                                       ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3387:45: error: unknown type name 'BaseType_t'
+ 3387 |                                       const BaseType_t xWaitIndefinitely ) PRIVILEGED_FUNCTION;
+      |                                             ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3432:1: error: unknown type name 'BaseType_t'
+ 3432 | BaseType_t xTaskRemoveFromEventList( const List_t * const pxEventList ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3432:73: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3432 | BaseType_t xTaskRemoveFromEventList( const List_t * const pxEventList ) PRIVILEGED_FUNCTION;
+      |                                                                         ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3434:47: error: unknown type name 'TickType_t'
+ 3434 |                                         const TickType_t xItemValue ) PRIVILEGED_FUNCTION;
+      |                                               ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3434:71: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3434 |                                         const TickType_t xItemValue ) PRIVILEGED_FUNCTION;
+      |                                                                       ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3444:1: error: expected declaration specifiers before 'portDONT_DISCARD'
+ 3444 | portDONT_DISCARD void vTaskSwitchContext( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3450:1: error: unknown type name 'TickType_t'
+ 3450 | TickType_t uxTaskResetEventItemValue( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3450:46: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3450 | TickType_t uxTaskResetEventItemValue( void ) PRIVILEGED_FUNCTION;
+      |                                              ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3455:1: error: expected declaration specifiers before 'TaskHandle_t'
+ 3455 | TaskHandle_t xTaskGetCurrentTaskHandle( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3461:31: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3461 | void vTaskMissedYield( void ) PRIVILEGED_FUNCTION;
+      |                               ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3467:1: error: unknown type name 'BaseType_t'
+ 3467 | BaseType_t xTaskGetSchedulerState( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3467:43: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3467 | BaseType_t xTaskGetSchedulerState( void ) PRIVILEGED_FUNCTION;
+      |                                           ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3473:1: error: unknown type name 'BaseType_t'
+ 3473 | BaseType_t xTaskPriorityInherit( TaskHandle_t const pxMutexHolder ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3473:34: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 3473 | BaseType_t xTaskPriorityInherit( TaskHandle_t const pxMutexHolder ) PRIVILEGED_FUNCTION;
+      |                                  ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3479:1: error: unknown type name 'BaseType_t'
+ 3479 | BaseType_t xTaskPriorityDisinherit( TaskHandle_t const pxMutexHolder ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3479:37: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 3479 | BaseType_t xTaskPriorityDisinherit( TaskHandle_t const pxMutexHolder ) PRIVILEGED_FUNCTION;
+      |                                     ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3489:43: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 3489 | void vTaskPriorityDisinheritAfterTimeout( TaskHandle_t const pxMutexHolder,
+      |                                           ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3490:43: error: unknown type name 'UBaseType_t'
+ 3490 |                                           UBaseType_t uxHighestPriorityWaitingTask ) PRIVILEGED_FUNCTION;
+      |                                           ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3495:1: error: unknown type name 'UBaseType_t'
+ 3495 | UBaseType_t uxTaskGetTaskNumber( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3495:34: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 3495 | UBaseType_t uxTaskGetTaskNumber( TaskHandle_t xTask ) PRIVILEGED_FUNCTION;
+      |                                  ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3501:26: error: expected declaration specifiers or '...' before 'TaskHandle_t'
+ 3501 | void vTaskSetTaskNumber( TaskHandle_t xTask,
+      |                          ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3502:32: error: unknown type name 'UBaseType_t'
+ 3502 |                          const UBaseType_t uxHandle ) PRIVILEGED_FUNCTION;
+      |                                ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3512:27: error: unknown type name 'TickType_t'
+ 3512 | void vTaskStepTick( const TickType_t xTicksToJump ) PRIVILEGED_FUNCTION;
+      |                           ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3512:53: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'PRIVILEGED_FUNCTION'
+ 3512 | void vTaskStepTick( const TickType_t xTicksToJump ) PRIVILEGED_FUNCTION;
+      |                                                     ^~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3528:1: error: expected declaration specifiers before 'eSleepModeStatus'
+ 3528 | eSleepModeStatus eTaskConfirmSleepModeStatus( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3534:1: error: expected declaration specifiers before 'TaskHandle_t'
+ 3534 | TaskHandle_t pvTaskIncrementMutexHeldCount( void ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:3540:36: error: expected declaration specifiers or '...' before 'TimeOut_t'
+ 3540 | void vTaskInternalSetTimeOutState( TimeOut_t * const pxTimeOut ) PRIVILEGED_FUNCTION;
+      |                                    ^~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:55:1: warning: empty declaration
+   55 | struct QueueDefinition; /* Using old naming convention so as not to break kernel aware debuggers. */
+      | ^~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:56:36: error: storage class specified for parameter 'QueueHandle_t'
+   56 | typedef struct QueueDefinition   * QueueHandle_t;
+      |                                    ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:63:36: error: storage class specified for parameter 'QueueSetHandle_t'
+   63 | typedef struct QueueDefinition   * QueueSetHandle_t;
+      |                                    ^~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:70:36: error: storage class specified for parameter 'QueueSetMemberHandle_t'
+   70 | typedef struct QueueDefinition   * QueueSetMemberHandle_t;
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:693:1: error: unknown type name 'BaseType_t'
+  693 | BaseType_t xQueueGenericSend( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:693:31: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+  693 | BaseType_t xQueueGenericSend( QueueHandle_t xQueue,
+      |                               ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:695:31: error: unknown type name 'TickType_t'
+  695 |                               TickType_t xTicksToWait,
+      |                               ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:696:37: error: unknown type name 'BaseType_t'
+  696 |                               const BaseType_t xCopyPosition ) PRIVILEGED_FUNCTION;
+      |                                     ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:795:1: error: unknown type name 'BaseType_t'
+  795 | BaseType_t xQueuePeek( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:795:24: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+  795 | BaseType_t xQueuePeek( QueueHandle_t xQueue,
+      |                        ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:797:24: error: unknown type name 'TickType_t'
+  797 |                        TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                        ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:835:1: error: unknown type name 'BaseType_t'
+  835 | BaseType_t xQueuePeekFromISR( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:835:31: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+  835 | BaseType_t xQueuePeekFromISR( QueueHandle_t xQueue,
+      |                               ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:932:1: error: unknown type name 'BaseType_t'
+  932 | BaseType_t xQueueReceive( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:932:27: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+  932 | BaseType_t xQueueReceive( QueueHandle_t xQueue,
+      |                           ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:934:27: error: unknown type name 'TickType_t'
+  934 |                           TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                           ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:955:1: error: unknown type name 'UBaseType_t'
+  955 | UBaseType_t uxQueueMessagesWaiting( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:955:43: error: type defaults to 'int' in declaration of 'QueueHandle_t' [-Werror=implicit-int]
+  955 | UBaseType_t uxQueueMessagesWaiting( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                           ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:955:57: error: expected ';', ',' or ')' before 'xQueue'
+  955 | UBaseType_t uxQueueMessagesWaiting( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                                         ^~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:978:1: error: unknown type name 'UBaseType_t'
+  978 | UBaseType_t uxQueueSpacesAvailable( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:978:43: error: type defaults to 'int' in declaration of 'QueueHandle_t' [-Werror=implicit-int]
+  978 | UBaseType_t uxQueueSpacesAvailable( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                           ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:978:57: error: expected ';', ',' or ')' before 'xQueue'
+  978 | UBaseType_t uxQueueSpacesAvailable( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                                         ^~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:998:20: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+  998 | void vQueueDelete( QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                    ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1402:1: error: unknown type name 'BaseType_t'
+ 1402 | BaseType_t xQueueGenericSendFromISR( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1402:38: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1402 | BaseType_t xQueueGenericSendFromISR( QueueHandle_t xQueue,
+      |                                      ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1404:38: error: unknown type name 'BaseType_t'
+ 1404 |                                      BaseType_t * const pxHigherPriorityTaskWoken,
+      |                                      ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1405:44: error: unknown type name 'BaseType_t'
+ 1405 |                                      const BaseType_t xCopyPosition ) PRIVILEGED_FUNCTION;
+      |                                            ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1406:1: error: unknown type name 'BaseType_t'
+ 1406 | BaseType_t xQueueGiveFromISR( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1406:31: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1406 | BaseType_t xQueueGiveFromISR( QueueHandle_t xQueue,
+      |                               ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1407:31: error: unknown type name 'BaseType_t'
+ 1407 |                               BaseType_t * const pxHigherPriorityTaskWoken ) PRIVILEGED_FUNCTION;
+      |                               ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1499:1: error: unknown type name 'BaseType_t'
+ 1499 | BaseType_t xQueueReceiveFromISR( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1499:34: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1499 | BaseType_t xQueueReceiveFromISR( QueueHandle_t xQueue,
+      |                                  ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1501:34: error: unknown type name 'BaseType_t'
+ 1501 |                                  BaseType_t * const pxHigherPriorityTaskWoken ) PRIVILEGED_FUNCTION;
+      |                                  ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1507:1: error: unknown type name 'BaseType_t'
+ 1507 | BaseType_t xQueueIsQueueEmptyFromISR( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1507:45: error: type defaults to 'int' in declaration of 'QueueHandle_t' [-Werror=implicit-int]
+ 1507 | BaseType_t xQueueIsQueueEmptyFromISR( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                             ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1507:59: error: expected ';', ',' or ')' before 'xQueue'
+ 1507 | BaseType_t xQueueIsQueueEmptyFromISR( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                                           ^~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1508:1: error: unknown type name 'BaseType_t'
+ 1508 | BaseType_t xQueueIsQueueFullFromISR( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1508:44: error: type defaults to 'int' in declaration of 'QueueHandle_t' [-Werror=implicit-int]
+ 1508 | BaseType_t xQueueIsQueueFullFromISR( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                            ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1508:58: error: expected ';', ',' or ')' before 'xQueue'
+ 1508 | BaseType_t xQueueIsQueueFullFromISR( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                                          ^~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1509:1: error: unknown type name 'UBaseType_t'
+ 1509 | UBaseType_t uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1509:50: error: type defaults to 'int' in declaration of 'QueueHandle_t' [-Werror=implicit-int]
+ 1509 | UBaseType_t uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                                  ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1509:64: error: expected ';', ',' or ')' before 'xQueue'
+ 1509 | UBaseType_t uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                                                ^~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1521:1: error: unknown type name 'BaseType_t'
+ 1521 | BaseType_t xQueueCRSendFromISR( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1521:33: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1521 | BaseType_t xQueueCRSendFromISR( QueueHandle_t xQueue,
+      |                                 ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1523:33: error: unknown type name 'BaseType_t'
+ 1523 |                                 BaseType_t xCoRoutinePreviouslyWoken );
+      |                                 ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1524:1: error: unknown type name 'BaseType_t'
+ 1524 | BaseType_t xQueueCRReceiveFromISR( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1524:36: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1524 | BaseType_t xQueueCRReceiveFromISR( QueueHandle_t xQueue,
+      |                                    ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1526:36: error: unknown type name 'BaseType_t'
+ 1526 |                                    BaseType_t * pxTaskWoken );
+      |                                    ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1527:1: error: unknown type name 'BaseType_t'
+ 1527 | BaseType_t xQueueCRSend( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1527:26: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1527 | BaseType_t xQueueCRSend( QueueHandle_t xQueue,
+      |                          ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1529:26: error: unknown type name 'TickType_t'
+ 1529 |                          TickType_t xTicksToWait );
+      |                          ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1530:1: error: unknown type name 'BaseType_t'
+ 1530 | BaseType_t xQueueCRReceive( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1530:29: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1530 | BaseType_t xQueueCRReceive( QueueHandle_t xQueue,
+      |                             ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1532:29: error: unknown type name 'TickType_t'
+ 1532 |                             TickType_t xTicksToWait );
+      |                             ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1539:1: error: expected declaration specifiers before 'QueueHandle_t'
+ 1539 | QueueHandle_t xQueueCreateMutex( const uint8_t ucQueueType ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1540:1: error: expected declaration specifiers before 'QueueHandle_t'
+ 1540 | QueueHandle_t xQueueCreateMutexStatic( const uint8_t ucQueueType,
+      | ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1542:1: error: expected declaration specifiers before 'QueueHandle_t'
+ 1542 | QueueHandle_t xQueueCreateCountingSemaphore( const UBaseType_t uxMaxCount,
+      | ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1544:1: error: expected declaration specifiers before 'QueueHandle_t'
+ 1544 | QueueHandle_t xQueueCreateCountingSemaphoreStatic( const UBaseType_t uxMaxCount,
+      | ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1547:1: error: unknown type name 'BaseType_t'
+ 1547 | BaseType_t xQueueSemaphoreTake( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1547:33: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1547 | BaseType_t xQueueSemaphoreTake( QueueHandle_t xQueue,
+      |                                 ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1548:33: error: unknown type name 'TickType_t'
+ 1548 |                                 TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                                 ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1549:1: error: expected declaration specifiers before 'TaskHandle_t'
+ 1549 | TaskHandle_t xQueueGetMutexHolder( QueueHandle_t xSemaphore ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1550:1: error: expected declaration specifiers before 'TaskHandle_t'
+ 1550 | TaskHandle_t xQueueGetMutexHolderFromISR( QueueHandle_t xSemaphore ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1556:1: error: unknown type name 'BaseType_t'
+ 1556 | BaseType_t xQueueTakeMutexRecursive( QueueHandle_t xMutex,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1556:38: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1556 | BaseType_t xQueueTakeMutexRecursive( QueueHandle_t xMutex,
+      |                                      ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1557:38: error: unknown type name 'TickType_t'
+ 1557 |                                      TickType_t xTicksToWait ) PRIVILEGED_FUNCTION;
+      |                                      ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1558:1: error: unknown type name 'BaseType_t'
+ 1558 | BaseType_t xQueueGiveMutexRecursive( QueueHandle_t xMutex ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1558:38: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1558 | BaseType_t xQueueGiveMutexRecursive( QueueHandle_t xMutex ) PRIVILEGED_FUNCTION;
+      |                                      ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1696:1: error: expected declaration specifiers before 'QueueSetHandle_t'
+ 1696 | QueueSetHandle_t xQueueCreateSet( const UBaseType_t uxEventQueueLength ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1720:1: error: unknown type name 'BaseType_t'
+ 1720 | BaseType_t xQueueAddToSet( QueueSetMemberHandle_t xQueueOrSemaphore,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1720:28: error: expected declaration specifiers or '...' before 'QueueSetMemberHandle_t'
+ 1720 | BaseType_t xQueueAddToSet( QueueSetMemberHandle_t xQueueOrSemaphore,
+      |                            ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1721:28: error: expected declaration specifiers or '...' before 'QueueSetHandle_t'
+ 1721 |                            QueueSetHandle_t xQueueSet ) PRIVILEGED_FUNCTION;
+      |                            ^~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1740:1: error: unknown type name 'BaseType_t'
+ 1740 | BaseType_t xQueueRemoveFromSet( QueueSetMemberHandle_t xQueueOrSemaphore,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1740:33: error: expected declaration specifiers or '...' before 'QueueSetMemberHandle_t'
+ 1740 | BaseType_t xQueueRemoveFromSet( QueueSetMemberHandle_t xQueueOrSemaphore,
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1741:33: error: expected declaration specifiers or '...' before 'QueueSetHandle_t'
+ 1741 |                                 QueueSetHandle_t xQueueSet ) PRIVILEGED_FUNCTION;
+      |                                 ^~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1777:1: error: expected declaration specifiers before 'QueueSetMemberHandle_t'
+ 1777 | QueueSetMemberHandle_t xQueueSelectFromSet( QueueSetHandle_t xQueueSet,
+      | ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1783:1: error: expected declaration specifiers before 'QueueSetMemberHandle_t'
+ 1783 | QueueSetMemberHandle_t xQueueSelectFromSetFromISR( QueueSetHandle_t xQueueSet ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1788:38: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1788 | void vQueueWaitForMessageRestricted( QueueHandle_t xQueue,
+      |                                      ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1789:38: error: unknown type name 'TickType_t'
+ 1789 |                                      TickType_t xTicksToWait,
+      |                                      ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1790:44: error: unknown type name 'BaseType_t'
+ 1790 |                                      const BaseType_t xWaitIndefinitely ) PRIVILEGED_FUNCTION;
+      |                                            ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1791:1: error: unknown type name 'BaseType_t'
+ 1791 | BaseType_t xQueueGenericReset( QueueHandle_t xQueue,
+      | ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1791:32: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1791 | BaseType_t xQueueGenericReset( QueueHandle_t xQueue,
+      |                                ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1792:32: error: unknown type name 'BaseType_t'
+ 1792 |                                BaseType_t xNewQueue ) PRIVILEGED_FUNCTION;
+      |                                ^~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1793:28: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1793 | void vQueueSetQueueNumber( QueueHandle_t xQueue,
+      |                            ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1794:28: error: unknown type name 'UBaseType_t'
+ 1794 |                            UBaseType_t uxQueueNumber ) PRIVILEGED_FUNCTION;
+      |                            ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1795:1: error: unknown type name 'UBaseType_t'
+ 1795 | UBaseType_t uxQueueGetQueueNumber( QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      | ^~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1795:36: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1795 | UBaseType_t uxQueueGetQueueNumber( QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                                    ^~~~~~~~~~~~~
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:1796:30: error: expected declaration specifiers or '...' before 'QueueHandle_t'
+ 1796 | uint8_t ucQueueGetQueueType( QueueHandle_t xQueue ) PRIVILEGED_FUNCTION;
+      |                              ^~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:65:3: error: storage class specified for parameter 'midiMetaEventType_t'
+   65 | } midiMetaEventType_t;
+      |   ^~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:72:3: error: storage class specified for parameter 'midiFileHeaderData_t'
+   72 | } midiFileHeaderData_t;
+      |   ^~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:78:3: error: storage class specified for parameter 'systemMode_t'
+   78 | } systemMode_t;
+      |   ^~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:85:3: error: storage class specified for parameter 'midiPlaybackCommand_t'
+   85 | } midiPlaybackCommand_t;
+      |   ^~~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:91:5: error: unknown type name 'bool'
+   91 |     bool isRunningStatus;
+      |     ^~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:96:5: error: expected specifier-qualifier-list before 'midiFileHeaderData_t'
+   96 |     midiFileHeaderData_t midiFileHeaderData;
+      |     ^~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:97:3: error: storage class specified for parameter 'midiPlaybackRuntimeData_t'
+   97 | } midiPlaybackRuntimeData_t;
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:102:17: error: unknown type name 'bool'
+  102 | extern volatile bool deltaTimerFired;
+      |                 ^~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:102:22: error: storage class specified for parameter 'deltaTimerFired'
+  102 | extern volatile bool deltaTimerFired;
+      |                      ^~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:103:22: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'appToPlaybackTaskQueue'
+  103 | extern QueueHandle_t appToPlaybackTaskQueue;
+      |                      ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:104:22: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'playbackTaskToAppQueue'
+  104 | extern QueueHandle_t playbackTaskToAppQueue;
+      |                      ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:108:22: error: storage class specified for parameter 'MThd_fileHeaderBytes'
+  108 | extern const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES];     // A midi file ALWAYS starts with these four bytes
+      |                      ^~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:109:22: error: storage class specified for parameter 'MTtk_trackHeaderBytes'
+  109 | extern const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES];    // Midi file track data ALWAYS starts with these four bytes
+      |                      ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:110:22: error: storage class specified for parameter 'endOfTrackBytes'
+  110 | extern const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES];                // A track chunk is always expected to be terminated with endOfTrackBytes
+      |                      ^~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:111:22: error: storage class specified for parameter 'setTimeSignatureMetaEventBytes'
+  111 | extern const uint8_t setTimeSignatureMetaEventBytes[MIDI_TIME_SIG_MSG_NUM_BYTES]; // Set time signature preamble, followed by setTimeSignatureMetaEventBytes[2] time signature bytes
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:112:22: error: storage class specified for parameter 'setTempoMetaEventBytes'
+  112 | extern const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES];         // Set tempo preamble, followed by setTempMetaEventBytes[2] tempo bytes
+      |                      ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:1: error: parameter 'MThd_fileHeaderBytes' is initialized
+    7 | const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x68, 0x64};          // A midi file ALWAYS starts with these four bytes
+      | ^~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:15: error: redefinition of parameter 'MThd_fileHeaderBytes'
+    7 | const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x68, 0x64};          // A midi file ALWAYS starts with these four bytes
+      |               ^~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:108:22: note: previous definition of 'MThd_fileHeaderBytes' with type 'const uint8_t *' {aka 'const unsigned char *'}
+  108 | extern const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES];     // A midi file ALWAYS starts with these four bytes
+      |                      ^~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:67: warning: initialization of 'const uint8_t *' {aka 'const unsigned char *'} from 'int' makes pointer from integer without a cast [-Wint-conversion]
+    7 | const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x68, 0x64};          // A midi file ALWAYS starts with these four bytes
+      |                                                                   ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:67: note: (near initialization for 'MThd_fileHeaderBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:73: warning: excess elements in scalar initializer
+    7 | const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x68, 0x64};          // A midi file ALWAYS starts with these four bytes
+      |                                                                         ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:73: note: (near initialization for 'MThd_fileHeaderBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:79: warning: excess elements in scalar initializer
+    7 | const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x68, 0x64};          // A midi file ALWAYS starts with these four bytes
+      |                                                                               ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:79: note: (near initialization for 'MThd_fileHeaderBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:85: warning: excess elements in scalar initializer
+    7 | const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x68, 0x64};          // A midi file ALWAYS starts with these four bytes
+      |                                                                                     ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:7:85: note: (near initialization for 'MThd_fileHeaderBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:1: error: parameter 'MTtk_trackHeaderBytes' is initialized
+    8 | const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x72, 0x6B};        // Midi file track data ALWAYS starts with these four bytes
+      | ^~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:15: error: redefinition of parameter 'MTtk_trackHeaderBytes'
+    8 | const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x72, 0x6B};        // Midi file track data ALWAYS starts with these four bytes
+      |               ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:109:22: note: previous definition of 'MTtk_trackHeaderBytes' with type 'const uint8_t *' {aka 'const unsigned char *'}
+  109 | extern const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES];    // Midi file track data ALWAYS starts with these four bytes
+      |                      ^~~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:69: warning: initialization of 'const uint8_t *' {aka 'const unsigned char *'} from 'int' makes pointer from integer without a cast [-Wint-conversion]
+    8 | const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x72, 0x6B};        // Midi file track data ALWAYS starts with these four bytes
+      |                                                                     ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:69: note: (near initialization for 'MTtk_trackHeaderBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:75: warning: excess elements in scalar initializer
+    8 | const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x72, 0x6B};        // Midi file track data ALWAYS starts with these four bytes
+      |                                                                           ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:75: note: (near initialization for 'MTtk_trackHeaderBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:81: warning: excess elements in scalar initializer
+    8 | const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x72, 0x6B};        // Midi file track data ALWAYS starts with these four bytes
+      |                                                                                 ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:81: note: (near initialization for 'MTtk_trackHeaderBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:87: warning: excess elements in scalar initializer
+    8 | const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x72, 0x6B};        // Midi file track data ALWAYS starts with these four bytes
+      |                                                                                       ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:8:87: note: (near initialization for 'MTtk_trackHeaderBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:9:1: error: parameter 'endOfTrackBytes' is initialized
+    9 | const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES] = {0xFF, 0x2F, 0x00};                // A track chunk is always expected to be terminated with endOfTrackBytes
+      | ^~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:9:15: error: redefinition of parameter 'endOfTrackBytes'
+    9 | const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES] = {0xFF, 0x2F, 0x00};                // A track chunk is always expected to be terminated with endOfTrackBytes
+      |               ^~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:110:22: note: previous definition of 'endOfTrackBytes' with type 'const uint8_t *' {aka 'const unsigned char *'}
+  110 | extern const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES];                // A track chunk is always expected to be terminated with endOfTrackBytes
+      |                      ^~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:9:67: warning: initialization of 'const uint8_t *' {aka 'const unsigned char *'} from 'int' makes pointer from integer without a cast [-Wint-conversion]
+    9 | const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES] = {0xFF, 0x2F, 0x00};                // A track chunk is always expected to be terminated with endOfTrackBytes
+      |                                                                   ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:9:67: note: (near initialization for 'endOfTrackBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:9:73: warning: excess elements in scalar initializer
+    9 | const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES] = {0xFF, 0x2F, 0x00};                // A track chunk is always expected to be terminated with endOfTrackBytes
+      |                                                                         ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:9:73: note: (near initialization for 'endOfTrackBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:9:79: warning: excess elements in scalar initializer
+    9 | const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES] = {0xFF, 0x2F, 0x00};                // A track chunk is always expected to be terminated with endOfTrackBytes
+      |                                                                               ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:9:79: note: (near initialization for 'endOfTrackBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:10:1: error: parameter 'setTimeSignatureMetaEventBytes' is initialized
+   10 | const uint8_t setTimeSignatureMetaEventBytes[MIDI_TIME_SIG_MSG_NUM_BYTES] = {0xFF, 0x51, 0x03};     // Set time signature preamble, followed by setTimeSignatureMetaEventBytes[2] time signature bytes
+      | ^~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:10:15: error: redefinition of parameter 'setTimeSignatureMetaEventBytes'
+   10 | const uint8_t setTimeSignatureMetaEventBytes[MIDI_TIME_SIG_MSG_NUM_BYTES] = {0xFF, 0x51, 0x03};     // Set time signature preamble, followed by setTimeSignatureMetaEventBytes[2] time signature bytes
+      |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:111:22: note: previous definition of 'setTimeSignatureMetaEventBytes' with type 'const uint8_t *' {aka 'const unsigned char *'}
+  111 | extern const uint8_t setTimeSignatureMetaEventBytes[MIDI_TIME_SIG_MSG_NUM_BYTES]; // Set time signature preamble, followed by setTimeSignatureMetaEventBytes[2] time signature bytes
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:10:78: warning: initialization of 'const uint8_t *' {aka 'const unsigned char *'} from 'int' makes pointer from integer without a cast [-Wint-conversion]
+   10 | const uint8_t setTimeSignatureMetaEventBytes[MIDI_TIME_SIG_MSG_NUM_BYTES] = {0xFF, 0x51, 0x03};     // Set time signature preamble, followed by setTimeSignatureMetaEventBytes[2] time signature bytes
+      |                                                                              ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:10:78: note: (near initialization for 'setTimeSignatureMetaEventBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:10:84: warning: excess elements in scalar initializer
+   10 | const uint8_t setTimeSignatureMetaEventBytes[MIDI_TIME_SIG_MSG_NUM_BYTES] = {0xFF, 0x51, 0x03};     // Set time signature preamble, followed by setTimeSignatureMetaEventBytes[2] time signature bytes
+      |                                                                                    ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:10:84: note: (near initialization for 'setTimeSignatureMetaEventBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:10:90: warning: excess elements in scalar initializer
+   10 | const uint8_t setTimeSignatureMetaEventBytes[MIDI_TIME_SIG_MSG_NUM_BYTES] = {0xFF, 0x51, 0x03};     // Set time signature preamble, followed by setTimeSignatureMetaEventBytes[2] time signature bytes
+      |                                                                                          ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:10:90: note: (near initialization for 'setTimeSignatureMetaEventBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:11:1: error: parameter 'setTempoMetaEventBytes' is initialized
+   11 | const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES] = {0xFF, 0x58, 0x04};            // Set tempo preamble, followed by setTempMetaEventBytes[2] tempo bytes
+      | ^~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:11:15: error: redefinition of parameter 'setTempoMetaEventBytes'
+   11 | const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES] = {0xFF, 0x58, 0x04};            // Set tempo preamble, followed by setTempMetaEventBytes[2] tempo bytes
+      |               ^~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/Desktop/Firmware/components/midi/include/midi.h:112:22: note: previous definition of 'setTempoMetaEventBytes' with type 'const uint8_t *' {aka 'const unsigned char *'}
+  112 | extern const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES];         // Set tempo preamble, followed by setTempMetaEventBytes[2] tempo bytes
+      |                      ^~~~~~~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:11:71: warning: initialization of 'const uint8_t *' {aka 'const unsigned char *'} from 'int' makes pointer from integer without a cast [-Wint-conversion]
+   11 | const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES] = {0xFF, 0x58, 0x04};            // Set tempo preamble, followed by setTempMetaEventBytes[2] tempo bytes
+      |                                                                       ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:11:71: note: (near initialization for 'setTempoMetaEventBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:11:77: warning: excess elements in scalar initializer
+   11 | const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES] = {0xFF, 0x58, 0x04};            // Set tempo preamble, followed by setTempMetaEventBytes[2] tempo bytes
+      |                                                                             ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:11:77: note: (near initialization for 'setTempoMetaEventBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:11:83: warning: excess elements in scalar initializer
+   11 | const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES] = {0xFF, 0x58, 0x04};            // Set tempo preamble, followed by setTempMetaEventBytes[2] tempo bytes
+      |                                                                                   ^~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:11:83: note: (near initialization for 'setTempoMetaEventBytes')
+/home/synth002/Desktop/Firmware/components/midi/midi.c:16:1: error: expected '=', ',', ';', 'asm' or '__attribute__' before '{' token
+   16 | {
+      | ^
+In file included from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/task.h:42,
+                 from /home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/queue.h:48,
+                 from /home/synth002/Desktop/Firmware/components/midi/include/midi.h:2,
+                 from /home/synth002/Desktop/Firmware/components/midi/midi.c:4:
+/home/synth002/esp/esp-idf-v5.0/components/freertos/FreeRTOS-Kernel/include/freertos/list.h:353:6: error: old-style parameter declarations in prototyped function definition
+  353 | void vListInitialise( List_t * const pxList ) PRIVILEGED_FUNCTION;
+      |      ^~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/midi/midi.c:74: error: expected '{' at end of input
+cc1: some warnings being treated as errors
+ninja: build stopped: subcommand failed.

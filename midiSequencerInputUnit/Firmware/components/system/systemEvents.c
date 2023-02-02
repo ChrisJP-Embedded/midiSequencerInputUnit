@@ -11,7 +11,7 @@
 #include "switchMatrix.h"
 #include "ipsDisplay.h"
 #include "fileSys.h"
-#include "midi.h"
+#include "midiHelper.h"
 #include "sequencerGrid.h"
 
 #define LOG_TAG "systemEvents"

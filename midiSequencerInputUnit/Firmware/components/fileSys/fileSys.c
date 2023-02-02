@@ -127,71 +127,67 @@ uint8_t fileSys_writeFile(char * fileName, uint8_t * data, uint32_t numBytes, bo
 
 
 //---- Public
-uint8_t fileSys_readFile(char *fileName, uint8_t * dataBuffer, uint16_t numBytes, bool readEntireFile)
+uint32_t fileSys_readFile(char *fileName, uint8_t * dataBuffer, uint16_t numBytes, bool readEntireFile)
 {
     //This function performs a read on the currently open file,
     //proceeding from the current file pointer position in file.
     //numBytes of data is written to the address pointed at by
     //'dataBuffer' (which should have been allocated from PSRAM)
 
+    //RETURNS: The number of bytes successfully read from file
+
     size_t numBytesRead;
     size_t numBytesInFile;
 
     assert(g_FileSysPrivateData.isPartitionMounted == true);
     assert(dataBuffer != NULL);
+    assert(fileName != NULL);
 
     //Open target file for read op
     fileSys_openFileRW(fileName, false); 
 
-    //Abort if target file not open
     if(g_FileSysPrivateData.fileHandle == NULL) 
     {
+        //The file should have been opened via a previous call to 'fileSys_openFileRW'
+        //If the module file pointer is NULL then a system fault has occured.
         ESP_LOGE(LOG_TAG, "Error: Attempted to read from file when no file open");
-        return 1;
+        assert(0);
     }
-    else //Execute read operation
+
+    if(readEntireFile)
     {
-        if(dataBuffer == NULL)
+        fseek(g_FileSysPrivateData.fileHandle, 0L, SEEK_END);
+        numBytesInFile = ftell(g_FileSysPrivateData.fileHandle);
+        rewind(g_FileSysPrivateData.fileHandle);
+
+        //NEED TO ADD CHECK THAT MAX FILESIZE NOT EXCEEDED
+
+        numBytesRead = fread(dataBuffer, sizeof(uint8_t), numBytesInFile, g_FileSysPrivateData.fileHandle);
+        if(numBytesInFile != numBytesRead)
         {
-            ESP_LOGE(LOG_TAG, "Error: Read buffe");
-            return 1;
-        }
-
-        if(readEntireFile)
-        {
-            fseek(g_FileSysPrivateData.fileHandle, 0L, SEEK_END);
-            numBytesInFile = ftell(g_FileSysPrivateData.fileHandle);
-            rewind(g_FileSysPrivateData.fileHandle);
-
-            //NEED TO ADD CHECK THAT MAX FILESIZE NOT EXCEEDED
-
-            numBytesRead = fread(dataBuffer, sizeof(uint8_t), numBytesInFile, g_FileSysPrivateData.fileHandle);
-            if(numBytesInFile != numBytesRead)
+            if(feof(g_FileSysPrivateData.fileHandle))
             {
-                if(feof(g_FileSysPrivateData.fileHandle))
-                {
-                    ESP_LOGI(LOG_TAG, "Reached end of currently open file while reading");
-                    return 1;
-                }
+                ESP_LOGE(LOG_TAG, "Error: Reached end of currently open file while reading");
+                assert(0);
             }
         }
-        else
-        {
-            numBytesRead = fread(dataBuffer, sizeof(uint8_t), numBytes, g_FileSysPrivateData.fileHandle);
-            if(numBytes != numBytesRead)
-            {
-                if(feof(g_FileSysPrivateData.fileHandle))
-                {
-                    ESP_LOGI(LOG_TAG, "Reached end of currently open file while reading");
-                    return 1;
-                }
-            }
-        }
-
-        fileSys_closeFile(); //Operation complete, close file
-
-        return 0;
     }
+    else
+    {
+        numBytesRead = fread(dataBuffer, sizeof(uint8_t), numBytes, g_FileSysPrivateData.fileHandle);
+        if(numBytes != numBytesRead)
+        {
+            if(feof(g_FileSysPrivateData.fileHandle))
+            {
+                ESP_LOGE(LOG_TAG, "Error: Reached end of currently open file while reading");
+                assert(0);
+            }
+        }
+    }
+
+    fileSys_closeFile(); //Operation complete, close file
+
+    return (uint32_t)numBytesRead;
 }
 
 

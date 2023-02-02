@@ -299,7 +299,7 @@ rule C_STATIC_LIBRARY_LINKER____idf_main_
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /home/synth002/.espressif/tools/cmake/3.24.0/bin/cmake --regenerate-during-build -S/home/synth002/esp/esp-idf-v5.0/components/bootloader/subproject -B/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/bootloader
+  command = /home/synth002/.espressif/tools/cmake/3.24.0/bin/cmake --regenerate-during-build -S/home/synth002/esp/esp-idf-v5.0/components/bootloader/subproject -B/home/synth002/Desktop/Firmware/build/bootloader
   description = Re-running CMake...
   generator = 1
 

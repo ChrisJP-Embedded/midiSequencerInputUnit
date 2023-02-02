@@ -1526,7 +1526,7 @@ rule C_STATIC_LIBRARY_LINKER____idf_bleCentralClient_
 #############################################
 # Rule for compiling C files.
 
-rule C_COMPILER____idf_midi_
+rule C_COMPILER____idf_midiHelper_
   depfile = $DEP_FILE
   deps = gcc
   command = /home/synth002/.espressif/tools/xtensa-esp32s3-elf/esp-2022r1-11.2.0/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-gcc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -1536,7 +1536,7 @@ rule C_COMPILER____idf_midi_
 #############################################
 # Rule for linking C static library.
 
-rule C_STATIC_LIBRARY_LINKER____idf_midi_
+rule C_STATIC_LIBRARY_LINKER____idf_midiHelper_
   command = $PRE_LINK && /home/synth002/.espressif/tools/cmake/3.24.0/bin/cmake -E rm -f $TARGET_FILE && /home/synth002/.espressif/tools/xtensa-esp32s3-elf/esp-2022r1-11.2.0/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc $TARGET_FILE $LINK_FLAGS $in && /home/synth002/.espressif/tools/xtensa-esp32s3-elf/esp-2022r1-11.2.0/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib $TARGET_FILE && $POST_BUILD
   description = Linking C static library $TARGET_FILE
   restat = $RESTAT
@@ -1584,7 +1584,7 @@ rule C_STATIC_LIBRARY_LINKER____idf_main_
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /home/synth002/.espressif/tools/cmake/3.24.0/bin/cmake --regenerate-during-build -S/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware -B/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build
+  command = /home/synth002/.espressif/tools/cmake/3.24.0/bin/cmake --regenerate-during-build -S/home/synth002/Desktop/Firmware -B/home/synth002/Desktop/Firmware/build
   description = Re-running CMake...
   generator = 1
 

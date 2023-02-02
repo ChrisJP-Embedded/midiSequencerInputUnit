@@ -70,6 +70,6 @@ $<TARGET_FILE:__idf_switchMatrix>
 $<TARGET_FILE:__idf_esp_littlefs>
 $<TARGET_FILE:__idf_fileSys>
 $<TARGET_FILE:__idf_bleCentralClient>
-$<TARGET_FILE:__idf_midi>
+$<TARGET_FILE:__idf_midiHelper>
 $<TARGET_FILE:__idf_system>
 $<TARGET_FILE:__idf_main>

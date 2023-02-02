@@ -1,4 +1,4 @@
-# Install script for directory: /home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/components/guiMenu
+# Install script for directory: /home/synth002/Desktop/Firmware/components/guiMenu
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

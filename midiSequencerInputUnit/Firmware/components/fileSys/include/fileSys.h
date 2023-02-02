@@ -22,6 +22,6 @@ FileSysPublicData_t fileSys_init(void);
 void fileSys_deinit(void);
 
 uint8_t fileSys_writeFile(char * fileName, uint8_t * data, uint32_t numBytes, bool createFileIfDoesntExist);
-uint8_t fileSys_readFile(char *fileName, uint8_t * dataBuffer, uint16_t numBytes, bool readEntireFile);
+uint32_t fileSys_readFile(char *fileName, uint8_t * dataBuffer, uint16_t numBytes, bool readEntireFile);
 uint8_t fileSys_deleteFile(char * fileName);
 

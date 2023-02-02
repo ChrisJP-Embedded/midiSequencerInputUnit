@@ -48,7 +48,7 @@ static bool hasModuleBeenInitialized = false;
 //---- Public 
 uint8_t ledDrivers_init(void)
 {
-    assert(hasModuleBeenInitialized == false);
+    //assert(hasModuleBeenInitialized == false);
 
     uint8_t data[5] = {0};
     gpio_config_t ledDriverLatchPin_conf = {};
@@ -61,17 +61,21 @@ uint8_t ledDrivers_init(void)
     ledDriverLatchPin_conf.pull_down_en = false;
     ledDriverLatchPin_conf.pull_up_en = false;
 
-    if(gpio_config(&ledDriverLatchPin_conf) != ESP_OK)
+    if(hasModuleBeenInitialized == false)
     {
-        ESP_LOGE(LOG_TAG, "Error: Fault initializing gpio");
-        return 1;
+        if(gpio_config(&ledDriverLatchPin_conf) != ESP_OK)
+        {
+            ESP_LOGE(LOG_TAG, "Error: Fault initializing gpio");
+            return 1;
+        }
+
+        if(configureI2CPeripheral() != ESP_OK)
+        {
+            ESP_LOGE(LOG_TAG, "Error: Fault initializing I2C periperhal");
+            return 1;
+        }
     }
 
-    if(configureI2CPeripheral() != ESP_OK)
-    {
-        ESP_LOGE(LOG_TAG, "Error: Fault initializing I2C periperhal");
-        return 1;
-    }
 
     //***********************************
     //Prepare configuration register data
@@ -250,7 +254,7 @@ uint8_t ledDrivers_writeEntireGrid(rgbLedColour_t * rgbGridColours)
 
     //The data in the recieved array is row by row as described
     //above, as the led drivers control the grid leds on a column
-    //basis we will need to extract each column
+    //basis we will need to extract and update each column
     rgbLedColour_t colourCodesForSingleColumn[SYSTEM_NUM_ROWS];
 
     //For each column in the grid
@@ -357,7 +361,7 @@ static esp_err_t configureI2CPeripheral(void)
 {
     //Setup I2C peripheral for comms with LP5862 led drivers
 
-    assert(hasModuleBeenInitialized == false);
+   assert(hasModuleBeenInitialized == false);
 
     esp_err_t err = ESP_OK;
 
@@ -382,8 +386,9 @@ static esp_err_t configureI2CPeripheral(void)
 //---- Private
 static uint8_t I2CLedDriverWrite(uint16_t regAddr, uint8_t *data, uint16_t numBytes, ledDriverICAddr_t deviceAddr, bool isBroadcast)
 {
-    uint8_t addrByte0;
-    uint8_t addrByte1;
+    static uint8_t addrByte0;
+    static uint8_t addrByte1;
+    esp_err_t err;
 
     assert(hasModuleBeenInitialized == true);
 
@@ -441,7 +446,9 @@ static uint8_t I2CLedDriverWrite(uint16_t regAddr, uint8_t *data, uint16_t numBy
         writePayload[a] = data[a - 1];
     }
 
-    if(i2c_master_write_to_device(I2C_MASTER_NUM, addrByte0, writePayload, numBytes, I2C_MASTER_TIMEOUT_MS) != ESP_OK)
+    err = i2c_master_write_to_device(I2C_MASTER_NUM, addrByte0, writePayload, numBytes, I2C_MASTER_TIMEOUT_MS);
+
+    if(err != ESP_OK)
     {
         ESP_LOGE(LOG_TAG, "Error: I2C write error detected");
         free(writePayload);
@@ -449,6 +456,7 @@ static uint8_t I2CLedDriverWrite(uint16_t regAddr, uint8_t *data, uint16_t numBy
     }
 
     free(writePayload);
+
 
     return 0;
 }
@@ -499,9 +507,9 @@ static inline void toggleDriverLatchPins(void)
     //TODO: Automate with timer
     //This pin must be toggled in order for the driver ICs 
     //to latch data from internal SRAM to driver outputs.
-
     assert(hasModuleBeenInitialized == true);
 
+    vTaskDelay(pdMS_TO_TICKS(1));
     gpio_set_level(LED_DRIVER_LATCH_IO, true);
     vTaskDelay(pdMS_TO_TICKS(1));
     gpio_set_level(LED_DRIVER_LATCH_IO, false);

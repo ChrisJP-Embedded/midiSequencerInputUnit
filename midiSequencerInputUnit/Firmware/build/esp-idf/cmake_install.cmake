@@ -39,411 +39,421 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/xtensa/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/xtensa/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_ringbuf/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_ringbuf/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/efuse/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/efuse/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/driver/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/driver/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_pm/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_pm/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/mbedtls/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/mbedtls/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_app_format/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_app_format/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/bootloader_support/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/bootloader_support/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/bootloader/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/bootloader/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esptool_py/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esptool_py/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/partition_table/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/partition_table/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_partition/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_partition/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/app_update/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/app_update/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/spi_flash/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/spi_flash/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/pthread/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/pthread/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_system/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_system/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_rom/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_rom/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/hal/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/hal/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/log/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/log/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/heap/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/heap/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/soc/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/soc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_hw_support/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_hw_support/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/freertos/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/freertos/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/newlib/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/newlib/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/cxx/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/cxx/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_common/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_common/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_timer/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_timer/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/app_trace/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/app_trace/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_event/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_event/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/nvs_flash/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/nvs_flash/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_phy/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_phy/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/vfs/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/vfs/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/lwip/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/lwip/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_netif/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_netif/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/wpa_supplicant/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/wpa_supplicant/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_wifi/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_wifi/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/bt/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/bt/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/unity/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/unity/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/cmock/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/cmock/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/console/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/console/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/http_parser/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/http_parser/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp-tls/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp-tls/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_adc/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_adc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_eth/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_eth/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_gdbstub/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_gdbstub/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_hid/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_hid/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/tcp_transport/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/tcp_transport/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_http_client/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_http_client/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_http_server/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_http_server/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_https_ota/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_https_ota/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_https_server/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_https_server/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_lcd/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_lcd/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/protobuf-c/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/protobuf-c/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/protocomm/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/protocomm/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_local_ctrl/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_local_ctrl/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_psram/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_psram/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/espcoredump/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/espcoredump/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/wear_levelling/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/wear_levelling/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/sdmmc/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/sdmmc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/fatfs/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/fatfs/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/idf_test/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/idf_test/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/ieee802154/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/ieee802154/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/json/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/json/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/mqtt/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/mqtt/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/openthread/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/openthread/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/perfmon/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/perfmon/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/spiffs/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/spiffs/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/touch_element/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/touch_element/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/ulp/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/ulp/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/usb/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/usb/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/wifi_provisioning/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/wifi_provisioning/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/ipsDisplay/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/ipsDisplay/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/rotaryEncoders/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/rotaryEncoders/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/guiMenu/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/guiMenu/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/ledDrivers/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/ledDrivers/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/switchMatrix/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/switchMatrix/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/esp_littlefs/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/esp_littlefs/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/fileSys/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/fileSys/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/bleCentralClient/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/bleCentralClient/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/midi/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/genericMacros/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/system/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/midiHelper/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/synth002/Desktop/midiSequencer/midiSequencerInputUnit/Firmware/build/esp-idf/main/cmake_install.cmake")
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/system/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/main/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/systemWideDefinitions/cmake_install.cmake")
 endif()
 
