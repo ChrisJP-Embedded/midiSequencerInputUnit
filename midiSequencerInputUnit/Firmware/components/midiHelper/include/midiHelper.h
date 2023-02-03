@@ -66,5 +66,5 @@ extern const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES];
 uint8_t generateEmptyMidiFile(uint8_t * filePtr, uint16_t ppq, uint8_t tempo);
 int8_t processMidiFileMetaMessage(uint8_t *metaMsgPtr);
 uint32_t processMidiFileDeltaTime(uint8_t * midiFilePtr);
-uint8_t getDeltaTimeVaraibleLengthNumBytes(uint32_t deltaTime);
+uint8_t getDeltaTimeVariableLengthNumBytes(uint32_t deltaTime);
 uint8_t getMidiFileFormatType(uint8_t * midiFilePtr);

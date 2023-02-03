@@ -69,7 +69,7 @@ uint8_t generateEmptyMidiFile(uint8_t * filePtr, uint16_t ppq, uint8_t tempo)
 }
 
 
-uint8_t getDeltaTimeVaraibleLengthNumBytes(uint32_t deltaTime)
+uint8_t getDeltaTimeVariableLengthNumBytes(uint32_t deltaTime)
 {
     //This function takes in a 32-bit deltaTime value
     //and returns the number of bytes required to 

@@ -1,269 +1,156 @@
-
-uint8_t generateEmptyMidiFile(uint8_t * filePtr, uint16_t ppq, uint8_t tempo)
+void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
 {
-    //This function expects a pointer to a file buffer,
-    //it will write a default midi file template with a
-    //single track that contains a single midi event,
-    //an EOF meta event.
-    
-    //TODO: Add tempo meta message (currentlY)
+    //This function updates all rgbs leds of the switch matrix 
 
-    if(filePtr == NULL) return 0;
+    SequencerGridItem_t * tempNodePtr = NULL;
+    SequencerGridItem_t * searchPtr = NULL;
+    bool abortCurrentRow = false;
+    bool runOncePerRow = false;
+    uint16_t numGridSteps = 0;
+    uint8_t relativeRow = 0;
+    uint16_t relativeColumn = 0;
+    rgbLedColour_t gridRGBCodes[48] = {rgb_off};
 
-    uint8_t writeAddr = 0;
+    bool keepSearchingCurrentRow = false;
 
-    //Write midi file header (4 bytes)
-    for(uint8_t a = 0; a < sizeof(MThd_fileHeaderBytes); ++a)
-    {
-        filePtr[writeAddr++] = MThd_fileHeaderBytes[a];
-    }
+    //The pysical sequencer grid is made up of a matrix of switches, where each
+    //switch has its own assosiated RGB led, this function handles the setting
+    //of those RGB leds in order to provide a means to display grid data.
 
-    //Write header length (4 bytes - always equal to 6)
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 6;
+    //The pysical size of the grids switch matrix is defined by:
+    //NUM_SEQUENCER_PHYSICAL_ROWS x NUM_SEQUENCER_PHYSICAL_COLUMNS
+    //The top left switch of the grid considered as coordinate 0,0.
 
-    //Write format (2 bytes - always format 0 - single track format)
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
+    //The grid data that can be displayed is limited to the physical size of
+    //the sequencer grid. Depending on the sequence, its likely that it will
+    //only be possible to display a subset of the virtual grid at any one time.
 
-    //Write number of tracks that follow (2 bytes - always equal 1 for format 0)
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 1;
+    //The input arguments 'rowOffset' and 'columnOffset' allow the caller to
+    //specify which area of grid data should be displayed on the physical grid.
 
-    //Write division (ppq) (2 bytes)
-    filePtr[writeAddr++] = (uint8_t)(ppq >> 8);
-    filePtr[writeAddr++] = (uint8_t)(ppq);
-
-    //Write midi track header (4 bytes)
-    for(uint8_t a = 0; a < sizeof(MTtk_trackHeaderBytes); ++a)
-    {
-        filePtr[writeAddr++] = MTtk_trackHeaderBytes[a];
-    }
-
-    //Write track length in bytes (4 bytes)
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 4;
-
-    //Write end of track meta message
-    //with a delta time of zero
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0xFF;
-    filePtr[writeAddr++] = 0x2F;
-    filePtr[writeAddr++] = 0x00;
-
-    return writeAddr;
-}
+    //EXAMPLE: rowOffset = 5, columnOffset = 7.
+    //The physical grid will display any events which fall 
+    //within the following area of the virtual grid data.
+    //Rows:    5 -> (5 + (NUM_SEQUENCER_PHYSICAL_ROWS - 1))
+    //Columns: 7 -> (7 + (NUM_SEQUENCER_PHYSICAL_COLUMNS - 1))
 
 
-uint8_t getDeltaTimeVaraibleLengthNumBytes(uint32_t deltaTime)
-{
-    //This function takes in a 32-bit deltaTime value
-    //and returns the number of bytes required to 
-    //represent it in when converted to a variable length
-    //value (as a delta times appear in a midi file)
+    //Iterate through each grid row that fall within the specified area. Each row 
+    //stores midi events as nodes in a linked list. A row may have zero or more event nodes.
+    for(uint8_t rowNum = rowOffset; rowNum <= (rowOffset + NUM_SEQUENCER_PHYSICAL_ROWS); ++rowNum)
+    { 
+        runOncePerRow = true;
+        abortCurrentRow = false;
 
-    //Note: Check the returned value is within range.
-    
-    unsigned char count = 1;
-    while(deltaTime >>= 7)
-    {
-        ++count;
-    } 
-    return count;
-}
-
-
-uint8_t getDeltaTimeVaraibleLengthNumBytes(uint32_t deltaTime)
-{
-    //This function takes in a 32-bit deltaTime value
-    //and returns the number of bytes required to 
-    //represent it in when converted to a variable length
-    //value (as a delta times appear in a midi file)
-    
-    assert(deltaTime <= MIDI_FILE_MAX_DELTA_TIME_VALUE);
-
-    //Delta-time min one byte
-    unsigned char count = 1;
-    while(deltaTime >>= (NUM_BITS_IN_BYTE - 1))
-    {
-        ++count;
-    } 
-    return count;
-}
-
-
-uint32_t processMidiFileDeltaTime(uint8_t * midiFilePtr)
-{
-    //This function processes a midi file delta time,
-    //it expects a pointer to the base of a delta time
-
-    //This function is called when converting an
-    //existing midi file to grid data.
-
-    //A delta-time is variable length value, between 1 and 4 
-    //bytes in length, it specifies (in midi ticks) the time
-    //that must pass before the event it is assosiated with
-    //should be transmitted.
-
-    //Delta-time bytes appear in MSB first order, the MSBIT
-    //in each byte is a flag which indicates that there are
-    //more delta-time bytes to follow when SET.
-    //To generate the reconstructed value, the MSBIT of each
-    //delta-time byte is removed and then remaining 7 bits of
-    //each byte are concatenated.
-
-    //RETURNS: The reconstructed 32-bit (max) delta-time value.
-
-    assert(midiFilePtr != NULL);
-
-    uint32_t tempStore = 0;
-    uint32_t result = 0;
-    uint8_t numBytes = 0;
-    bool hasBytesToRead = true;
-
-    while(hasBytesToRead)
-    {
-        hasBytesToRead = false; //May only have a single byte
-        tempStore |= *midiFilePtr; //Get first delta-time byte
-
-        //If MSBIT is SET then delta-time has more bytes
-        if(GET_MSBIT_IN_BYTE(*midiFilePtr)) 
+        //We only need to do further processing for the 
+        //current row if has midi events allocated to it 
+        if(g_GridData.gridLinkedListHeadPtrs[rowNum] != NULL)
         {
-            //We get here if bit 8 of the current delta-time byte
-            //is SET (meaning at least one more delta-time byte)
 
-            //Delta-times are FOUR BYTES max in length
-            if(numBytes < MIDI_FILE_MAX_DELTA_TIME_NUM_BYTES) 
+            //A NULL pointer here indcates a system fault
+            assert(g_GridData.gridLinkedListTailPtrs[rowNum] != NULL);
+
+            //If the column of the last event node in the current rows list is LESS 
+            //than the columnOffset no further processing is required for the current row
+            if(g_GridData.gridLinkedListTailPtrs[rowNum]->column >= columnOffset)
             {
-                tempStore <<= NUM_BITS_IN_BYTE;
-                ++numBytes;
-                midiFilePtr += 1;
-                hasBytesToRead = true;
+                //Grab a direct ptr to current rows linked list
+                tempNodePtr = g_GridData.gridLinkedListHeadPtrs[rowNum];
+
+                do
+                {
+                    keepSearchingCurrentRow = false;
+
+                    //If condition evaulates to TRUE the event node pointed at by tempNodePtr DOES NOT fall within the target window
+                    if((tempNodePtr->column >= columnOffset) && (tempNodePtr->column < columnOffset + NUM_SEQUENCER_PHYSICAL_COLUMNS) == false)
+                    {
+                        //Check if more nodes exist
+                        if(tempNodePtr->nextPtr !=  NULL)
+                        {
+                            //current node coordinates didnt fall within
+                            //target window so move onto next node in the list
+                            tempNodePtr = tempNodePtr->nextPtr;
+                            //goto findEventsWithinWindow;
+                            keepSearchingCurrentRow = true;
+                        }
+                        else
+                        {
+                            //end of linked list
+                            abortCurrentRow = true;
+                        }
+                    }
+                    //The end of the list hasnt been reached, but we are no longer within the target window
+                    else if(tempNodePtr->column > (columnOffset + NUM_SEQUENCER_PHYSICAL_COLUMNS)) abortCurrentRow = true;
+
+                    if(!abortCurrentRow)
+                    {
+                        //We reach here if a target node has been found 
+                        //to exist within the specified grid window
+
+                        //If everything worked 'tempGridItemPtr' should now be pointing to the first
+                        //item for the specified row that falls within the target grid area. There
+                        //may be a single item or multiple items that fall within the target grid area
+
+                        //remove offset to get zero base hardware column num
+                        relativeColumn = tempNodePtr->column - columnOffset;
+            
+                        if((CLEAR_LOWER_NIBBLE(tempNodePtr->statusByte) == MIDI_NOTE_OFF_MSG) && (tempNodePtr->column > columnOffset) && (runOncePerRow))
+                        {
+                            //We only get here when the first event node in the current linked list is a note off event
+                            //while note-off events are not themselves displayed, if the relativeColumn is greater than zero
+                            //it means we have an existing note duration that overruns into the target window.
+                            //Any grid steps that are a note duration overrun must be displayed.
+                            runOncePerRow = false;
+                            numGridSteps = tempNodePtr->column - columnOffset;
+
+                            for(uint8_t a = 0; a <= numGridSteps; ++a)
+                            {
+                                //Set the colour of the grid coordinates that make up the note duration overrun
+                                gridRGBCodes[0 + (relativeRow * NUM_SEQUENCER_PHYSICAL_COLUMNS) + a] = rgb_green;
+                            }
+                        }
+                        else if(CLEAR_LOWER_NIBBLE(tempNodePtr->statusByte) == MIDI_NOTE_ON_MSG)
+                        {
+                            //A note-on event has been found within the target window
+                            //we must now find the duration of that note off event in steps
+                            runOncePerRow = false;
+                            //Search for and get pointer to corresponding note-off
+                            searchPtr = getPointerToCorespondingNoteOffEventNode(tempNodePtr);
+                            if(searchPtr != NULL) 
+                            {
+                                //We get here if the corresponding note-off to 
+                                //the current note-on event has been found to exist
+                                numGridSteps = searchPtr->column - tempNodePtr->column;
+                            }
+                            else
+                            {
+                                //A system fault has been detected if we reach here
+                                ESP_LOGE(LOG_TAG, "Error: Unable to find expected corresponding note-off in 'updateGridLEDs'");
+                                assert(0);
+                            } 
+
+                            for(uint8_t a = 0; a < numGridSteps; ++a)
+                            {
+                                //Set the colour of the grid coordinates that make up the current notes duration
+                                gridRGBCodes[relativeColumn + (relativeRow * NUM_SEQUENCER_PHYSICAL_COLUMNS) + a] = rgb_green;
+                            }
+
+                            tempNodePtr = searchPtr;
+                        }
+
+                        if(tempNodePtr->nextPtr !=  NULL)
+                        {
+                            //Still more nodes to process
+                            tempNodePtr = tempNodePtr->nextPtr;
+                            keepSearchingCurrentRow = true;
+                        }
+                    }               
+
+                }while(keepSearchingCurrentRow);
             }
         }
+        ++relativeRow; //Increment zero offset hardware row
     }
 
-    //Finished reading all bytes from file,
-    //now need to decode delta-time bytes
-    //into final delta-time value.
-    for (uint8_t a = 0; a <= numBytes; ++a)
-    {
-        //For each delta-time byte we need to remove bit 8 and concatenate the result
-        result |= ((tempStore & (0x0000007F << (a * NUM_BITS_IN_BYTE))) >> ((a ? 1 : 0) * a));
-    }
-
-    return result;
-}
-
-
-
-int8_t processMidiFileMetaMessage(uint8_t * metaMsgPtr)
-{
-    //This function processes a midi file meta message,
-    //it expects a pointer to the base of a meta message
-
-    //This function is called when converting 
-    //an existing midi file to grid data. 
-
-    //A meta message has the follow byte structure:
-    //meta_message[0] = 0xFF (indicates meta message)  <- *metaMsgPtr
-    //meta_message[1] = meta status byte
-    //meta_message[2] = length byte (number of bytes that follow)
-    
-    //RETURNS:
-
-    //ON SUCCESS: the length of the meta message (an EOF meta
-    //message is the only meta message with a length of zero)
-
-    //ON FAILURE: if the meta message is not recognized the
-    //return value will be -1, indicating corrupt data.
-
-
-    assert(metaMsgPtr != NULL);
-    assert(*metaMsgPtr == 0xFF);
-
-    uint8_t metaMsgLengthInBytes;
-    uint8_t metaStatusByte;
-
-    metaMsgPtr += 1;
-    metaStatusByte = *metaMsgPtr;
-    metaMsgPtr += 1; 
-    metaMsgLengthInBytes = *metaMsgPtr;
-
-
-    //Check meta message status byte
-    switch (metaStatusByte)
-    {
-        case metaEvent_deviceName:
-            ESP_LOGI(LOG_TAG, "metaEvent_deviceName detected");
-            break;
-
-        case metaEvent_midiPort:
-            ESP_LOGI(LOG_TAG, "metaEvent_midiPort detected");
-            break;
-
-        case metaEvent_sequenceNum:
-            //Two data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_sequenceNum detected");
-            break;
-
-        case metaEvent_cuePoint:
-        case metaEvent_marker:
-        case metaEvent_lyrics:
-        case metaEvent_instrumentName:
-        case metaEvent_trackName:
-        case metaEvent_copyright:
-        case metaEvent_textField:
-            //All meta events of variable length
-            //Not bothered about any of these so just increment file pointer
-            ESP_LOGI(LOG_TAG, "Ignored variable-length meta message");
-            break;
-
-        case metaEvent_channelPrefix:
-            //Single data byte expected
-            ESP_LOGI(LOG_TAG, "metaEvent_channelPrefix detected");
-            break;
-
-        case metaEvent_endOfTrack:
-            //Single byte
-            ESP_LOGI(LOG_TAG, "metaEvent_endOfTrack detected");
-            break;
-
-        case metaEvent_setTempo:
-            //Three data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_setTempo detected");
-            break;
-
-        case metaEvent_smpteOffset:
-            //Five data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_smpteOffset detected (not supported)");
-            break;
-
-        case metaEvent_setTimeSig:
-            //Four data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_setTimeSig detected");
-            break;
-
-        case metaEvent_keySignature:
-            //Two data bytes expected
-            ESP_LOGI(LOG_TAG, "metaEvent_keySignature detected");
-            break;
-
-        case metaEvent_sequencerSpecific:
-            //Custom meta messages for the sequencer
-            //Variable length
-            ESP_LOGE(LOG_TAG, "metaEvent_sequencerSpecific detected");
-            break;
-
-        default:
-            ESP_LOGE(LOG_TAG, "Error: Unrecognized meta message status byte");
-            return -1; //Corrupt data detected
-            break;
-    }
-
-    return metaMsgLengthInBytes;
+    ledDrivers_writeEntireGrid(gridRGBCodes);
 }
