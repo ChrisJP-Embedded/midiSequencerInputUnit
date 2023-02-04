@@ -20,7 +20,7 @@
 SequencerGridData_t g_GridData;
 
 void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset);
-static uint8_t generateDeltaTimesForCurrentGrid(void);
+static void generateDeltaTimesForCurrentGrid(void);
 static void deleteEventNode(SequencerGridItem_t ** eventNodePtr);
 static bool doesThisGridCoordinateFallWithinAnExistingNoteDuration(uint16_t columnNum, uint8_t midiNoteNum);
 static SequencerGridItem_t * getPointerToCorespondingNoteOffEventNode(SequencerGridItem_t * baseNodePtr);
@@ -469,7 +469,7 @@ static void managePointersAndInsertNewEventNodeIntoLinkedList(SequencerGridItem_
 }
 
 
-static uint8_t generateDeltaTimesForCurrentGrid(void)
+static void generateDeltaTimesForCurrentGrid(void)
 {
     //This function will assign midi delta-times to all event nodes
     //currenly on the grid - its much easier to process the whole grid
@@ -477,48 +477,72 @@ static uint8_t generateDeltaTimesForCurrentGrid(void)
     //on the fly and grid events are added.
 
     uint16_t previousColumn = 0;
-    SequencerGridItem_t * itemPtr = NULL;
+    SequencerGridItem_t * tempNodePtr = NULL;
 
-    for(uint16_t currentTargetColumn = 0; currentTargetColumn <= g_GridData.totalGridColumns; ++currentTargetColumn)
+    for(uint16_t currentTargetColumn = 0; currentTargetColumn <=g_GridData.totalGridColumns; ++currentTargetColumn)
     {
-        //---- ADD CHECK TO SEE IF THIS COLUMN IS ACTIVE (has any events) - SKIP TO NEXT ITERATION IF NOT ACTIVE ----//
-
+        
         for(uint8_t currentMidiNote = 0; currentMidiNote < TOTAL_MIDI_NOTES; ++currentMidiNote) 
         {   
-            if(g_GridData.gridLinkedListHeadPtrs[currentMidiNote] != NULL)  //skip if nothing allocated
+            //We only need to do furth processing if the current rows 
+            //linked list has one of more midi event nodes allocated to it
+            if(g_GridData.gridLinkedListHeadPtrs[currentMidiNote] != NULL)
             {
-                itemPtr = g_GridData.gridLinkedListHeadPtrs[currentMidiNote];
 
-                if(itemPtr->column < currentTargetColumn)
+                //Grad a direct pointer to the current rows linked list
+                tempNodePtr = g_GridData.gridLinkedListHeadPtrs[currentMidiNote];
+
+                //As long as this event node doesnt exist at 
+                //a column beyong the current target then process
+                if(tempNodePtr->column <= currentTargetColumn)
                 {
-                    //Search currentMidiNote linked list for event column that matches target
-                    while(itemPtr->column < currentTargetColumn)
+                    //Search linked list for midi event node at column that matches current target column
+                    while(tempNodePtr->nextPtr != NULL && tempNodePtr->column < currentTargetColumn)
                     {
-                        if(itemPtr->nextPtr == NULL) goto lookForNext;
-                        itemPtr = itemPtr->nextPtr;
+                        tempNodePtr = tempNodePtr->nextPtr;
                     }
-                    //Check result
-                    if(itemPtr->column == currentTargetColumn)
+                    //If the column of this midi event node matches
+                    //the current target then we need to process
+                    if(tempNodePtr->column == currentTargetColumn)
                     {
-                        itemPtr->deltaTime = (itemPtr->column - previousColumn) * ((g_GridData.sequencerPPQN * NUM_QUATERS_IN_WHOLE_NOTE) / g_GridData.projectQuantization);
+                        //When generating delta-times columns are processed one at 
+                        //a time where the delta-times for all rows in the target column
+                        //are generated before the next column is processed.
+                        //Columns are processed from 0 -> g_GridData.totalGridColumns
+                        //each column represents a duration of step time, hence why
+                        //columns are processed sequentially while generating the 
+                        //timing data for each midi event.
+
+                        //A midi event node at the target column in the virtual grid
+                        //has been found we now need to generate its delta-time value.
+                        tempNodePtr->deltaTime = (tempNodePtr->column - previousColumn) * ((g_GridData.sequencerPPQN * NUM_QUATERS_IN_WHOLE_NOTE) / g_GridData.projectQuantization);
                         previousColumn = currentTargetColumn;
-                        goto lookForNext;
+
+                        //We just found a midi event node at the target column
+                        //in the virtual grid, but it is possible for multiple
+                        //event nodes to be placed at the same grid coordinate
+                        //the only condition being that no duplicates of a single
+                        //midi event type. (Only one Note-on, only one note-off, etc).
+                        //NOTE: Any of there midi event nodes at the current target
+                        //virtual grid coordinate will be set delta-time 0 as they
+                        //should all occur at the same time.
+                        while(tempNodePtr->nextPtr != NULL)
+                        {
+                            tempNodePtr = tempNodePtr->nextPtr;
+                            //We break from the loop as soon as the 
+                            //column pointed at tempNodePtr exists at
+                            //a column beyond the current target column.
+                            if(tempNodePtr->column == currentTargetColumn)
+                            {
+                                tempNodePtr->deltaTime = 0;
+                            }
+                            else break;
+                        }
                     }
                 }
-                else if(itemPtr->column == currentTargetColumn)
-                {
-                    //First node in currentMidiNote linked list is event with column that matches target
-                    itemPtr->deltaTime = (itemPtr->column - previousColumn) * ((g_GridData.sequencerPPQN * NUM_QUATERS_IN_WHOLE_NOTE) / g_GridData.projectQuantization);
-                    previousColumn = currentTargetColumn;
-                    goto lookForNext;
-                }
-
-                lookForNext:
             }
         }
     }
-
-    return 0;
 }
 
 
@@ -540,7 +564,7 @@ uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
 
     uint32_t deltaTime;
     uint32_t trackChunkSizeInBytes;
-    SequencerGridItem_t * tempGridItemPtr = NULL;
+    SequencerGridItem_t * tempGridtempNodePtr = NULL;
     bool stillMoreNodesToProccessAtCurrentCoordinate = false;
 
     assert(midiFileBufferPtr != NULL);
@@ -569,19 +593,19 @@ uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
             {
 
                 //Grab a direct pointer to the linked list of the current row
-                tempGridItemPtr = g_GridData.gridLinkedListHeadPtrs[currentRow];
+                tempGridtempNodePtr = g_GridData.gridLinkedListHeadPtrs[currentRow];
 
                 //Search the current row for any events which
                 //have grid coorinates which match the current target
-                while(tempGridItemPtr->column < currentTargetColumn)
+                while(tempGridtempNodePtr->column < currentTargetColumn)
                 {
-                    if(tempGridItemPtr->nextPtr == NULL) break;
-                    tempGridItemPtr = tempGridItemPtr->nextPtr;
+                    if(tempGridtempNodePtr->nextPtr == NULL) break;
+                    tempGridtempNodePtr = tempGridtempNodePtr->nextPtr;
                 }
 
                 //We only need to do processing if we've found
                 //an event node at the current target coordinate
-                if(tempGridItemPtr->column == currentTargetColumn)
+                if(tempGridtempNodePtr->column == currentTargetColumn)
                 {
 
                     do
@@ -596,14 +620,11 @@ uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
                         stillMoreNodesToProccessAtCurrentCoordinate = false;
 
                         //ESP_LOGI(LOG_TAG, "CurrentTargetColumn: %d", currentTargetColumn);
-                        //ESP_LOGI(LOG_TAG, "Node column: %d", tempGridItemPtr->column);
+                        //ESP_LOGI(LOG_TAG, "Node column: %d", tempGridtempNodePtr->column);
                         //ESP_LOGI(LOG_TAG, "CurrentRow: %0x", currentRow);
 
-                        //NOTE: There can be multiple events/nodes with the same column x row
-                        //When multiple events exist at the same grid coordinate the deltatimes
-                        //of all but the first event at that coordinate forced to zero.
-                        if(stillMoreNodesToProccessAtCurrentCoordinate) deltaTime = 0;
-                        else deltaTime = tempGridItemPtr->deltaTime;
+                        //Grab the delta-time of the current midi event node
+                        deltaTime = tempGridtempNodePtr->deltaTime;
 
                         //We now need to convert the delta-time of the
                         //current node/event being processed to a midi file
@@ -645,25 +666,25 @@ uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
 
                         //At the moment only note events and EOF meta event are supported,
                         //this code will be modified later to support other event types
-                        *midiFileBufferPtr = tempGridItemPtr->statusByte;
+                        *midiFileBufferPtr = tempGridtempNodePtr->statusByte;
                         ++midiFileBufferPtr;
-                        *midiFileBufferPtr = tempGridItemPtr->dataBytes[0];
+                        *midiFileBufferPtr = tempGridtempNodePtr->dataBytes[0];
                         ++midiFileBufferPtr;
-                        *midiFileBufferPtr = tempGridItemPtr->dataBytes[1];
+                        *midiFileBufferPtr = tempGridtempNodePtr->dataBytes[1];
                         ++midiFileBufferPtr;
 
                         //Check whether this node is the last
                         //in the linked list for the current row
-                        if(tempGridItemPtr->nextPtr != NULL)
+                        if(tempGridtempNodePtr->nextPtr != NULL)
                         {
                             //If there are more nodes in the list we need to check for 
                             //the case when multiple nodes exist at the same cooridnate
-                            if(tempGridItemPtr->nextPtr->column == tempGridItemPtr->column)
+                            if(tempGridtempNodePtr->nextPtr->column == tempGridtempNodePtr->column)
                             {
                                 //There are multiple events/nodes which 
                                 //share the same grid co-ordinates so update
                                 //the node pointer onto next node and set flag
-                                tempGridItemPtr = tempGridItemPtr->nextPtr;
+                                tempGridtempNodePtr = tempGridtempNodePtr->nextPtr;
                                 stillMoreNodesToProccessAtCurrentCoordinate = true;
                             }
                         }
@@ -927,7 +948,11 @@ void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
     //Rows:    5 -> (5 + (NUM_SEQUENCER_PHYSICAL_ROWS - 1))
     //Columns: 7 -> (7 + (NUM_SEQUENCER_PHYSICAL_COLUMNS - 1))
 
-    //NOTE: Current version is hardcoded to display note on events only
+    //NOTE: Current version is hardcoded to display channel 0 note only ATM
+    //will add input arguments for channel and other midi event types after v0.1
+
+    //Range check the number of rows, maybe add limit for columns later
+    assert(rowOffset <= ((TOTAL_NUM_VIRTUAL_GRID_ROWS - 1) - (NUM_SEQUENCER_PHYSICAL_ROWS - 1)));
 
     //Iterate through each grid row that fall within the specified area. Each row 
     //stores midi events as nodes in a linked list. A row may have zero or more event nodes.

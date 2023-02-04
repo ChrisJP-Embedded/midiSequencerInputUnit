@@ -1,0 +1,102 @@
+[0/1] Re-running CMake...
+-- Project is not inside a git repository, or git repository has no commits; will not use 'git describe' to determine PROJECT_VER.
+-- Building ESP-IDF components for target esp32s3
+Processing 1 dependencies:
+[1/1] idf (5.0.0)
+-- Project sdkconfig file /home/synth002/Desktop/Firmware/sdkconfig
+-- App "midiSeqController" version: 1
+-- Adding linker script /home/synth002/Desktop/Firmware/build/esp-idf/esp_system/ld/memory.ld
+-- Adding linker script /home/synth002/esp/esp-idf-v5.0/components/esp_system/ld/esp32s3/sections.ld.in
+-- Adding linker script /home/synth002/esp/esp-idf-v5.0/components/esp_rom/esp32s3/ld/esp32s3.rom.ld
+-- Adding linker script /home/synth002/esp/esp-idf-v5.0/components/esp_rom/esp32s3/ld/esp32s3.rom.api.ld
+-- Adding linker script /home/synth002/esp/esp-idf-v5.0/components/esp_rom/esp32s3/ld/esp32s3.rom.libgcc.ld
+-- Adding linker script /home/synth002/esp/esp-idf-v5.0/components/esp_rom/esp32s3/ld/esp32s3.rom.newlib.ld
+-- Adding linker script /home/synth002/esp/esp-idf-v5.0/components/esp_rom/esp32s3/ld/esp32s3.rom.version.ld
+-- Adding linker script /home/synth002/esp/esp-idf-v5.0/components/soc/esp32s3/ld/esp32s3.peripherals.ld
+-- Components: app_trace app_update bleCentralClient bootloader bootloader_support bt cmock console cxx driver efuse esp-tls esp_adc esp_app_format esp_common esp_eth esp_event esp_gdbstub esp_hid esp_http_client esp_http_server esp_https_ota esp_https_server esp_hw_support esp_lcd esp_littlefs esp_local_ctrl esp_netif esp_partition esp_phy esp_pm esp_psram esp_ringbuf esp_rom esp_system esp_timer esp_wifi espcoredump esptool_py fatfs fileSys freertos genericMacros guiMenu hal heap http_parser idf_test ieee802154 ipsDisplay json ledDrivers log lwip main mbedtls midiHelper mqtt newlib nvs_flash openthread partition_table perfmon protobuf-c protocomm pthread rotaryEncoders sdmmc soc spi_flash spiffs switchMatrix system systemWideDefinitions tcp_transport touch_element ulp unity usb vfs wear_levelling wifi_provisioning wpa_supplicant xtensa
+-- Component paths: /home/synth002/esp/esp-idf-v5.0/components/app_trace /home/synth002/esp/esp-idf-v5.0/components/app_update /home/synth002/Desktop/Firmware/components/bleCentralClient /home/synth002/esp/esp-idf-v5.0/components/bootloader /home/synth002/esp/esp-idf-v5.0/components/bootloader_support /home/synth002/esp/esp-idf-v5.0/components/bt /home/synth002/esp/esp-idf-v5.0/components/cmock /home/synth002/esp/esp-idf-v5.0/components/console /home/synth002/esp/esp-idf-v5.0/components/cxx /home/synth002/esp/esp-idf-v5.0/components/driver /home/synth002/esp/esp-idf-v5.0/components/efuse /home/synth002/esp/esp-idf-v5.0/components/esp-tls /home/synth002/esp/esp-idf-v5.0/components/esp_adc /home/synth002/esp/esp-idf-v5.0/components/esp_app_format /home/synth002/esp/esp-idf-v5.0/components/esp_common /home/synth002/esp/esp-idf-v5.0/components/esp_eth /home/synth002/esp/esp-idf-v5.0/components/esp_event /home/synth002/esp/esp-idf-v5.0/components/esp_gdbstub /home/synth002/esp/esp-idf-v5.0/components/esp_hid /home/synth002/esp/esp-idf-v5.0/components/esp_http_client /home/synth002/esp/esp-idf-v5.0/components/esp_http_server /home/synth002/esp/esp-idf-v5.0/components/esp_https_ota /home/synth002/esp/esp-idf-v5.0/components/esp_https_server /home/synth002/esp/esp-idf-v5.0/components/esp_hw_support /home/synth002/esp/esp-idf-v5.0/components/esp_lcd /home/synth002/Desktop/Firmware/components/esp_littlefs /home/synth002/esp/esp-idf-v5.0/components/esp_local_ctrl /home/synth002/esp/esp-idf-v5.0/components/esp_netif /home/synth002/esp/esp-idf-v5.0/components/esp_partition /home/synth002/esp/esp-idf-v5.0/components/esp_phy /home/synth002/esp/esp-idf-v5.0/components/esp_pm /home/synth002/esp/esp-idf-v5.0/components/esp_psram /home/synth002/esp/esp-idf-v5.0/components/esp_ringbuf /home/synth002/esp/esp-idf-v5.0/components/esp_rom /home/synth002/esp/esp-idf-v5.0/components/esp_system /home/synth002/esp/esp-idf-v5.0/components/esp_timer /home/synth002/esp/esp-idf-v5.0/components/esp_wifi /home/synth002/esp/esp-idf-v5.0/components/espcoredump /home/synth002/esp/esp-idf-v5.0/components/esptool_py /home/synth002/esp/esp-idf-v5.0/components/fatfs /home/synth002/Desktop/Firmware/components/fileSys /home/synth002/esp/esp-idf-v5.0/components/freertos /home/synth002/Desktop/Firmware/components/genericMacros /home/synth002/Desktop/Firmware/components/guiMenu /home/synth002/esp/esp-idf-v5.0/components/hal /home/synth002/esp/esp-idf-v5.0/components/heap /home/synth002/esp/esp-idf-v5.0/components/http_parser /home/synth002/esp/esp-idf-v5.0/components/idf_test /home/synth002/esp/esp-idf-v5.0/components/ieee802154 /home/synth002/Desktop/Firmware/components/ipsDisplay /home/synth002/esp/esp-idf-v5.0/components/json /home/synth002/Desktop/Firmware/components/ledDrivers /home/synth002/esp/esp-idf-v5.0/components/log /home/synth002/esp/esp-idf-v5.0/components/lwip /home/synth002/Desktop/Firmware/main /home/synth002/esp/esp-idf-v5.0/components/mbedtls /home/synth002/Desktop/Firmware/components/midiHelper /home/synth002/esp/esp-idf-v5.0/components/mqtt /home/synth002/esp/esp-idf-v5.0/components/newlib /home/synth002/esp/esp-idf-v5.0/components/nvs_flash /home/synth002/esp/esp-idf-v5.0/components/openthread /home/synth002/esp/esp-idf-v5.0/components/partition_table /home/synth002/esp/esp-idf-v5.0/components/perfmon /home/synth002/esp/esp-idf-v5.0/components/protobuf-c /home/synth002/esp/esp-idf-v5.0/components/protocomm /home/synth002/esp/esp-idf-v5.0/components/pthread /home/synth002/Desktop/Firmware/components/rotaryEncoders /home/synth002/esp/esp-idf-v5.0/components/sdmmc /home/synth002/esp/esp-idf-v5.0/components/soc /home/synth002/esp/esp-idf-v5.0/components/spi_flash /home/synth002/esp/esp-idf-v5.0/components/spiffs /home/synth002/Desktop/Firmware/components/switchMatrix /home/synth002/Desktop/Firmware/components/system /home/synth002/Desktop/Firmware/components/systemWideDefinitions /home/synth002/esp/esp-idf-v5.0/components/tcp_transport /home/synth002/esp/esp-idf-v5.0/components/touch_element /home/synth002/esp/esp-idf-v5.0/components/ulp /home/synth002/esp/esp-idf-v5.0/components/unity /home/synth002/esp/esp-idf-v5.0/components/usb /home/synth002/esp/esp-idf-v5.0/components/vfs /home/synth002/esp/esp-idf-v5.0/components/wear_levelling /home/synth002/esp/esp-idf-v5.0/components/wifi_provisioning /home/synth002/esp/esp-idf-v5.0/components/wpa_supplicant /home/synth002/esp/esp-idf-v5.0/components/xtensa
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/synth002/Desktop/Firmware/build
+[1/11] Performing build step for 'bootloader'
+[1/1] cd /home/synth002/Desktop/Firmware/build/bootloader/esp-idf/esptool_py && /home/synth002/.espressif/python_env/idf5.0_py3.10_env/bin/python /home/synth002/esp/esp-idf-v5.0/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /home/synth002/Desktop/Firmware/build/bootloader/bootloader.bin
+Bootloader binary size 0x55d0 bytes. 0x2a30 bytes (33%) free.
+[2/9] Building C object esp-idf/system/CMakeFiles/__idf_system.dir/systemEvents.c.obj
+[3/9] Building C object esp-idf/system/CMakeFiles/__idf_system.dir/system.c.obj
+/home/synth002/Desktop/Firmware/components/system/system.c: In function 'system_EntryPoint':
+/home/synth002/Desktop/Firmware/components/system/system.c:253:68: warning: passing argument 1 of 'gridDataToMidiFile' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  253 |             ProjectSettings.midiFileSizeBytes = gridDataToMidiFile(midiFileBufferBASEPtr, FILE_BUFFER_SIZE);
+      |                                                                    ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/system/system.c:9:
+/home/synth002/Desktop/Firmware/components/system/sequencerGrid.h:58:39: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'const uint8_t *' {aka 'const unsigned char *'}
+   58 | uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
+      |                             ~~~~~~~~~~^~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/system/system.c:255:49: warning: passing argument 1 of 'printEntireMidiFileContentToConsole' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  255 |             printEntireMidiFileContentToConsole(midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes);
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/system/system.c:3:
+/home/synth002/Desktop/Firmware/components/system/include/systemEvents.h:6:55: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'const uint8_t *' {aka 'const unsigned char *'}
+    6 | uint8_t printEntireMidiFileContentToConsole(uint8_t * fileBASE, uint32_t fileSize);
+      |                                             ~~~~~~~~~~^~~~~~~~
+/home/synth002/Desktop/Firmware/components/system/system.c:257:57: warning: passing argument 2 of 'fileSys_writeFile' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  257 |             fileSys_writeFile(ProjectSettings.fileName, midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes, true);
+      |                                                         ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/system/system.c:14:
+/home/synth002/Desktop/Firmware/components/fileSys/include/fileSys.h:24:54: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'const uint8_t *' {aka 'const unsigned char *'}
+   24 | uint8_t fileSys_writeFile(char * fileName, uint8_t * data, uint32_t numBytes, bool createFileIfDoesntExist);
+      |                                            ~~~~~~~~~~^~~~
+/home/synth002/Desktop/Firmware/components/system/system.c:259:92: warning: passing argument 2 of 'fileSys_readFile' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  259 |             ProjectSettings.midiFileSizeBytes = fileSys_readFile(ProjectSettings.fileName, midiFileBufferBASEPtr, 0, true);
+      |                                                                                            ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/system/system.c:14:
+/home/synth002/Desktop/Firmware/components/fileSys/include/fileSys.h:25:53: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'const uint8_t *' {aka 'const unsigned char *'}
+   25 | uint32_t fileSys_readFile(char *fileName, uint8_t * dataBuffer, uint16_t numBytes, bool readEntireFile);
+      |                                           ~~~~~~~~~~^~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/system/system.c:261:49: warning: passing argument 1 of 'printEntireMidiFileContentToConsole' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  261 |             printEntireMidiFileContentToConsole(midiFileBufferBASEPtr, ProjectSettings.midiFileSizeBytes);
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/system/system.c:3:
+/home/synth002/Desktop/Firmware/components/system/include/systemEvents.h:6:55: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'const uint8_t *' {aka 'const unsigned char *'}
+    6 | uint8_t printEntireMidiFileContentToConsole(uint8_t * fileBASE, uint32_t fileSize);
+      |                                             ~~~~~~~~~~^~~~~~~~
+/home/synth002/Desktop/Firmware/components/system/system.c:263:28: warning: passing argument 1 of 'midiFileToGrid' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  263 |             midiFileToGrid(midiFileBufferBASEPtr, FILE_BUFFER_SIZE);
+      |                            ^~~~~~~~~~~~~~~~~~~~~
+In file included from /home/synth002/Desktop/Firmware/components/system/system.c:9:
+/home/synth002/Desktop/Firmware/components/system/sequencerGrid.h:57:31: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'const uint8_t *' {aka 'const unsigned char *'}
+   57 | void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
+      |                     ~~~~~~~~~~^~~~~~~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/system/system.c:79:10: warning: unused variable 'hasGridInput' [-Wunused-variable]
+   79 |     bool hasGridInput = false;
+      |          ^~~~~~~~~~~~
+/home/synth002/Desktop/Firmware/components/system/system.c:77:10: warning: unused variable 'isGridActive' [-Wunused-variable]
+   77 |     bool isGridActive = false;
+      |          ^~~~~~~~~~~~
+At top level:
+/home/synth002/Desktop/Firmware/components/system/system.c:288:13: warning: 'initRTOSTasks' defined but not used [-Wunused-function]
+  288 | static void initRTOSTasks(void)
+      |             ^~~~~~~~~~~~~
+[4/9] Building C object esp-idf/system/CMakeFiles/__idf_system.dir/sequencerGrid.c.obj
+/home/synth002/Desktop/Firmware/components/system/sequencerGrid.c: In function 'gridDataToMidiFile':
+/home/synth002/Desktop/Firmware/components/system/sequencerGrid.c:694:23: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  694 |     midiFileBufferPtr = (trackChunkBasePtr + MIDI_TRACK_HEADER_NUM_BYTES);
+      |                       ^
+/home/synth002/Desktop/Firmware/components/system/sequencerGrid.c: In function 'updateGridLEDs':
+/home/synth002/Desktop/Firmware/components/system/sequencerGrid.c:899:10: warning: variable 'abortCurrentRow' set but not used [-Wunused-but-set-variable]
+  899 |     bool abortCurrentRow = false;
+      |          ^~~~~~~~~~~~~~~
+At top level:
+/home/synth002/Desktop/Firmware/components/system/sequencerGrid.c:69:13: warning: 'deleteEventNode' defined but not used [-Wunused-function]
+   69 | static void deleteEventNode(SequencerGridItem_t ** eventNodePtr)
+      |             ^~~~~~~~~~~~~~~
+[5/9] Linking C static library esp-idf/system/libsystem.a
+[6/9] Generating ld/sections.ld
+[7/9] Linking CXX executable midiSeqController.elf
+[8/9] Generating binary image from built executable
+esptool.py v4.4
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Generated /home/synth002/Desktop/Firmware/build/midiSeqController.bin
+[9/9] cd /home/synth002/Desktop/Firmware/build/esp-idf/esptool_py && /home/synth002/.espressif/python_env/idf5.0_py3.10_env/bin/python /home/synth002/esp/esp-idf-v5.0/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/synth002/Desktop/Firmware/build/partition_table/partition-table.bin /home/synth002/Desktop/Firmware/build/midiSeqController.bin
+midiSeqController.bin binary size 0x525e0 bytes. Smallest app partition is 0x177000 bytes. 0x124a20 bytes (78%) free.
