@@ -71,5 +71,6 @@
 /home/synth002/Desktop/Firmware/build/esp-idf/fileSys/libfileSys.a
 /home/synth002/Desktop/Firmware/build/esp-idf/bleCentralClient/libbleCentralClient.a
 /home/synth002/Desktop/Firmware/build/esp-idf/midiHelper/libmidiHelper.a
+/home/synth002/Desktop/Firmware/build/esp-idf/genericDLL/libgenericDLL.a
 /home/synth002/Desktop/Firmware/build/esp-idf/system/libsystem.a
 /home/synth002/Desktop/Firmware/build/esp-idf/main/libmain.a

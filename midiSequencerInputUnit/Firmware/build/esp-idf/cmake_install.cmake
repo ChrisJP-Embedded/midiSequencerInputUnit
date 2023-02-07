@@ -444,6 +444,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("/home/synth002/Desktop/Firmware/build/esp-idf/genericDLL/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("/home/synth002/Desktop/Firmware/build/esp-idf/system/cmake_install.cmake")
 endif()
 

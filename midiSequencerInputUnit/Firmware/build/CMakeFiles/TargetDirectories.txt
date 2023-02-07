@@ -669,6 +669,13 @@
 /home/synth002/Desktop/Firmware/build/esp-idf/midiHelper/CMakeFiles/install.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/midiHelper/CMakeFiles/install/local.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/midiHelper/CMakeFiles/install/strip.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/genericDLL/CMakeFiles/__idf_genericDLL.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/genericDLL/CMakeFiles/edit_cache.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/genericDLL/CMakeFiles/rebuild_cache.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/genericDLL/CMakeFiles/list_install_components.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/genericDLL/CMakeFiles/install.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/genericDLL/CMakeFiles/install/local.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/genericDLL/CMakeFiles/install/strip.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/system/CMakeFiles/__idf_system.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/system/CMakeFiles/edit_cache.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/system/CMakeFiles/rebuild_cache.dir

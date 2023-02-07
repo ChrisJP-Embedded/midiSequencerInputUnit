@@ -226,25 +226,25 @@ void system_EntryPoint(void)
             // When starting a new project, or opening an existing project the
             // sequencer grid needs to be reset to its initial (blank) state
 
-            //addNewNoteToGrid(0, 0x90, 0x37, 60, 4, true);
-            addNewNoteToGrid(6, 0x90, 0x37, 60, 2, true);
+            //addNewMidiEventToGrid(0, 0x90, 0x37, 60, 4, true);
+            addNewMidiEventToGrid(6, 0x90, 0x37, 60, 2, true);
             vTaskDelay(1);
-            addNewNoteToGrid(4, 0x90, 0x37, 60, 1, true);
+            addNewMidiEventToGrid(4, 0x90, 0x37, 60, 1, true);
             vTaskDelay(1);
             //printAllLinkedListEventNodesFromBase(0x37);
-            addNewNoteToGrid(5, 0x90, 0x37, 60, 1, true);
+            addNewMidiEventToGrid(5, 0x90, 0x37, 60, 1, true);
             vTaskDelay(1);
 
-            addNewNoteToGrid(0, 0x90, 0x34, 60, 1, true);
-            addNewNoteToGrid(7, 0x90, 0x34, 60, 1, true);
+            addNewMidiEventToGrid(0, 0x90, 0x34, 60, 1, true);
+            addNewMidiEventToGrid(7, 0x90, 0x34, 60, 1, true);
 
-            addNewNoteToGrid(0, 0x90, 0x39, 60, 1, true);
-            addNewNoteToGrid(7, 0x90, 0x39, 60, 1, true);
+            addNewMidiEventToGrid(0, 0x90, 0x39, 60, 1, true);
+            addNewMidiEventToGrid(7, 0x90, 0x39, 60, 1, true);
             vTaskDelay(1);
 
 
-            //addNewNoteToGrid(4, 0x90, 0x37, 60, 1, true); //shouldnt appear   
-            //addNewNoteToGrid(2, 0x90, 0x37, 60, 3, true); //shouldnt appear   
+            //addNewMidiEventToGrid(4, 0x90, 0x37, 60, 1, true); //shouldnt appear   
+            //addNewMidiEventToGrid(2, 0x90, 0x37, 60, 3, true); //shouldnt appear   
 
             ESP_LOGI(LOG_TAG, "Updating LEDS");
             updateGridLEDs(0x34, 0);
