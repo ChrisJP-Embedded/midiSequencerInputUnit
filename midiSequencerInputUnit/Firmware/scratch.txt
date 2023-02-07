@@ -1,3 +1,76 @@
+
+static uint8_t appendNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps, bool autoAddNoteOff)
+{
+    assert(midiNoteNumber < TOTAL_MIDI_NOTES);
+
+    SequencerGridItem_t * newEventNodePtr = NULL;
+
+    newEventNodePtr = createNewEventNode(statusByte, columnNum, midiNoteNumber, midiVelocity, rgb_green);
+    genericDLL_appendNewNodeOntoLinkedList(newEventNodePtr, &g_GridData.gridLinkedListHeadPtrs[midiNoteNumber], &g_GridData.gridLinkedListTailPtrs[midiNoteNumber]);
+
+
+    //Update a record of the total columns in the project
+    if(columnNum > g_GridData.totalGridColumns) g_GridData.totalGridColumns = columnNum;
+
+    if(autoAddNoteOff) addCorrespondingNoteOff(newEventNodePtr, durationInSteps);
+
+    return 0; 
+}
+
+
+static uint8_t insertNewGridData(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, 
+                                        uint8_t midiVelocity, uint8_t durationInSteps, bool autoAddNoteOff)
+{
+    //This newly inputed grid entry occurs BEFORE the current last
+    //item in the linked list for the current row/note, we therefore need
+    //to find the correct location in the linked list and manually insert,
+    //ensuring that all pointers are updated correctly
+
+    assert(midiNoteNumber < TOTAL_MIDI_NOTES);
+    assert(g_GridData.gridLinkedListTailPtrs[midiNoteNumber] != NULL);
+
+    SequencerGridItem_t * tempNodePtr = NULL;
+    SequencerGridItem_t * newEventNodePtr = NULL;
+
+    tempNodePtr = g_GridData.gridLinkedListTailPtrs[midiNoteNumber];
+
+    if(doesThisGridCoordinateFallWithinAnExistingNoteDuration(columnNum, midiNoteNumber))
+    {
+        ESP_LOGI(LOG_TAG, "Error: Cant place note within existing notes duration");
+        return 1;
+    }
+
+    while(tempNodePtr != NULL)
+    {
+        //ADD TIMEOUT
+        if(tempNodePtr->column <= columnNum) break;
+        if(tempNodePtr->prevPtr == NULL)
+        {
+            tempNodePtr = NULL;
+            break;
+        } 
+        tempNodePtr = tempNodePtr->prevPtr;
+    }
+
+    //We get here if this new event node needs to be inserted at the list head 
+    //this means that the global list head ptr array will also need updating
+    newEventNodePtr = createNewEventNode(statusByte, columnNum, midiNoteNumber, midiVelocity, rgb_green);
+    genericDLL_insertNewNodeIntoLinkedList(newEventNodePtr, tempNodePtr, &g_GridData.gridLinkedListHeadPtrs[midiNoteNumber]);
+    tempNodePtr = newEventNodePtr;
+
+    if(autoAddNoteOff) addCorrespondingNoteOff(newEventNodePtr, durationInSteps);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
 void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
 {
     //This function updates all rgbs leds of the switch matrix 

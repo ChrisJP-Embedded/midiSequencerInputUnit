@@ -227,19 +227,19 @@ void system_EntryPoint(void)
             // sequencer grid needs to be reset to its initial (blank) state
 
             //addNewMidiEventToGrid(0, 0x90, 0x37, 60, 4, true);
-            addNewMidiEventToGrid(6, 0x90, 0x37, 60, 2, true);
+            addNewMidiEventToGrid(6, 0x90, 0x37, 60, 2);
             vTaskDelay(1);
-            addNewMidiEventToGrid(4, 0x90, 0x37, 60, 1, true);
+            addNewMidiEventToGrid(4, 0x90, 0x37, 60, 1);
             vTaskDelay(1);
             //printAllLinkedListEventNodesFromBase(0x37);
-            addNewMidiEventToGrid(5, 0x90, 0x37, 60, 1, true);
+            addNewMidiEventToGrid(5, 0x90, 0x37, 60, 1);
             vTaskDelay(1);
 
-            addNewMidiEventToGrid(0, 0x90, 0x34, 60, 1, true);
-            addNewMidiEventToGrid(7, 0x90, 0x34, 60, 1, true);
+            addNewMidiEventToGrid(0, 0x90, 0x34, 60, 1);
+            addNewMidiEventToGrid(7, 0x90, 0x34, 60, 1);
 
-            addNewMidiEventToGrid(0, 0x90, 0x39, 60, 1, true);
-            addNewMidiEventToGrid(7, 0x90, 0x39, 60, 1, true);
+            addNewMidiEventToGrid(0, 0x90, 0x39, 60, 1);
+            addNewMidiEventToGrid(7, 0x90, 0x39, 60, 1);
             vTaskDelay(1);
 
 
@@ -262,12 +262,10 @@ void system_EntryPoint(void)
 
             midiFileToGrid(midiFileBufferBASEPtr, FILE_BUFFER_SIZE);
 
-
             ESP_LOGI(LOG_TAG, "Update sequencer grid LEDS");
 
             updateGridLEDs(0x34, 0);
             hasLoadedGrid = true;
-
         }
 
         RxMenuEvent.eventOpcode = 0;

@@ -55,6 +55,10 @@ void genericDLL_insertNewNodeIntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE * 
 {
     assert((newNodePtr != NULL) && (listHeadPtr != NULL));
 
+
+    //IMPORTANT:
+    //IF(insertLocationPtr == NULL) The new event node will be inserted as the new HEAD of the list.
+    //IF(insertLocationPtr != NULL) The new event node will be inserted at insertLocationPtr->nextPtr
     if(insertLocationPtr == NULL) 
     {
         newNodePtr->nextPtr = *listHeadPtr;
@@ -74,6 +78,20 @@ void genericDLL_insertNewNodeIntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE * 
         insertLocationPtr->nextPtr->prevPtr = newNodePtr;
         insertLocationPtr->nextPtr = newNodePtr;
     }
+}
+
+inline bool genericDLL_returnTrueIfLastNodeInList(NODE_TYPE * nodePtr)
+{
+    assert(nodePtr != NULL);
+    if(nodePtr->nextPtr == NULL) return true;
+    else return false;
+}
+
+inline bool genericDLL_returnTrueIfFirstNodeInList(NODE_TYPE * nodePtr)
+{
+    assert(nodePtr != NULL);
+    if(nodePtr->prevPtr == NULL) return true;
+    else return false;
 }
 
 

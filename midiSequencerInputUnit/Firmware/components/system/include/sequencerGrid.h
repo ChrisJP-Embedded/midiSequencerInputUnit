@@ -20,6 +20,9 @@
 #define MIDI_NOTE_OFF_MSG 0x80
 #define MIDI_NOTE_ON_MSG 0x90
 
+#define MIDI_NOTE_NUM_IDX 0
+#define MIDI_VELOCITY_IDX 1
+#define MIDI_MAX_VELOCITY 127
 
 
 #define MAX_DATA_BYTES 4
@@ -53,7 +56,7 @@ typedef struct {
 
 
 
-void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps, bool autoAddNoteOff);
+void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps);
 void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
 uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
 void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset);

@@ -20,3 +20,5 @@ void genericDLL_appendNewNodeOntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE **
 void genericDLL_insertNewNodeIntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE * insertLocationPtr, NODE_TYPE ** listHeadPtr);
 void genericDLL_freeEntireLinkedList(NODE_TYPE ** listHeadPtr, NODE_TYPE ** listTailPtr);
 void genericDLL_deleteNodeFromList(NODE_TYPE * deleteNodePtr, NODE_TYPE ** listHeadPtr, NODE_TYPE ** listTailPtr);
+bool genericDLL_returnTrueIfFirstNodeInList(NODE_TYPE * nodePtr);
+bool genericDLL_returnTrueIfLastNodeInList(NODE_TYPE * nodePtr);

@@ -643,6 +643,9 @@
 /home/synth002/Desktop/Firmware/build/esp-idf/esp_littlefs/CMakeFiles/install/local.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/esp_littlefs/CMakeFiles/install/strip.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/fileSys/CMakeFiles/__idf_fileSys.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/fileSys/CMakeFiles/littlefs_fileSys_bin.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/fileSys/CMakeFiles/fileSys-flash.dir
+/home/synth002/Desktop/Firmware/build/esp-idf/fileSys/CMakeFiles/encrypted-fileSys-flash.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/fileSys/CMakeFiles/edit_cache.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/fileSys/CMakeFiles/rebuild_cache.dir
 /home/synth002/Desktop/Firmware/build/esp-idf/fileSys/CMakeFiles/list_install_components.dir
