@@ -37,6 +37,8 @@
         "queue.h": "c",
         "esp_intr_alloc.h": "c",
         "esp_system.h": "c",
-        "*.inc": "c"
+        "*.inc": "c",
+        "leddrivers.h": "c",
+        "genericdll.h": "c"
     }
 }

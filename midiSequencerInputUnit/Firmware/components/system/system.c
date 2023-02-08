@@ -100,7 +100,7 @@ void system_EntryPoint(void)
     guiMenu_init(FileSysInfo.filenamesPtr, FileSysInfo.numFilesOnPartitionPtr);
     ledDrivers_init();
     ledDrivers_init();
-    resetSequencerGrid(MIDI_SEQUENCER_PPQ, 4);
+    resetSequencerGrid(4);
     //initRTOSTasks();
 
     bool hasLoadedGrid = false;
@@ -227,20 +227,64 @@ void system_EntryPoint(void)
             // sequencer grid needs to be reset to its initial (blank) state
 
             //addNewMidiEventToGrid(0, 0x90, 0x37, 60, 4, true);
-            addNewMidiEventToGrid(6, 0x90, 0x37, 60, 2);
+            //addNewMidiEventToGrid(6, 0x90, 0x37, 60, 2);
             vTaskDelay(1);
-            addNewMidiEventToGrid(4, 0x90, 0x37, 60, 1);
+            //addNewMidiEventToGrid(4, 0x90, 0x37, 60, 1);
             vTaskDelay(1);
             //printAllLinkedListEventNodesFromBase(0x37);
-            addNewMidiEventToGrid(5, 0x90, 0x37, 60, 1);
+            //addNewMidiEventToGrid(5, 0x90, 0x37, 60, 1);
             vTaskDelay(1);
 
-            addNewMidiEventToGrid(0, 0x90, 0x34, 60, 1);
-            addNewMidiEventToGrid(7, 0x90, 0x34, 60, 1);
+            //addNewMidiEventToGrid(0, 0x90, 0x34, 60, 1);
+            //addNewMidiEventToGrid(7, 0x90, 0x34, 60, 1);
 
-            addNewMidiEventToGrid(0, 0x90, 0x39, 60, 1);
-            addNewMidiEventToGrid(7, 0x90, 0x39, 60, 1);
+            //addNewMidiEventToGrid(0, 0x90, 0x39, 60, 1);
+            //addNewMidiEventToGrid(7, 0x90, 0x39, 60, 1);
             vTaskDelay(1);
+
+            /*
+            ///----- TESTS FOR GRID PUBLIC INTERFACE -------//
+
+            addNewMidiEventToGrid(4, 0x90, 0x39, 60, 6);
+            addNewMidiEventToGrid(1, 0x90, 0x39, 60, 3);
+            addNewMidiEventToGrid(14, 0x90, 0x39, 60, 10);
+
+            SequencerGridItem_t * ptr = getNoteOnPtrIfCoordinateFallsWithinExistingNoteDuration(5, 0x39);
+            removeMidiEventFromGrid(ptr, 0x39);
+
+            addNewMidiEventToGrid(4, 0x90, 0x39, 60, 2);
+
+            for(uint8_t a = 0; a < 12; ++a)
+            {
+                ESP_LOGI(LOG_TAG, "\n");
+
+                ptr = getNoteOnPtrIfCoordinateFallsWithinExistingNoteDuration(a, 0x39);
+
+                if(ptr == NULL)
+                { 
+                    ESP_LOGI(LOG_TAG, "No note found at coordinate 0x39, %d", a);
+                }
+                else
+                {
+                    ESP_LOGI(LOG_TAG, "Note on found for coordinate 0x39, %d", a);
+                    ESP_LOGI(LOG_TAG, "Node column: %d", ptr->column);
+                    ESP_LOGI(LOG_TAG, "Node Status byte: %0x", ptr->statusByte);
+
+                    SequencerGridItem_t * ptr0 = getPointerToCorespondingNoteOffEventNode(ptr, true);
+                    if(ptr0 == NULL)
+                    {
+                        ESP_LOGI(LOG_TAG, "No corresponding note-off found!");
+                    }
+                    else
+                    {
+                        ESP_LOGI(LOG_TAG, "Corresponding note-off found");
+                        ESP_LOGI(LOG_TAG, "node column: %d", ptr0->column);
+                        ESP_LOGI(LOG_TAG, "node status byte %0x", ptr0->statusByte);
+                    }
+                }
+                ESP_LOGI(LOG_TAG, "\n");
+            }
+            */
 
 
             //addNewMidiEventToGrid(4, 0x90, 0x37, 60, 1, true); //shouldnt appear   

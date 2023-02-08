@@ -1,5 +1,5 @@
-
 #include "ledDrivers.h"
+
 
 #define TOTAL_MIDI_NOTES 128
 #define MAX_ROWS NUM_OCTAVES * 12
@@ -33,7 +33,7 @@ typedef struct SequencerGridItem_t SequencerGridItem_t;
 struct SequencerGridItem_t {
     SequencerGridItem_t * prevPtr;
     SequencerGridItem_t * nextPtr;
-    rgbLedColour_t rgbColourCode;
+    uint32_t rgbColourCode;
     uint32_t deltaTime;
     uint8_t  statusByte;
     uint8_t  dataBytes[MAX_DATA_BYTES];
@@ -53,12 +53,13 @@ typedef struct {
 
 
 
-
-
-
+SequencerGridItem_t * getPointerToCorespondingNoteOffEventNode(SequencerGridItem_t * nodePtr, bool faultOnFail);
+SequencerGridItem_t * getNoteOnPtrIfCoordinateFallsWithinExistingNoteDuration(uint16_t columnNum, uint8_t rowNum);
+SequencerGridItem_t * getPointerToEventNodeIfExists(uint8_t targetStatusByte, uint16_t columnNum, uint8_t rowNum);
 void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps);
 void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
 uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
 void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset);
 void printAllLinkedListEventNodesFromBase(uint16_t midiNoteNum);
-void resetSequencerGrid(uint8_t ppqn, uint8_t quantization);
+void resetSequencerGrid(uint8_t quantizationSetting);
+void removeMidiEventFromGrid(SequencerGridItem_t * nodeForRemovalPtr, uint8_t rowNum);
