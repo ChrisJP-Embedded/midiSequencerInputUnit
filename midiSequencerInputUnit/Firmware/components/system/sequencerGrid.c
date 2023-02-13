@@ -8,6 +8,7 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
+#include "ledDrivers.h"
 #include "genericDLL.h"
 #include "esp_task_wdt.h"
 #include "midiHelper.h"
@@ -25,10 +26,20 @@
 
 //The midi tick rate is determined by: 60000 / (BPM * PPQN) (in milliseconds)
 
-SequencerGridData_t g_GridData;
+struct {
+    uint16_t totalGridColumns;
+    uint32_t midiDataNumBytes;
+    uint8_t sequencerPPQN;
+    uint8_t projectQuantization;
+    GridEventNode_t * gridLinkedListTailPtrs[TOTAL_MIDI_NOTES];
+    GridEventNode_t * gridLinkedListHeadPtrs[TOTAL_MIDI_NOTES];
+}  g_GridData;
 
-static SequencerGridItem_t * createNewEventNode(uint8_t statusByte, uint16_t columnNum, uint8_t midiNoteNum, uint8_t midiVelocity, uint16_t rgbCode);
-static void addCorrespondingNoteOff(SequencerGridItem_t * noteOnNode, uint16_t noteDuration);
+
+static GridEventNode_t * getPointerToCorespondingNoteOffEventNode(GridEventNode_t * nodePtr);
+static GridEventNode_t * getPointerToNextNoteOnEventInListIfOneExists(GridEventNode_t * noteOnEventPtr);
+static GridEventNode_t * getPointerToEventNodeIfExists(uint8_t targetStatusByte, uint8_t rowNum, uint16_t columnNum);
+static void addCorrespondingNoteOff(GridEventNode_t * noteOnNode, uint16_t noteDuration);
 static void generateDeltaTimesForCurrentGrid(void);
 static void freeAllGridData(void);
 
@@ -50,7 +61,7 @@ void resetSequencerGrid(uint8_t quantizationSetting)
 
 
 //---- Public Interface
-void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiNoteNumber, uint8_t midiVelocity, uint8_t durationInSteps)
+void addNewMidiEventToGrid(MidiEventParams_t newEventParams)
 {
     //This public function is called by the host when 
     //a new event needs to be added to the virtual grid. 
@@ -64,19 +75,19 @@ void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiN
     //target coordinate does NOT fall within the duration 
     //of an existing note IF the event to be added is a note-on.
 
-    assert(midiNoteNumber < TOTAL_MIDI_NOTES);
+    assert(newEventParams.gridRow < TOTAL_MIDI_NOTES);
 
-    SequencerGridItem_t * newEventNodePtr = NULL;
-    SequencerGridItem_t * tempNodePtr = NULL;
+    GridEventNode_t * newNodePtr = NULL;
+    GridEventNode_t * tempNodePtr = NULL;
     bool autoAddNoteOff = false;
 
     //Its possible for multiple event nodes may share the same virtual grid cooridinate,
     //BUT - each event node at that coordinate MUST ALWAYS have a unqiue statusByte.
     //Its the callers responsibility to check that there are no existing event nodes with
     //the same statusByte at the target coordinate, so this is considered a system fault.
-    if(getPointerToEventNodeIfExists(statusByte, columnNum, midiNoteNumber) != NULL) assert(0);
+    if(getPointerToEventNodeIfExists(newEventParams.statusByte, newEventParams.gridColumn, newEventParams.gridRow) != NULL) assert(0);
 
-    if((CLEAR_LOWER_NIBBLE(statusByte) == MIDI_NOTE_ON_MSG) && (durationInSteps > 0))
+    if((CLEAR_LOWER_NIBBLE(newEventParams.statusByte) == MIDI_NOTE_ON_MSG) && (newEventParams.durationInSteps > 0))
     {
         //IMPORTANT: When a note is added with durationInSteps == 0,
         //its a special case used to indicate that a corresponding
@@ -84,17 +95,31 @@ void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiN
         //This is a requirement when performing midi file to grid
         //data conversions, where ALL events are added manually.
 
+        //Quick check to make sure the note number is within range
+        assert(newEventParams.dataBytes[MIDI_NOTE_NUM_IDX] < TOTAL_MIDI_NOTES);
+
         //Since this is a note-on event the system requires that a
         //corresponding note-off event is generated automatically
         autoAddNoteOff = true;
     }
 
 
-    //Create the new event node - it will be appended OR inserted into the target rows linked list below
-    newEventNodePtr = createNewEventNode(statusByte, columnNum, midiNoteNumber, midiVelocity, rgb_green);
-    
+    //Create the new event node
+    newNodePtr = genericDLL_createNewNode();
+    assert(newNodePtr != NULL);
+    //Assign parameters to new midi event node
+    //TODO: WHEN MORE EVENT TYPES SUPPORTED,
+    //ADD SWITCH HERE THAT WILL RANGE CHECK
+    //THE MESSAGE DATA BYTES.
+    newNodePtr->column = newEventParams.gridColumn;
+    newNodePtr->statusByte = newEventParams.statusByte;
+    //newNodePtr->durationInSteps = newEventParams.durationInSteps;
+    memcpy(&newNodePtr->dataBytes, &newEventParams.dataBytes, MAX_DATA_BYTES);
+    //TODO: ADD RGB COLOUR CODE ASSIGNMENT - CURRENTLY HARDCODED
 
-    if((g_GridData.gridLinkedListHeadPtrs[midiNoteNumber] != NULL) && (columnNum < g_GridData.gridLinkedListTailPtrs[midiNoteNumber]->column))
+
+    if((g_GridData.gridLinkedListHeadPtrs[newEventParams.gridRow] != NULL) && 
+        (newEventParams.gridColumn < g_GridData.gridLinkedListTailPtrs[newEventParams.gridRow]->column))
     {
         //If we get here then the linked list for the target row has existing event
         //nodes allocated AND the target column is LESS than the last event node in
@@ -102,9 +127,9 @@ void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiN
         //new event node we want to add.
 
         //If a NULL pointer found here we have a system fault
-        assert(g_GridData.gridLinkedListTailPtrs[midiNoteNumber] != NULL);
+        assert(g_GridData.gridLinkedListTailPtrs[newEventParams.gridRow] != NULL);
 
-        if(CLEAR_LOWER_NIBBLE(statusByte) == MIDI_NOTE_ON_MSG)
+        if(CLEAR_LOWER_NIBBLE(newEventParams.statusByte) == MIDI_NOTE_ON_MSG)
         {
             //As note events can have a duration of multiple sequencer steps,
             //we need to ALWAYS make sure that we're not placing a new note-on
@@ -112,10 +137,11 @@ void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiN
             //Its the callers responsibility to have checked that the target
             //coordinate does not fall within the duration of an existing note
             //event, so this is considered a system fault.
-            if(getNoteOnPtrIfCoordinateFallsWithinExistingNoteDuration(columnNum, midiNoteNumber) != NULL) assert(0);
+            MidiEventParams_t params = getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(newEventParams.gridColumn, newEventParams.gridRow, 0);
+            if(params.statusByte != 0) assert(0);
         }
 
-        tempNodePtr = g_GridData.gridLinkedListTailPtrs[midiNoteNumber];
+        tempNodePtr = g_GridData.gridLinkedListTailPtrs[newEventParams.gridRow];
 
         //We need to identify the node at or immediately previous
         //to the insertion coordinate within the virtual grid.
@@ -125,7 +151,7 @@ void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiN
         //to detect that case and insert the node at list head.
         while(tempNodePtr != NULL)
         {
-            if(tempNodePtr->column <= columnNum) break;
+            if(tempNodePtr->column <= newEventParams.gridColumn) break;
             if(tempNodePtr->prevPtr == NULL)
             {
                 tempNodePtr = NULL;
@@ -137,7 +163,7 @@ void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiN
         //IMPORTANT:
         //IF(tempNodePtr != NULL) The new event node will be inserted at tempNodePtr->nextPtr
         //IF(tempNodePtr == NULL) The new event node will be inserted as the new HEAD of the list.
-        genericDLL_insertNewNodeIntoLinkedList(newEventNodePtr, tempNodePtr, &g_GridData.gridLinkedListHeadPtrs[midiNoteNumber]);
+        genericDLL_insertNewNodeIntoLinkedList(newNodePtr, tempNodePtr, &g_GridData.gridLinkedListHeadPtrs[newEventParams.gridRow]);
     }
     else
     {
@@ -147,24 +173,22 @@ void addNewMidiEventToGrid(uint16_t columnNum, uint8_t statusByte, uint8_t midiN
         //operation for the new node we want to add.
 
         //Append new event node to the linked list
-        genericDLL_appendNewNodeOntoLinkedList(newEventNodePtr, &g_GridData.gridLinkedListHeadPtrs[midiNoteNumber], 
-                                               &g_GridData.gridLinkedListTailPtrs[midiNoteNumber]);
+        genericDLL_appendNewNodeOntoLinkedList(newNodePtr, &g_GridData.gridLinkedListHeadPtrs[newEventParams.gridRow], 
+                                               &g_GridData.gridLinkedListTailPtrs[newEventParams.gridRow]);
 
         //Update a record of the total columns in the project if required.
-        if(columnNum > g_GridData.totalGridColumns) g_GridData.totalGridColumns = columnNum;
+        if(newEventParams.gridColumn > g_GridData.totalGridColumns) g_GridData.totalGridColumns = newEventParams.gridColumn;
     }
 
-    if(autoAddNoteOff) addCorrespondingNoteOff(newEventNodePtr, durationInSteps);
+    if(autoAddNoteOff) addCorrespondingNoteOff(newNodePtr, newEventParams.durationInSteps);
 }
 
 
 //---- Public Interface
-void removeMidiEventFromGrid(SequencerGridItem_t * nodeForRemovalPtr, uint8_t rowNum)
+void removeMidiEventFromGrid(MidiEventParams_t midiEventParams)
 {
     //This function handles the removal of an
     //existing midi event from the virtual grid.
-    //It expects a valid pointer to the event node
-    //which needs to be removed.
 
     //IMPORTANT:
     //When it comes to note event types, the function 
@@ -174,19 +198,27 @@ void removeMidiEventFromGrid(SequencerGridItem_t * nodeForRemovalPtr, uint8_t ro
     //When removing a note-on event, the corresponding
     //note-off event will be removed automatically.
 
-    assert(nodeForRemovalPtr != NULL);
-    assert(CLEAR_LOWER_NIBBLE(nodeForRemovalPtr->statusByte) != MIDI_NOTE_OFF_MSG);
+    assert(CLEAR_LOWER_NIBBLE(midiEventParams.statusByte) != MIDI_NOTE_OFF_MSG);
+    assert(g_GridData.gridLinkedListHeadPtrs[midiEventParams.gridRow] != NULL);
+    assert(g_GridData.gridLinkedListTailPtrs[midiEventParams.gridRow] != NULL);
+    //TODO: ADD FURTHER CHECKS HERE LATER
 
-    SequencerGridItem_t * nodePtr = NULL;
+    GridEventNode_t * nodeForRemovalPtr = getPointerToEventNodeIfExists(midiEventParams.statusByte, midiEventParams.gridRow, midiEventParams.gridColumn);
+    assert(nodeForRemovalPtr != NULL); //We shouldnt ever be trying to remove nodes that dont exist- FAULT CONDITION
+
+    GridEventNode_t * nodePtr = NULL;
 
     switch(CLEAR_LOWER_NIBBLE(nodeForRemovalPtr->statusByte))
     {
         case MIDI_NOTE_ON_MSG:
-            nodePtr = getPointerToCorespondingNoteOffEventNode(nodeForRemovalPtr, true);
+            nodePtr = getPointerToCorespondingNoteOffEventNode(nodeForRemovalPtr);
+            assert(nodePtr != NULL); //A missing note-off is a system fault
             //Handle note-on event node removal
-            genericDLL_deleteNodeFromList(nodeForRemovalPtr, &g_GridData.gridLinkedListHeadPtrs[rowNum], &g_GridData.gridLinkedListTailPtrs[rowNum]);
+            genericDLL_deleteNodeFromList(nodeForRemovalPtr, &g_GridData.gridLinkedListHeadPtrs[midiEventParams.gridRow], 
+                                          &g_GridData.gridLinkedListTailPtrs[midiEventParams.gridRow]);
             //Handle corresponding note-off event node removal
-            genericDLL_deleteNodeFromList(nodePtr, &g_GridData.gridLinkedListHeadPtrs[rowNum], &g_GridData.gridLinkedListTailPtrs[rowNum]);
+            genericDLL_deleteNodeFromList(nodePtr, &g_GridData.gridLinkedListHeadPtrs[midiEventParams.gridRow], 
+                                          &g_GridData.gridLinkedListTailPtrs[midiEventParams.gridRow]);
             break;
 
         default:
@@ -197,125 +229,132 @@ void removeMidiEventFromGrid(SequencerGridItem_t * nodeForRemovalPtr, uint8_t ro
 
 
 //---- Public Interface
-SequencerGridItem_t * getNoteOnPtrIfCoordinateFallsWithinExistingNoteDuration(uint16_t columnNum, uint8_t rowNum)
+MidiEventParams_t getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel)
 {
     //Notes on the grid can have multiple step durations, so we need
     //to make sure NOT to place a new note-on note-off pair such that 
     //it overlaps an existing note duration on the same row, to do so
     //would introduce condition considered to be a system fault.
 
-    //NOTE: Only a first pass to get system operational.
-
     //RETURNS: IF the target grid coordinate is found to exist witin
-    //an existing notes duration a pointer to the previously existing 
-    //note-on event node assosiated with that duration is returned. 
-    //ELSE returns NULL.
+    //an existing notes duration a the a populates midiEvent_t struct
+    //is returned. ELSE the retured struct is zeroed APART FROM the 
+    //stepsToNext member (which may or may not be zero).
 
-    SequencerGridItem_t * nodePtr = NULL;
-    SequencerGridData_t * noteOnPtr = NULL;
+    GridEventNode_t * nodePtr = NULL;
+    GridEventNode_t * noteOnPtr = NULL;
+    MidiEventParams_t eventParams = {0};
+    bool skipSearch = false;
 
-    if(g_GridData.gridLinkedListHeadPtrs[rowNum] == NULL) return NULL;
-    nodePtr = g_GridData.gridLinkedListHeadPtrs[rowNum];
+    if(g_GridData.gridLinkedListHeadPtrs[rowNum] == NULL) skipSearch = true;
 
-    if(columnNum > g_GridData.totalGridColumns) return NULL;
-
-    while(1)
+    if(!skipSearch)
     {
-        if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_ON_MSG)
+        nodePtr = g_GridData.gridLinkedListHeadPtrs[rowNum];
+
+        while(1)
         {
-            if(nodePtr->column <= columnNum)
+            //TODO: ADD TIMEOUT
+
+            if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_ON_MSG)
             {
-                //If we detect two consectutive
-                //note-on events without a note-off
-                //event between - fault condition.
-                if(noteOnPtr != NULL) assert(0);
-                noteOnPtr = nodePtr;
+                if(CLEAR_UPPER_NIBBLE(nodePtr->statusByte) == midiChannel)
+                {
+                    if(nodePtr->column <= columnNum)
+                    {
+                        //If we detect two consectutive
+                        //note-on events without a note-off
+                        //event between - fault condition.
+                        if(noteOnPtr != NULL) assert(0);
+                        noteOnPtr = nodePtr;
+                    }
+                }
             }
-        }
-        else if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_OFF_MSG)
-        {
-            if(nodePtr->column <= columnNum)
+            else if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_OFF_MSG)
             {
-                //If we detect two consectutive
-                //note-off events without a note-on
-                //event between - fault condition.
-                if(noteOnPtr == NULL) assert(0);
-                noteOnPtr = NULL;
+                if(CLEAR_UPPER_NIBBLE(nodePtr->statusByte) == midiChannel)
+                {
+                    if(nodePtr->column <= columnNum)
+                    {
+                        //If we detect two consectutive
+                        //note-off events without a note-on
+                        //event between - fault condition.
+                        if(noteOnPtr == NULL) assert(0);
+                        noteOnPtr = NULL;
+                    }
+                }
             }
-        }
 
-        if(nodePtr->nextPtr == NULL) break;
-        nodePtr = nodePtr->nextPtr;
-        if(nodePtr->column > columnNum) break;
-    } 
-
-    return noteOnPtr;
-}
-
-
-//---- Public Interface
-SequencerGridItem_t * getPointerToCorespondingNoteOffEventNode(SequencerGridItem_t * nodePtr, bool faultOnFail)
-{
-    //This function seaches a rows linked list in forward direction 
-    //from a supplied node ptr for a corresponding note-off event.
-    //Note-on and Note-off events are always created in pairs
-    //if one exists without the other its a fault condition!
-
-    //REQUIREMENTS: Expects a valid pointer to note-on event node.
-
-    //RETURNS: A pointer to the corresponding note-off event node.
-    //If no correponding note-off is found OR another note-on event
-    //is encountered first then:
-    //IF faultOnFail == true, will execute assertion failure.
-    //IF faultOnFail == false, will return NULL.
-
-    assert(nodePtr != NULL);
-    assert(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_ON_MSG);
-
-    while(nodePtr->nextPtr != NULL)
-    {
-        //TODO: ADD TIMEOUT
-        nodePtr = nodePtr->nextPtr;
-        if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_OFF_MSG) return nodePtr;
-        else if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_ON_MSG){
-            if(faultOnFail) assert(0);
-            else return NULL;
+            if(nodePtr->nextPtr == NULL) break;
+            nodePtr = nodePtr->nextPtr;
+            if(nodePtr->column > columnNum) break;
         } 
+
+        if(noteOnPtr != NULL)
+        {
+            //We must have found a note-on event node to reach here
+            assert(CLEAR_LOWER_NIBBLE(noteOnPtr->statusByte) == MIDI_NOTE_ON_MSG);
+            assert(CLEAR_UPPER_NIBBLE(noteOnPtr->statusByte) == midiChannel);
+
+            eventParams.statusByte = noteOnPtr->statusByte;
+            eventParams.gridColumn = noteOnPtr->column;
+            eventParams.gridRow = rowNum;
+            memcpy(&eventParams.dataBytes, &noteOnPtr->dataBytes, MAX_DATA_BYTES);
+            
+            //This note-on must have a corresponding note-off we need to get
+            //a pointer to that note-on event we can work out duration in steps.
+            nodePtr = getPointerToCorespondingNoteOffEventNode(noteOnPtr);
+            assert(nodePtr != NULL); //A missing note-off is a system fault
+            eventParams.durationInSteps = nodePtr->column - eventParams.gridColumn;
+
+            //Now we need to check if theres another note-on event after the
+            //corresponding note-off to determine the max allowed duration in
+            //steps allowed for the detected note event.
+            nodePtr = getPointerToNextNoteOnEventInListIfOneExists(noteOnPtr);
+            if(nodePtr == NULL) eventParams.stepsToNext = 0;
+            else eventParams.stepsToNext = nodePtr->column - noteOnPtr->column;
+        }
+        else
+        {
+            eventParams.stepsToNext = getNumStepsToNextNoteOnAfterCoordinate(columnNum, rowNum, midiChannel);
+        }
+
     }
 
-    if(faultOnFail) assert(0);
-    return NULL;
+    return eventParams;
 }
 
 
 //---- Public Interface
-SequencerGridItem_t * getPointerToEventNodeIfExists(uint8_t targetStatusByte, uint16_t columnNum, uint8_t rowNum)
+void updateMidiEventParameters(MidiEventParams_t eventParams)
 {
-    //This function iterates through a linked list in the 
-    //forward direction, looking for an event node at the 
-    //target coordinate which has a matching statusByte
 
-    //RETURNS: IF a node is found, a pointer to it is
-    //returned. ELSE a NULL ptr value is returned.
+    GridEventNode_t * nodeToUpdatePtr = getPointerToEventNodeIfExists(eventParams.statusByte, eventParams.gridRow, eventParams.gridColumn);
 
-    SequencerGridItem_t * targetNode = NULL;
+    assert(nodeToUpdatePtr != NULL); //Shouldnt be trying to update events that dont exist
 
-    //The linked list for this row has no event nodes
-    if(g_GridData.gridLinkedListHeadPtrs[rowNum] == NULL) return NULL;
+    switch(CLEAR_LOWER_NIBBLE(eventParams.statusByte))
+    {
+        case MIDI_NOTE_ON_MSG:
+            //Once a note-on has been placed only its velocity and duration
+            //can be edited. If the note-on needs its row or column changed
+            //it should be deleted and a new note placed at the desired coordinate.
+            //MORE EDITING FEATURES WILL BE ADDED LATER!
+            nodeToUpdatePtr->dataBytes[MIDI_VELOCITY_IDX] = eventParams.dataBytes[MIDI_VELOCITY_IDX];
 
-    //Grab a direct pointer to the HEAD node in the list
-    targetNode = g_GridData.gridLinkedListHeadPtrs[rowNum];
+            //We may also need to update the grid column of the 
+            //corresponding note-off message if the note duration
+            //has been changed. 
+            GridEventNode_t * correspondingNoteOffNodePtr = getPointerToCorespondingNoteOffEventNode(nodeToUpdatePtr);
+            assert(correspondingNoteOffNodePtr != NULL);  //A missing note-off is a system fault
+            correspondingNoteOffNodePtr->column = nodeToUpdatePtr->column + eventParams.durationInSteps;
+            break;
 
-    while(1)
-    { 
-        //TODO: ADD TIMEOUT
-        if((targetNode->column == columnNum) && (targetNode->statusByte == targetStatusByte)) return targetNode;
-        else if(targetNode->column > columnNum) break;
-        if(targetNode->nextPtr == NULL) break;
-        else targetNode = targetNode->nextPtr;
+        default:
+            assert(0);
+            break;
     }
 
-    return NULL;
 }
 
 
@@ -326,7 +365,7 @@ void printAllLinkedListEventNodesFromBase(uint16_t rowNum)
     //to print a list structure to console. Its used
     //only for debugging purposes.
 
-    SequencerGridItem_t * tempNodePtr = NULL;
+    GridEventNode_t * tempNodePtr = NULL;
     uint16_t nodeCount = 0;
 
     //If list for this row has no event nodes abort operation
@@ -370,7 +409,7 @@ uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
 
     uint32_t deltaTime;
     uint32_t trackChunkSizeInBytes;
-    SequencerGridItem_t * tempGridtempNodePtr = NULL;
+    GridEventNode_t * tempGridtempNodePtr = NULL;
     bool stillMoreNodesToProccessAtCurrentCoordinate = false;
 
     assert(midiFileBufferPtr != NULL);
@@ -551,6 +590,7 @@ void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
     uint8_t midiVoiceMsgData[2];
     int8_t metaMsgLength;
     bool corruptFileDetected = false;
+    MidiEventParams_t newEventParams = {0};
 
     assert(midiFileBufferPtr != NULL);
     assert(getMidiFileFormatType(midiFileBufferPtr) == MIDI_FILE_FORMAT_TYPE0);
@@ -632,7 +672,14 @@ void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
                         //IMPORTANT: A note duration of zero indicates to the function that
                         //corresponding note-off events shouldnt be automatically added, which
                         //is required while performing a midiFileToGrid conversion.
-                        addNewMidiEventToGrid(totalColumnCount, statusByte, midiVoiceMsgData[MIDI_NOTE_NUM_IDX], midiVoiceMsgData[MIDI_VELOCITY_IDX], 0);
+                        newEventParams.statusByte = statusByte;
+                        newEventParams.dataBytes[MIDI_NOTE_NUM_IDX] = midiVoiceMsgData[MIDI_NOTE_NUM_IDX];
+                        newEventParams.dataBytes[MIDI_VELOCITY_IDX] = midiVoiceMsgData[MIDI_VELOCITY_IDX];
+                        newEventParams.gridRow = midiVoiceMsgData[MIDI_NOTE_NUM_IDX];
+                        newEventParams.gridColumn = totalColumnCount;
+                        newEventParams.durationInSteps = 0;
+
+                        addNewMidiEventToGrid(newEventParams);
                         
                         //ESP_LOGI(LOG_TAG, "\n");
                         //ESP_LOGI(LOG_TAG, "New %s midi event detected..", (CLEAR_LOWER_NIBBLE(statusByte) == 0x90) ? "Note-On" : "Note-Off");
@@ -707,10 +754,7 @@ void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
         }
     }
 
-    if(corruptFileDetected)
-    {
-        assert(0);
-    }
+    if(corruptFileDetected) assert(0);
     else
     {
         ESP_LOGI(LOG_TAG, "midiFileToGrid SUCCESS, total columns in project: %d", totalColumnCount);
@@ -724,8 +768,8 @@ void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
 {
     //This function updates all rgbs leds of the switch matrix 
 
-    SequencerGridItem_t * tempNodePtr = NULL;
-    SequencerGridItem_t * searchPtr = NULL;
+    GridEventNode_t * tempNodePtr = NULL;
+    GridEventNode_t * searchPtr = NULL;
     bool abortCurrentRow = false;
     bool runOncePerRow = false;
     uint16_t numGridSteps = 0;
@@ -734,6 +778,7 @@ void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
     rgbLedColour_t gridRGBCodes[48] = {rgb_off};
 
     bool keepSearchingCurrentRow = false;
+    bool withinNoteDuration = true;
 
     //The pysical sequencer grid is made up of a matrix of switches, where each
     //switch has its own assosiated RGB led, this function handles the setting
@@ -787,6 +832,12 @@ void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
                 {
                     keepSearchingCurrentRow = false;
 
+                    //These conditionals are used to catch a condition where a note-on and note-off
+                    //pair exist before and after (respectively) the area of the virtual grid to be displayed,
+                    //without these a condition where an entire row should be illuminated, but isnt can occur.
+                    if(CLEAR_LOWER_NIBBLE(tempNodePtr->statusByte) == MIDI_NOTE_ON_MSG) withinNoteDuration = true;
+                    else if(CLEAR_LOWER_NIBBLE(tempNodePtr->statusByte) == MIDI_NOTE_OFF_MSG) withinNoteDuration = false;
+
                     if((tempNodePtr->column >= columnOffset) && (tempNodePtr->column < (columnOffset + NUM_SEQUENCER_PHYSICAL_COLUMNS)))
                     {
                         //We reach here if the current node falls
@@ -797,19 +848,19 @@ void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
             
                         if((CLEAR_LOWER_NIBBLE(tempNodePtr->statusByte) == MIDI_NOTE_OFF_MSG) && (runOncePerRow))
                         {
-                            //We only get here when the first event node in the current linked list is a note off event
+                            //We only get here when the first event node within the area to be displayed is a note off event
                             //while note-off events are not themselves displayed, if the relativeColumn is greater than zero
                             //it means we have an existing note duration that overruns into the target window.
                             //Any grid steps that are a note duration overrun must be displayed.
 
                             numGridSteps = tempNodePtr->column - columnOffset;
-
                             runOncePerRow = false;
 
                             for(uint8_t a = 0; a < numGridSteps; ++a)
                             {
                                 //Set the colour of the grid coordinates that make up the note duration overrun
                                 gridRGBCodes[0 + (relativeRow * NUM_SEQUENCER_PHYSICAL_COLUMNS) + a] = rgb_green;
+                                //if((relativeColumn + a) > NUM_SEQUENCER_PHYSICAL_COLUMNS) break;
                             }
                         }
                         else if(CLEAR_LOWER_NIBBLE(tempNodePtr->statusByte) == MIDI_NOTE_ON_MSG)
@@ -817,26 +868,24 @@ void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
                             //A note-on event has been found within the target window
                             //we must now find the duration of that note off event in steps
 
-                            runOncePerRow = false;
-
                             //Search for and get pointer to corresponding note-off
-                            searchPtr = getPointerToCorespondingNoteOffEventNode(tempNodePtr, true);
+                            searchPtr = getPointerToCorespondingNoteOffEventNode(tempNodePtr);
                             if(searchPtr != NULL) 
                             {
                                 //We get here if the corresponding note-off to 
                                 //the current note-on event has been found to exist
                                 numGridSteps = searchPtr->column - tempNodePtr->column;
+
                             }
                             else
                             {
-                                //Each note-on should ALWAYS have an assosiated NOTE-OFF, this is a system fault.
-                                ESP_LOGE(LOG_TAG, "Error: Unable to find expected corresponding note-off in 'updateGridLEDs'");
-                                assert(0);
+                                assert(0);  //A missing note-off is a system fault
                             } 
 
                             for(uint8_t a = 0; a < numGridSteps; ++a)
                             {
                                 //Set the colour of the grid coordinates that make up the current notes duration
+                                if((relativeColumn + a) > (NUM_SEQUENCER_PHYSICAL_COLUMNS - 1)) break;
                                 gridRGBCodes[relativeColumn + (relativeRow * NUM_SEQUENCER_PHYSICAL_COLUMNS) + a] = rgb_green;
                             }
 
@@ -853,6 +902,14 @@ void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
                             tempNodePtr = tempNodePtr->nextPtr;
                             keepSearchingCurrentRow = true;
                         }
+                        else if(withinNoteDuration)
+                        {
+                            for(uint8_t a = 0; a < NUM_SEQUENCER_PHYSICAL_COLUMNS; ++a)
+                            {
+                                //Light all steps in the row
+                                gridRGBCodes[0 + (relativeRow * NUM_SEQUENCER_PHYSICAL_COLUMNS) + a] = rgb_green;
+                            }
+                        }
                     }
 
                 }while(keepSearchingCurrentRow);
@@ -863,7 +920,6 @@ void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
 
     ledDrivers_writeEntireGrid(gridRGBCodes);
 }
-
 
 
 
@@ -901,7 +957,7 @@ static void generateDeltaTimesForCurrentGrid(void)
     //on the fly as grid events are added.
 
     uint16_t previousColumn = 0;
-    SequencerGridItem_t * tempNodePtr = NULL;
+    GridEventNode_t * tempNodePtr = NULL;
 
     for(uint16_t currentTargetColumn = 0; currentTargetColumn <=g_GridData.totalGridColumns; ++currentTargetColumn)
     {
@@ -970,31 +1026,8 @@ static void generateDeltaTimesForCurrentGrid(void)
 }
 
 
-
 //---- Private
-static SequencerGridItem_t * createNewEventNode(uint8_t statusByte, uint16_t columnNum, uint8_t midiNoteNum, uint8_t midiVelocity, uint16_t rgbCode)
-{
-
-    //Allocate memory for new node from psram
-    SequencerGridItem_t * newNodePtr = heap_caps_malloc(sizeof(SequencerGridItem_t), MALLOC_CAP_SPIRAM);
-    assert(newNodePtr != NULL);
-
-    memset(newNodePtr, 0, sizeof(SequencerGridItem_t));
-
-    newNodePtr->column = columnNum;
-    newNodePtr->statusByte = statusByte;
-    newNodePtr->dataBytes[MIDI_NOTE_NUM_IDX] = midiNoteNum;
-    newNodePtr->dataBytes[MIDI_VELOCITY_IDX] = midiVelocity;
-    newNodePtr->rgbColourCode = rgbCode;
-    newNodePtr->prevPtr = NULL;
-    newNodePtr->nextPtr = NULL;
-
-    return newNodePtr;
-}
-
-
-//---- Private
-static void addCorrespondingNoteOff(SequencerGridItem_t * noteOnNode, uint16_t noteDuration)
+static void addCorrespondingNoteOff(GridEventNode_t * noteOnNode, uint16_t noteDuration)
 {
     //The functions handles the automatic generation of note-off
     //midi events for a corresponding note-on event at the 
@@ -1009,17 +1042,24 @@ static void addCorrespondingNoteOff(SequencerGridItem_t * noteOnNode, uint16_t n
     assert(noteOnNode != NULL);
     assert(CLEAR_LOWER_NIBBLE(noteOnNode->statusByte) == MIDI_NOTE_ON_MSG);
 
-    SequencerGridItem_t * noteOffNodePtr = NULL;
+    GridEventNode_t * noteOffNodePtr = NULL;
 
     uint8_t midiEventChannel = CLEAR_UPPER_NIBBLE(noteOnNode->statusByte);
     uint8_t noteOffStatusByte = MIDI_NOTE_OFF_MSG | midiEventChannel;
     uint16_t noteOffColumn = noteOnNode->column + noteDuration;
 
+    noteOffNodePtr = genericDLL_createNewNode();
+    assert(noteOffNodePtr != NULL);
+    //Assign event parameters
+    noteOffNodePtr->statusByte = noteOffStatusByte;
+    noteOffNodePtr->column = noteOffColumn;
+    noteOffNodePtr->dataBytes[MIDI_NOTE_NUM_IDX] = noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX];
+    noteOffNodePtr->dataBytes[MIDI_VELOCITY_IDX] = MIDI_MAX_VELOCITY;
+    //TODO: ADD RGB COLOUR CODE ASSIGNMENT - CURRENTLY HARDCODED
+
     if(genericDLL_returnTrueIfLastNodeInList(noteOnNode))
     {
-        //The note-off event node we want to
-        //add will be appended onto a list
-        noteOffNodePtr = createNewEventNode(noteOffStatusByte, noteOffColumn, noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX], MIDI_MAX_VELOCITY, rgb_off);
+        //The note-off event node we want to add will be appended onto a list
         genericDLL_appendNewNodeOntoLinkedList(noteOffNodePtr, &g_GridData.gridLinkedListHeadPtrs[noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX]], 
                                                &g_GridData.gridLinkedListTailPtrs[noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX]]);
 
@@ -1029,9 +1069,164 @@ static void addCorrespondingNoteOff(SequencerGridItem_t * noteOnNode, uint16_t n
     }
     else
     {
-        //The note-off event node we want to
-        //add will be inserted into a list
-        noteOffNodePtr = createNewEventNode(noteOffStatusByte, noteOffColumn, noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX], MIDI_MAX_VELOCITY, rgb_off);
+        //The note-off event node we want to add will be inserted into a list
         genericDLL_insertNewNodeIntoLinkedList(noteOffNodePtr, noteOnNode, &g_GridData.gridLinkedListHeadPtrs[noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX]]);
     }
+}
+
+
+//---- Private
+static GridEventNode_t * getPointerToCorespondingNoteOffEventNode(GridEventNode_t * noteOnEventPtr)
+{
+    //This function seaches a rows linked list in forward direction 
+    //from a supplied note-on event node for a corresponding note-off
+    //event which has the same midi channel number as the input node.
+
+    //Note-on and Note-off events are always created in pairs
+    //if one exists without the other its a fault condition!
+
+    //REQUIREMENTS: This function expects a note-on event node ptr,
+    //if any other type is passed it will be considered a fault
+    //condition and generate an assertion failure.
+
+    //RETURNS: A pointer to the corresponding note-off event node.
+    //If no correponding note-off is found OR another note-on event
+    //is encountered (with matching midi channel number) first then
+    //will return NULL.
+
+    assert(noteOnEventPtr != NULL);
+    assert(CLEAR_LOWER_NIBBLE(noteOnEventPtr->statusByte) == MIDI_NOTE_ON_MSG);
+
+    GridEventNode_t * nodePtr = noteOnEventPtr;
+
+    while(nodePtr->nextPtr != NULL)
+    {
+        //TODO: ADD TIMEOUT
+        nodePtr = nodePtr->nextPtr;
+        if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_OFF_MSG)
+        {
+            //We found a note-off event, we now need to see if
+            //it has the same channel number as the note-on event
+            if(CLEAR_UPPER_NIBBLE(noteOnEventPtr->statusByte) == CLEAR_UPPER_NIBBLE(nodePtr->statusByte))
+            {
+                return nodePtr; //Found corresponding note-off
+            }
+        } 
+        else if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_ON_MSG)
+        {
+            if(CLEAR_UPPER_NIBBLE(noteOnEventPtr->statusByte) == CLEAR_UPPER_NIBBLE(nodePtr->statusByte))
+            {
+                return NULL;
+            }
+        } 
+    }
+
+    return NULL;
+}
+
+
+//---- Private
+static GridEventNode_t * getPointerToNextNoteOnEventInListIfOneExists(GridEventNode_t * noteOnEventPtr)
+{
+    //This function seaches a rows linked list in forward direction 
+    //from a supplied note-on event node for the next note-on event 
+    //in which has the same midi channel number as the input node,
+    //IF SUCH A NODE EXISTS.
+
+    //REQUIREMENTS: This function expects a note-on event node ptr,
+    //if any other type is passed it will be considered a fault
+    //condition and generate an assertion failure.
+
+    //RETURNS: IF another note-on event node with matching midi
+    //channel number if found a pointer to it is returned.
+    //ELSE returns NULL.
+
+    assert(noteOnEventPtr != NULL);
+    assert(CLEAR_LOWER_NIBBLE(noteOnEventPtr->statusByte) == MIDI_NOTE_ON_MSG);
+
+    GridEventNode_t * nodePtr = noteOnEventPtr;
+
+    while(nodePtr->nextPtr != NULL)
+    {
+        //TODO: ADD TIMEOUT
+        nodePtr = nodePtr->nextPtr;
+        if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_ON_MSG)
+        {
+            //We found a note-off event, we now need to see if
+            //it has the same channel number as the note-on event
+            if(CLEAR_UPPER_NIBBLE(noteOnEventPtr->statusByte) == CLEAR_UPPER_NIBBLE(nodePtr->statusByte))
+            {
+                return nodePtr; //Found corresponding note-off
+            }
+        } 
+    }
+
+    return NULL;
+}
+
+
+//---- Private
+uint8_t getNumStepsToNextNoteOnAfterCoordinate(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel)
+{
+    uint8_t numStepsToNext = 0;
+    bool abortSearch = false;
+
+    GridEventNode_t * nodePtr = g_GridData.gridLinkedListHeadPtrs[rowNum];
+    if(nodePtr == NULL) abortSearch = true;
+
+    if(!abortSearch)
+    {
+        while(nodePtr->nextPtr != NULL)
+        {
+            //TODO: ADD TIMEOUT
+            nodePtr = nodePtr->nextPtr;
+            if(nodePtr->column > columnNum)
+            {
+                //We're only looking for note-on events 
+                //that occur AFTER the input columnNum
+                if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_ON_MSG)
+                {
+                    //We found a note-off event, we now need to see if
+                    //it has the same channel number as the note-on event
+                    if(midiChannel == CLEAR_UPPER_NIBBLE(nodePtr->statusByte))
+                    {
+                        numStepsToNext = nodePtr->column - columnNum;
+                    }
+                } 
+            }
+        }
+    }
+
+    return numStepsToNext;
+}
+
+
+//---- Private
+static GridEventNode_t * getPointerToEventNodeIfExists(uint8_t targetStatusByte, uint8_t rowNum, uint16_t columnNum)
+{
+    //This function iterates through a linked list in the 
+    //forward direction, looking for an event node at the 
+    //target coordinate which has a matching statusByte
+
+    //RETURNS: IF a node is found, a pointer to it is
+    //returned. ELSE a NULL ptr value is returned.
+
+    GridEventNode_t * targetNode = NULL;
+
+    //The linked list for this row has no event nodes
+    if(g_GridData.gridLinkedListHeadPtrs[rowNum] == NULL) return NULL;
+
+    //Grab a direct pointer to the HEAD node in the list
+    targetNode = g_GridData.gridLinkedListHeadPtrs[rowNum];
+
+    while(1)
+    { 
+        //TODO: ADD TIMEOUT
+        if((targetNode->column == columnNum) && (targetNode->statusByte == targetStatusByte)) return targetNode;
+        else if(targetNode->column > columnNum) break;
+        if(targetNode->nextPtr == NULL) break;
+        else targetNode = targetNode->nextPtr;
+    }
+
+    return NULL;
 }

@@ -6,6 +6,7 @@
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
 #include "guiMenu.h"
+#include "ledDrivers.h"
 #include "sequencerGrid.h"
 #include "rotaryEncoders.h"
 #include "bleCentClient.h"
@@ -105,7 +106,7 @@ void system_EntryPoint(void)
 
     bool hasLoadedGrid = false;
     uint8_t gridroffset = 0x34;
-    int16_t gridcoffset = 0;
+    int16_t gridcoffset = 8;
 
     while (1)
     {
@@ -226,21 +227,90 @@ void system_EntryPoint(void)
             // When starting a new project, or opening an existing project the
             // sequencer grid needs to be reset to its initial (blank) state
 
-            //addNewMidiEventToGrid(0, 0x90, 0x37, 60, 4, true);
-            //addNewMidiEventToGrid(6, 0x90, 0x37, 60, 2);
-            vTaskDelay(1);
-            //addNewMidiEventToGrid(4, 0x90, 0x37, 60, 1);
-            vTaskDelay(1);
-            //printAllLinkedListEventNodesFromBase(0x37);
-            //addNewMidiEventToGrid(5, 0x90, 0x37, 60, 1);
+            MidiEventParams_t midiEvent;
+
             vTaskDelay(1);
 
-            //addNewMidiEventToGrid(0, 0x90, 0x34, 60, 1);
-            //addNewMidiEventToGrid(7, 0x90, 0x34, 60, 1);
-
-            //addNewMidiEventToGrid(0, 0x90, 0x39, 60, 1);
-            //addNewMidiEventToGrid(7, 0x90, 0x39, 60, 1);
             vTaskDelay(1);
+
+            midiEvent.statusByte = 0x90;
+            midiEvent.durationInSteps = 9;
+            midiEvent.gridColumn = 7;
+            midiEvent.gridRow = 0x37;
+            midiEvent.dataBytes[MIDI_NOTE_NUM_IDX] = 0x37;
+            midiEvent.dataBytes[MIDI_VELOCITY_IDX] = 1;
+            addNewMidiEventToGrid(midiEvent);
+            vTaskDelay(1);
+
+            midiEvent.statusByte = 0x90;
+            midiEvent.durationInSteps = 3;
+            midiEvent.gridColumn = 0;
+            midiEvent.gridRow = 0x34;
+            midiEvent.dataBytes[MIDI_NOTE_NUM_IDX] = 0x34;
+            midiEvent.dataBytes[MIDI_VELOCITY_IDX] = 2;
+            addNewMidiEventToGrid(midiEvent);
+
+            midiEvent.statusByte = 0x90;
+            midiEvent.durationInSteps = 1;
+            midiEvent.gridColumn = 7;
+            midiEvent.gridRow = 0x34;
+            midiEvent.dataBytes[MIDI_NOTE_NUM_IDX] = 0x34;
+            midiEvent.dataBytes[MIDI_VELOCITY_IDX] = 3;
+            addNewMidiEventToGrid(midiEvent);
+
+            midiEvent.statusByte = 0x90;
+            midiEvent.durationInSteps = 1;
+            midiEvent.gridColumn = 2;
+            midiEvent.gridRow = 0x39;
+            midiEvent.dataBytes[MIDI_NOTE_NUM_IDX] = 0x39;
+            midiEvent.dataBytes[MIDI_VELOCITY_IDX] = 4;
+            addNewMidiEventToGrid(midiEvent);
+
+            midiEvent.statusByte = 0x90;
+            midiEvent.durationInSteps = 1;
+            midiEvent.gridColumn = 7;
+            midiEvent.gridRow = 0x39;
+            midiEvent.dataBytes[MIDI_NOTE_NUM_IDX] = 0x39;
+            midiEvent.dataBytes[MIDI_VELOCITY_IDX] = 5;
+            addNewMidiEventToGrid(midiEvent);
+            vTaskDelay(1);
+
+            ESP_LOGI(LOG_TAG, "Updating LEDS");
+            updateGridLEDs(0x34, 0);
+            vTaskDelay(pdMS_TO_TICKS(3000));
+
+            midiEvent = getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(2, 0x34, 0);
+            midiEvent.durationInSteps = 1;
+            updateMidiEventParameters(midiEvent);
+
+            ESP_LOGI(LOG_TAG, "Updating LEDS");
+            updateGridLEDs(0x34, 0);
+            vTaskDelay(pdMS_TO_TICKS(3000));
+
+
+            ESP_LOGI(LOG_TAG, "Updating LEDS");
+            updateGridLEDs(0x34, 8);
+            vTaskDelay(pdMS_TO_TICKS(3000));
+
+            for(uint8_t a = 0; a < 10; ++a)
+            {
+                midiEvent = getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(a, 0x34, 0);
+                ESP_LOGI(LOG_TAG, "midiEvent.statusByte: %0x", midiEvent.statusByte);
+                ESP_LOGI(LOG_TAG, "midiEvent.gridRow: %0x", midiEvent.gridRow);
+                ESP_LOGI(LOG_TAG, "midiEvent.gridColumn: %d", midiEvent.gridColumn);
+                ESP_LOGI(LOG_TAG, "midiEvent.durationInSteps: %d", midiEvent.durationInSteps);
+                ESP_LOGI(LOG_TAG, "midiEvent.stepsToNext: %d", midiEvent.stepsToNext);
+                ESP_LOGI(LOG_TAG, "midiEvent.dataBytes[0]: %0x", midiEvent.dataBytes[0]);
+                ESP_LOGI(LOG_TAG, "midiEvent.dataBytes[1]: %0x", midiEvent.dataBytes[1]);
+
+                if(a == 7)
+                {
+                    removeMidiEventFromGrid(midiEvent);
+                    printAllLinkedListEventNodesFromBase(0x34);
+                }
+                
+            }
+
 
             /*
             ///----- TESTS FOR GRID PUBLIC INTERFACE -------//
@@ -249,7 +319,7 @@ void system_EntryPoint(void)
             addNewMidiEventToGrid(1, 0x90, 0x39, 60, 3);
             addNewMidiEventToGrid(14, 0x90, 0x39, 60, 10);
 
-            SequencerGridItem_t * ptr = getNoteOnPtrIfCoordinateFallsWithinExistingNoteDuration(5, 0x39);
+            GridEventNode_t * ptr = getNoteOnPtrIfCoordinateFallsWithinExistingNoteDuration(5, 0x39);
             removeMidiEventFromGrid(ptr, 0x39);
 
             addNewMidiEventToGrid(4, 0x90, 0x39, 60, 2);
@@ -270,7 +340,7 @@ void system_EntryPoint(void)
                     ESP_LOGI(LOG_TAG, "Node column: %d", ptr->column);
                     ESP_LOGI(LOG_TAG, "Node Status byte: %0x", ptr->statusByte);
 
-                    SequencerGridItem_t * ptr0 = getPointerToCorespondingNoteOffEventNode(ptr, true);
+                    GridEventNode_t * ptr0 = getPointerToCorespondingNoteOffEventNode(ptr, true);
                     if(ptr0 == NULL)
                     {
                         ESP_LOGI(LOG_TAG, "No corresponding note-off found!");
@@ -286,13 +356,9 @@ void system_EntryPoint(void)
             }
             */
 
-
-            //addNewMidiEventToGrid(4, 0x90, 0x37, 60, 1, true); //shouldnt appear   
-            //addNewMidiEventToGrid(2, 0x90, 0x37, 60, 3, true); //shouldnt appear   
-
-            ESP_LOGI(LOG_TAG, "Updating LEDS");
-            updateGridLEDs(0x34, 0);
-            vTaskDelay(pdMS_TO_TICKS(1000));
+            //printAllLinkedListEventNodesFromBase(0x37);
+            //printAllLinkedListEventNodesFromBase(0x38);
+            //printAllLinkedListEventNodesFromBase(0x39);
 
             ProjectSettings.midiFileSizeBytes = gridDataToMidiFile(midiFileBufferBASEPtr, FILE_BUFFER_SIZE);
 
@@ -308,7 +374,7 @@ void system_EntryPoint(void)
 
             ESP_LOGI(LOG_TAG, "Update sequencer grid LEDS");
 
-            updateGridLEDs(0x34, 0);
+            //updateGridLEDs(0x34, 0);
             hasLoadedGrid = true;
         }
 

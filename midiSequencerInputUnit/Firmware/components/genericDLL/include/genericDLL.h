@@ -7,7 +7,7 @@
 //NODE_TYPE.nextPtr
 //NODE_TYPE.prevPtr
 
-#define NODE_TYPE SequencerGridItem_t
+#define NODE_TYPE GridEventNode_t
 
 //IMPORTANT: This module also assumes that the caller has both list HEAD and TAIL
 //access to both a HEAD and TAIL pointer for the list.

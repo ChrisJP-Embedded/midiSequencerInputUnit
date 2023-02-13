@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <esp_log.h>
 #include "esp_heap_caps.h"
 #include "malloc.h"
 #include "memory.h"
@@ -53,7 +54,8 @@ void genericDLL_appendNewNodeOntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE **
 //---- Public
 void genericDLL_insertNewNodeIntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE * insertLocationPtr, NODE_TYPE ** listHeadPtr)
 {
-    assert((newNodePtr != NULL) && (listHeadPtr != NULL));
+    assert(newNodePtr != NULL);
+    assert(listHeadPtr != NULL);
 
 
     //IMPORTANT:
@@ -140,15 +142,26 @@ void genericDLL_freeEntireLinkedList(NODE_TYPE ** listHeadPtr, NODE_TYPE ** list
 //---- Public
 void genericDLL_deleteNodeFromList(NODE_TYPE * deleteNodePtr, NODE_TYPE ** listHeadPtr, NODE_TYPE ** listTailPtr)
 {
-    assert((deleteNodePtr != NULL) && (*listHeadPtr != NULL) && (*listTailPtr != NULL));
+    assert(deleteNodePtr != NULL);
+    assert(*listHeadPtr != NULL);
+    assert(*listTailPtr != NULL);
 
     NODE_TYPE * nextNodePtr = NULL;
     NODE_TYPE * prevNodePtr = NULL;
 
+
     if(deleteNodePtr == *listHeadPtr)
     {
-        *listHeadPtr = NULL;
-        *listTailPtr = NULL;
+        if((*listHeadPtr)->nextPtr != NULL)
+        {
+            *listHeadPtr = (*listHeadPtr)->nextPtr;
+            (*listHeadPtr)->prevPtr = NULL;
+        }
+        else
+        {
+            *listHeadPtr = NULL;
+            *listTailPtr = NULL;
+        }
     }
     else if(deleteNodePtr == *listTailPtr)
     {
