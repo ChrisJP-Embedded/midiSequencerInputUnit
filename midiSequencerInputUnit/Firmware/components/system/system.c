@@ -96,7 +96,7 @@ void system_EntryPoint(void)
     
     //Initialize sub-modules
 
-    initIPSDisplayDriver();
+    IPSDisplay_init();
     rotaryEncoders_init();
     guiMenu_init(FileSysInfo.filenamesPtr, FileSysInfo.numFilesOnPartitionPtr);
     ledDrivers_init();
