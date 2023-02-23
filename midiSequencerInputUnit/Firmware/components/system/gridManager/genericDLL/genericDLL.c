@@ -7,26 +7,70 @@
 #include "genericDLL.h"
 
 
-//Generic double-linked-list helper fucntions, 
-//see genericDLL.h for instructions on usage.
+static inline void freeNode(NODE_TYPE * nodePtr);
+
+
+struct moduleData {
+
+    bool moduleInitialized;
+    uint32_t totalNodes;
+    uint32_t currNodeIdx;
+    NODE_TYPE ** nodeArrPtr;
+} g_GenericDLLData;
+
+
+
+//---- Public
+void genericDLL_init(uint32_t numberNodes)
+{
+    assert(g_GenericDLLData.moduleInitialized == false);
+
+    if(g_GenericDLLData.moduleInitialized == false)
+    {
+        //This only runs once, at system startup. No dynamic allocation at runtime.
+        g_GenericDLLData.nodeArrPtr = heap_caps_calloc(numberNodes, sizeof(**g_GenericDLLData.nodeArrPtr), MALLOC_CAP_SPIRAM);
+        assert(g_GenericDLLData.nodeArrPtr != NULL);
+        g_GenericDLLData.totalNodes = numberNodes;
+        g_GenericDLLData.currNodeIdx = 0;
+        g_GenericDLLData.moduleInitialized = true;
+    }
+}
 
 
 //---- Public
 NODE_TYPE * genericDLL_createNewNode(void)
 {
-    NODE_TYPE * newNodePtr = heap_caps_malloc(sizeof(NODE_TYPE), MALLOC_CAP_SPIRAM);
-    if(newNodePtr != NULL)
+    assert(g_GenericDLLData.moduleInitialized == true);
+
+    //This function doesnt actually create node, it just returns
+    //a pointer to the next unused node in the pre-allocated node 
+    //pool that was create at system startup.
+    //This methods allows us to avoid dynamic memory allocation
+    //during runtime as its all done at startup.
+
+    NODE_TYPE * nodePtr = NULL;
+
+    if(g_GenericDLLData.currNodeIdx < (g_GenericDLLData.totalNodes - 1))
     {
-        newNodePtr->nextPtr = NULL;
-        newNodePtr->prevPtr = NULL;
+        assert(g_GenericDLLData.nodeArrPtr[g_GenericDLLData.currNodeIdx] != NULL);
+        nodePtr = g_GenericDLLData.nodeArrPtr[g_GenericDLLData.currNodeIdx];
+        g_GenericDLLData.nodeArrPtr[g_GenericDLLData.currNodeIdx++] = NULL;
     }
-    return newNodePtr;
+    else
+    {
+        //TODO: ADD OUT OF NODES HANDLING
+        //BUT SHOULDNT GET HERE ANYWAY
+        assert(0);
+    }
+
+    return nodePtr;
 }
 
 
 //---- Public
 void genericDLL_appendNewNodeOntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE ** listHeadPtr, NODE_TYPE ** listTailPtr)
 {
+    assert(g_GenericDLLData.moduleInitialized == true);
     assert(newNodePtr != NULL);
 
     if(*listHeadPtr == NULL)
@@ -54,13 +98,11 @@ void genericDLL_appendNewNodeOntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE **
 //---- Public
 void genericDLL_insertNewNodeIntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE * insertLocationPtr, NODE_TYPE ** listHeadPtr)
 {
+    assert(g_GenericDLLData.moduleInitialized == true);
     assert(newNodePtr != NULL);
     assert(listHeadPtr != NULL);
 
-
     //IMPORTANT:
-    //IF(insertLocationPtr == NULL) The new event node will be inserted as the new HEAD of the list.
-    //IF(insertLocationPtr != NULL) The new event node will be inserted at insertLocationPtr->nextPtr
     if(insertLocationPtr == NULL) 
     {
         newNodePtr->nextPtr = *listHeadPtr;
@@ -100,6 +142,10 @@ inline bool genericDLL_returnTrueIfFirstNodeInList(NODE_TYPE * nodePtr)
 //---- Public
 void genericDLL_freeEntireLinkedList(NODE_TYPE ** listHeadPtr, NODE_TYPE ** listTailPtr)
 {
+    assert(g_GenericDLLData.moduleInitialized == false);
+    assert(*listHeadPtr != NULL);
+    assert(*listTailPtr != NULL);
+
     NODE_TYPE * nodePtr = NULL;
     bool moreNodesToDelete;
 
@@ -126,12 +172,12 @@ void genericDLL_freeEntireLinkedList(NODE_TYPE ** listHeadPtr, NODE_TYPE ** list
             {
                 nodePtr = nodePtr->nextPtr;
                 assert(nodePtr->prevPtr != NULL);
-                free(nodePtr->prevPtr);
+                freeNode(nodePtr->prevPtr);
                 moreNodesToDelete = true;
             } 
             else
             {
-                free(nodePtr);
+                freeNode(nodePtr);
             }
 
         }while(moreNodesToDelete);
@@ -142,13 +188,14 @@ void genericDLL_freeEntireLinkedList(NODE_TYPE ** listHeadPtr, NODE_TYPE ** list
 //---- Public
 void genericDLL_deleteNodeFromList(NODE_TYPE * deleteNodePtr, NODE_TYPE ** listHeadPtr, NODE_TYPE ** listTailPtr)
 {
+    assert(g_GenericDLLData.moduleInitialized == true);
     assert(deleteNodePtr != NULL);
     assert(*listHeadPtr != NULL);
     assert(*listTailPtr != NULL);
 
+
     NODE_TYPE * nextNodePtr = NULL;
     NODE_TYPE * prevNodePtr = NULL;
-
 
     if(deleteNodePtr == *listHeadPtr)
     {
@@ -178,5 +225,29 @@ void genericDLL_deleteNodeFromList(NODE_TYPE * deleteNodePtr, NODE_TYPE ** listH
         prevNodePtr->nextPtr = nextNodePtr;
     }
 
-    free(deleteNodePtr);
+    freeNode(deleteNodePtr);
+}
+
+
+//---- Private 
+static inline void freeNode(NODE_TYPE * nodePtr)
+{
+    assert(g_GenericDLLData.moduleInitialized == true);
+    assert(nodePtr != NULL);
+
+    memset(nodePtr, 0, sizeof(*nodePtr));
+    memset(nodePtr->dataBytes, 0, MAX_DATA_BYTES);
+
+    if(g_GenericDLLData.currNodeIdx > 0)
+    {
+        --g_GenericDLLData.currNodeIdx;
+        assert(g_GenericDLLData.nodeArrPtr[g_GenericDLLData.currNodeIdx] == NULL);
+        g_GenericDLLData.nodeArrPtr[g_GenericDLLData.currNodeIdx] = nodePtr;
+    }
+    else
+    {
+        //TODO: ADD OUT OF NODES HANDLING
+        //BUT SHOULDNT GET HERE ANYWAY
+        assert(0);
+    }
 }

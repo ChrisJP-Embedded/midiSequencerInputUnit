@@ -1,4 +1,4 @@
-#include "sequencerGrid.h"
+#include "../gridManager.h"
 
 //This module provides functions to manage a double-linked-list
 //The NODE_TYPE must be updated to the same type that mades up the nodes in the list.

@@ -25,6 +25,16 @@
 #define MAX_DATA_BYTES 4
 #define NUM_OCTAVES 8
 
+typedef struct 
+{
+    uint16_t gridColumn;
+    uint8_t  gridRow;
+    uint8_t  statusByte;
+    uint8_t  dataBytes[MAX_DATA_BYTES];
+    uint8_t  durationInSteps;
+    uint8_t  stepsToNext;
+} MidiEventParams_t;
+
 
 typedef struct GridEventNode_t GridEventNode_t;
 struct GridEventNode_t {
@@ -37,15 +47,7 @@ struct GridEventNode_t {
     uint16_t column;
 };
 
-typedef struct 
-{
-    uint16_t gridColumn;
-    uint8_t  gridRow;
-    uint8_t  statusByte;
-    uint8_t  dataBytes[MAX_DATA_BYTES];
-    uint8_t  durationInSteps;
-    uint8_t  stepsToNext;
-} MidiEventParams_t;
+
 
 void updateMidiEventParameters(MidiEventParams_t eventParams);
 uint8_t getNumStepsToNextNoteOnAfterCoordinate(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel);

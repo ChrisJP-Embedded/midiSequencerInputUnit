@@ -9,9 +9,10 @@
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
 #include "ledDrivers.h"
-#include "genericDLL.h"
 #include "esp_task_wdt.h"
 #include "midiHelper.h"
+#include "genericDLL/genericDLL.h"
+#include "gridManager.h"
 
 #define LOG_TAG "sequencerGrid"
 #define TEMPO_IN_MICRO 500000
