@@ -2,39 +2,27 @@
 
 
 //THESE WILL BE PLACED INTO FLASH
-static char dispTxt_newProj[]        = "NEW PROJECT";
-static char dispTxt_loadProj[]       = "LOAD PROJECT";
-static char dispTxt_system[]         = "SYSTEM CONFIG";
-static char dispTxt_disk[]           = "DISK OPERATIONS";
+static char dispTxt_newProj[]     = "NEW PROJECT";
+static char dispTxt_loadProj[]    = "LOAD PROJECT";
+static char dispTxt_system[]      = "SYSTEM CONFIG";
+static char dispTxt_disk[]        = "DISK OPERATIONS";
 
-static char dispTxt_projName[]       = "NAME: ";
-static char dispTxt_projTempo[]      = "TEMPO: ";
-static char dispTxt_projQuant[]      = "QUANT: ";
-static char dispTxt_projCreate[]     = "SAVE & CONTINUE: ";
+static char dispTxt_projName[]    = "NAME: ";
+static char dispTxt_projTempo[]   = "TEMPO: ";
+static char dispTxt_projQuant[]   = "QUANT: ";
+static char dispTxt_projCreate[]  = "SAVE & CONTINUE: ";
 
-uint8_t initTempo = 120;
+static char * dispTxt_quant[5]    = {"1/1 Note", "1/2 Note", "1/4 Note", "1/8 Note", "1/16 Note" };
 
-static char dispTxt_quant0[] = "1/1 Note";
-static char dispTxt_quant1[] = "1/2 Note";
-static char dispTxt_quant2[] = "1/4 Note";
-static char dispTxt_quant3[] = "1/8 Note";
-static char dispTxt_quant4[] = "1/16 Note";
+static char numberArray[5] = {1,2,3,4,5};
 
+uint8_t initTempo;
 
-
-
-
-static char * initQuant[5] = {dispTxt_quant0, dispTxt_quant1, dispTxt_quant2, dispTxt_quant3, dispTxt_quant4};
-//******** example of numeric selection ********//
-//static uint8_t numericSelection[] = {5, 20, 45, 2, 1};
-//param_selection_t paramTempo = {numericSelection, &numericSelection[4], &numericSelection[0], 0, 0};
-
-
-param_t paramTempo = {&initTempo, 240, 40, 0, 0};
+param_t paramTempo = {&initTempo, 60, 240, 0, 0};
 param_t projName = {NULL, 0,0,0,0};
 
-
-param_selection_t paramQuant = {initQuant, &initQuant[4], &initQuant[0], 0, 0};
+param_selection_t paramQuant = {dispTxt_quant, 5, 0, 0};
+param_selection_t nums = {&numberArray, 5, 0, 0};
 
 
 menuData_t menuDataArr[] =

@@ -1,11 +1,13 @@
 
 
-
 typedef struct {
     uint8_t eventOpcode;
     void * eventData;
-} MenuEventData_t;
+} MenuQueueItem;
 
 //Public Interface
-void guiMenu_init(const char * fileNamesPtr[], const uint8_t * const numFilesOnSystem);
-MenuEventData_t guiMenu_interface(uint8_t menuInputBuffer);
+//void guiMenu_init(const char * fileNamesPtr[], const uint8_t * const numFilesOnSystem);
+
+extern QueueHandle_t g_MenuToSystemQueueHandle;
+
+void guiMenu_entryPoint(void * params);

@@ -20,8 +20,6 @@ typedef enum
     state_note_entry,    
 } menuPageCode_t;
 
-
-
 typedef enum 
 {
     param_numeric,              //A single modifiable integer value - the value can be dialed in by the user
@@ -31,20 +29,24 @@ typedef enum
     param_none                  //Used to identify a selectable menu item which has no assosiated parameter
 }parameterType_t;
 
+
+
+
+
 typedef struct
 {
     void * valuePtr;
+    uint8_t valMin;
     uint8_t valMax;
-    int8_t  valMin;
     uint16_t posX;
     uint16_t posY;
 } param_t;
 
 typedef struct
 {
-    void * valuePtr;
-    void * maxPtr;
-    void * minPtr;
+    void ** valuePtr;
+    uint8_t numItems;
+    uint8_t currIdx;
     uint16_t posX;
     uint16_t posY;
 } param_selection_t;
