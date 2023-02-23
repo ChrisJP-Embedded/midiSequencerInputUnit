@@ -126,7 +126,7 @@ void guiMenu_entryPoint(void * params)
         if(g_MenuData.updateMenuPageFlag == true)
         {
             g_MenuData.updateMenuPageFlag = false;
-            fillScreenWithColour(screenColourBlack);
+            IPSDisplay_fillScreenWithColour(screenColourBlack);
             updateMenuPage();
             resetMenuIndicator();
         }
@@ -268,7 +268,8 @@ static void updateMenuPage(void)
         g_MenuData.selectableItems++;
         stringLen = (uint16_t)strlen(menuManagerPtr[currentMenuItemIdx].textPtr);
         displayPosX = MENU_ITEM_START_X;
-        displayPosX += drawLineOfTextToScreen(menuManagerPtr[currentMenuItemIdx].textPtr, stringLen, MENU_ITEM_START_X, displayPosY, screenColourWhite);
+        displayPosX += IPSDisplay_drawLineOfTextToScreen(menuManagerPtr[currentMenuItemIdx].textPtr, 
+                                                        stringLen, MENU_ITEM_START_X, displayPosY, screenColourWhite);
 
         if (menuManagerPtr[currentMenuItemIdx].paramType != param_none) //Skip if current menu item has no assosiated parameter
         {
@@ -284,7 +285,7 @@ static void updateMenuPage(void)
                     //Turn the numeric param into a string to be displayed
                     memset(stringCharArray, 0, MAX_STRING_CHARS);
                     stringLen = snprintf(stringCharArray, MAX_STRING_CHARS, "%d", *(uint8_t*)paramPtr->valuePtr);
-                    drawLineOfTextToScreen(stringCharArray, stringLen, displayPosX, displayPosY, screenColourWhite);
+                    IPSDisplay_drawLineOfTextToScreen(stringCharArray, stringLen, displayPosX, displayPosY, screenColourWhite);
                     //Save the parameter display co-ordinates,
                     //they'll be required when user editing the param
                     paramPtr->posX = displayPosX;
@@ -298,7 +299,7 @@ static void updateMenuPage(void)
                     paramPtr = (param_t *)menuManagerPtr[currentMenuItemIdx].paramPtr;
                     //string does exist, so push it to the display
                     stringLen = strlen(((char*)paramPtr->valuePtr));
-                    drawLineOfTextToScreen(((char*)paramPtr->valuePtr), stringLen, displayPosX, displayPosY, screenColourWhite);
+                    IPSDisplay_drawLineOfTextToScreen(((char*)paramPtr->valuePtr), stringLen, displayPosX, displayPosY, screenColourWhite);
                     //Save the parameter display co-ordinates,
                     //they'll be required when user editing the param
                     paramPtr->posX = displayPosX;
@@ -314,7 +315,7 @@ static void updateMenuPage(void)
                     memset(stringCharArray, 0, MAX_STRING_CHARS);
                     assert(stringCharArray != NULL); //ERROR CONDITION//
                     stringLen = snprintf(stringCharArray, MAX_STRING_CHARS, "%d", *(uint8_t*)paramSelectionPtr->valuePtr);
-                    drawLineOfTextToScreen(stringCharArray, stringLen, displayPosX, displayPosY, screenColourWhite);
+                    IPSDisplay_drawLineOfTextToScreen(stringCharArray, stringLen, displayPosX, displayPosY, screenColourWhite);
                     paramSelectionPtr->posX = displayPosX;
                     paramSelectionPtr->posY = displayPosY;
                     break;
@@ -327,7 +328,7 @@ static void updateMenuPage(void)
                     //For selections, we always init to the 0 idx of the selection
                     paramSelectionPtr->currIdx = 0;
                     stringLen = strlen(((char **)paramSelectionPtr->valuePtr)[paramSelectionPtr->currIdx]);
-                    drawLineOfTextToScreen(((char**)paramSelectionPtr->valuePtr)[paramSelectionPtr->currIdx],
+                    IPSDisplay_drawLineOfTextToScreen(((char**)paramSelectionPtr->valuePtr)[paramSelectionPtr->currIdx],
                                             stringLen, displayPosX, displayPosY, screenColourWhite);
                     //Save the parameter display co-ordinates,
                     //they'll be required when user editing the param
@@ -467,13 +468,13 @@ void editNumericSelectionParam(param_selection_t *paramPtr)
             memset(stringCharArray, 0, MAX_STRING_CHARS);
             stringLen = snprintf(stringCharArray, MAX_STRING_CHARS, "%d", previousValue);
             //Remove the previous value from display
-            drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourBlack);
+            IPSDisplay_drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourBlack);
 
             //Convert new value to string, so we can update display
             memset(stringCharArray, 0, MAX_STRING_CHARS);
             stringLen = snprintf(stringCharArray, MAX_STRING_CHARS, "%d", ((uint8_t*)paramPtr->valuePtr)[paramPtr->currIdx]);
             //Draw the new value on display
-            drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourWhite);
+            IPSDisplay_drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourWhite);
         }
 
         if(flags.exitEditProcess) break;
@@ -563,12 +564,12 @@ void editStringSelectionParam(param_selection_t *paramPtr)
             //Get length of previous string selection
             stringLen = strlen(previousStringPtr);
             //Remove previous string by painting over it in background colour
-            drawLineOfTextToScreen(previousStringPtr, stringLen, paramPtr->posX, paramPtr->posY, screenColourBlack);
+            IPSDisplay_drawLineOfTextToScreen(previousStringPtr, stringLen, paramPtr->posX, paramPtr->posY, screenColourBlack);
 
             //Get length of new string selection 
             stringLen = strlen(((char**)paramPtr->valuePtr)[paramPtr->currIdx]);
             //Draw new value on display in foreground colour
-            drawLineOfTextToScreen(((char**)paramPtr->valuePtr)[paramPtr->currIdx], stringLen, paramPtr->posX, paramPtr->posY, screenColourWhite);
+            IPSDisplay_drawLineOfTextToScreen(((char**)paramPtr->valuePtr)[paramPtr->currIdx], stringLen, paramPtr->posX, paramPtr->posY, screenColourWhite);
         }
 
         if (flags.exitEditProcess) break;
@@ -655,13 +656,13 @@ void editNumericParam(param_t *paramPtr)
             memset(stringCharArray, 0, MAX_STRING_CHARS);
             stringLen = snprintf(stringCharArray, MAX_STRING_CHARS, "%d", previousParamValue);
             //Remove the previous value from display by painting over in background colour
-            drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourBlack);
+            IPSDisplay_drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourBlack);
 
             //Convert new value to string, so we can update display
             memset(stringCharArray, 0, MAX_STRING_CHARS);
             stringLen = snprintf(stringCharArray, MAX_STRING_CHARS, "%d", (*(uint8_t *)paramPtr->valuePtr));
             //Draw the new value on display in foreground colour
-            drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourWhite);
+            IPSDisplay_drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourWhite);
         }
 
         if (flags.exitNumericEditProcess) break;
@@ -705,8 +706,8 @@ void editStringParam(param_t *paramPtr)
     editMarkerPosXOffset = paramPtr->posX;
 
     //Underline character being editing (always inits on character at idx 0 in the string)
-    drawHorizontalLineToScreen(editMarkerPosXOffset, editMarkerPosXOffset + getCharWidthInPixels(*(char *)paramPtr->valuePtr), 
-                               paramPtr->posY + getCharHeightInPixels(), 2, screenColourWhite);
+    IPSDisplay_drawHorizontalLineToScreen(editMarkerPosXOffset, editMarkerPosXOffset + IPSDisplay_getCharWidthInPixels(*(char *)paramPtr->valuePtr), 
+                                          paramPtr->posY + IPSDisplay_getCharHeightInPixels(), 2, screenColourWhite);
 
 
     //---- CLEAR FLAGS ----
@@ -740,13 +741,13 @@ void editStringParam(param_t *paramPtr)
                     if(editStringIdx < (MAX_PROJECT_NAME_LENGTH-1))
                     {
                         //erase present character selection underline
-                        drawHorizontalLineToScreen(editMarkerPosXOffset, 
-                            editMarkerPosXOffset + getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
-                            paramPtr->posY + getCharHeightInPixels(), 2, screenColourBlack);
+                        IPSDisplay_drawHorizontalLineToScreen(editMarkerPosXOffset, 
+                            editMarkerPosXOffset + IPSDisplay_getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
+                            paramPtr->posY + IPSDisplay_getCharHeightInPixels(), 2, screenColourBlack);
 
 
                         //Update X offset for the placement of the underline to its new selection position
-                        editMarkerPosXOffset += getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))) + 1;
+                        editMarkerPosXOffset += IPSDisplay_getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))) + 1;
                         editStringIdx++; //Update the index of character currently being edited to new selection
 
                         //Draw new character selection underline
@@ -756,9 +757,9 @@ void editStringParam(param_t *paramPtr)
                             flags.stringHasBeenModified = true;   
                         }
                         
-                        drawHorizontalLineToScreen(editMarkerPosXOffset, 
-                            editMarkerPosXOffset + getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
-                            paramPtr->posY + getCharHeightInPixels(), 2, screenColourWhite);
+                        IPSDisplay_drawHorizontalLineToScreen(editMarkerPosXOffset, 
+                            editMarkerPosXOffset + IPSDisplay_getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
+                            paramPtr->posY + IPSDisplay_getCharHeightInPixels(), 2, screenColourWhite);
                     }
                     break;
 
@@ -769,18 +770,18 @@ void editStringParam(param_t *paramPtr)
                     if(editStringIdx > 0)
                     {
                         //erase present character selection underline
-                        drawHorizontalLineToScreen(editMarkerPosXOffset, 
-                            editMarkerPosXOffset + getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
-                            paramPtr->posY + getCharHeightInPixels(), 2, screenColourBlack);
+                        IPSDisplay_drawHorizontalLineToScreen(editMarkerPosXOffset, 
+                            editMarkerPosXOffset + IPSDisplay_getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
+                            paramPtr->posY + IPSDisplay_getCharHeightInPixels(), 2, screenColourBlack);
 
                         editStringIdx--; //Update the index of charcter currently being edited to new selection
                         //Update X offset for the placement of the underline to its new selection position
-                        editMarkerPosXOffset -= getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))) + 1;
+                        editMarkerPosXOffset -= IPSDisplay_getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))) + 1;
 
                         //Draw new character selection underline
-                        drawHorizontalLineToScreen(editMarkerPosXOffset, 
-                            editMarkerPosXOffset + getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
-                            paramPtr->posY + getCharHeightInPixels(), 2, screenColourWhite);
+                        IPSDisplay_drawHorizontalLineToScreen(editMarkerPosXOffset, 
+                            editMarkerPosXOffset + IPSDisplay_getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
+                            paramPtr->posY + IPSDisplay_getCharHeightInPixels(), 2, screenColourWhite);
                     } 
                     break;
 
@@ -819,9 +820,9 @@ void editStringParam(param_t *paramPtr)
 
             //Erase the current character selection underline, it will need
             //to be redrawn once the paramter string has been updated
-            drawHorizontalLineToScreen(editMarkerPosXOffset, 
-                editMarkerPosXOffset + getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
-                paramPtr->posY + getCharHeightInPixels(), 2, screenColourBlack);
+            IPSDisplay_drawHorizontalLineToScreen(editMarkerPosXOffset, 
+                editMarkerPosXOffset + IPSDisplay_getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
+                paramPtr->posY + IPSDisplay_getCharHeightInPixels(), 2, screenColourBlack);
 
             //Get current length of string being edited
             stringLen = strlen((char*)paramPtr->valuePtr);
@@ -837,19 +838,19 @@ void editStringParam(param_t *paramPtr)
             *((char*)paramPtr->valuePtr + sizeof(char) * editStringIdx) = characterSet[characterSetIdx];
 
             //Erase previous string by painting over it in background colour
-            drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourBlack);
+            IPSDisplay_drawLineOfTextToScreen(stringCharArray, stringLen, paramPtr->posX, paramPtr->posY, screenColourBlack);
 
             //Get length of the new string incase its changed
             stringLen = strlen((char *)paramPtr->valuePtr);   
 
             //Draw new string to display in the foreground colour
-            drawLineOfTextToScreen((char *)paramPtr->valuePtr, stringLen, paramPtr->posX, paramPtr->posY, screenColourWhite);
+            IPSDisplay_drawLineOfTextToScreen((char *)paramPtr->valuePtr, stringLen, paramPtr->posX, paramPtr->posY, screenColourWhite);
 
             //Redraw the current selection underline, we do this so
             //its length matches the pixel width of the new character
-            drawHorizontalLineToScreen(editMarkerPosXOffset, 
-                editMarkerPosXOffset + getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
-                paramPtr->posY + getCharHeightInPixels(), 2, screenColourWhite);
+            IPSDisplay_drawHorizontalLineToScreen(editMarkerPosXOffset, 
+                editMarkerPosXOffset + IPSDisplay_getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
+                paramPtr->posY + IPSDisplay_getCharHeightInPixels(), 2, screenColourWhite);
         }
         else if (flags.exitStringEditProcess) //Set to true when user leaves string edit mode
         {
@@ -858,9 +859,9 @@ void editStringParam(param_t *paramPtr)
             //Need to remove the current chacacter selection
             //underline before we can exit the string edit process,
             //erase underline by painting over in background colour
-            drawHorizontalLineToScreen(editMarkerPosXOffset, 
-                editMarkerPosXOffset + getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
-                paramPtr->posY + getCharHeightInPixels(), 2, screenColourBlack);
+            IPSDisplay_drawHorizontalLineToScreen(editMarkerPosXOffset, 
+                editMarkerPosXOffset + IPSDisplay_getCharWidthInPixels(*((char *)paramPtr->valuePtr + (sizeof(char) * editStringIdx))), 
+                paramPtr->posY + IPSDisplay_getCharHeightInPixels(), 2, screenColourBlack);
 
             break; //---- EXIT STRING EDIT PROCESS LOOP ----
         } 
@@ -964,9 +965,9 @@ void moveSelectionIndicator(bool isUpOrDown)
     }
 
     //Remove menu current selection indicator pixels from previous location
-    drawLineOfTextToScreen(MENU_SELECTOR_CHAR, 1, oldX, oldY, screenColourBlack); //delete previous
+    IPSDisplay_drawLineOfTextToScreen(MENU_SELECTOR_CHAR, 1, oldX, oldY, screenColourBlack); //delete previous
     //Draw new menu current selection indicator pixels at updated location
-    drawLineOfTextToScreen(MENU_SELECTOR_CHAR, 1, g_MenuData.selectionIndicator.xStartPos, g_MenuData.selectionIndicator.yPosCurrent, screenColourWhite); //draw new
+    IPSDisplay_drawLineOfTextToScreen(MENU_SELECTOR_CHAR, 1, g_MenuData.selectionIndicator.xStartPos, g_MenuData.selectionIndicator.yPosCurrent, screenColourWhite); //draw new
 }
 
 
@@ -975,7 +976,7 @@ void resetMenuIndicator(void)
 {
     //This function is used to reset the menus current
     //selection graphical indicator whenever a new menu page is opened 
-    drawLineOfTextToScreen(MENU_SELECTOR_CHAR, 1, g_MenuData.selectionIndicator.xStartPos, MENU_ITEM_START_Y, screenColourWhite);
+    IPSDisplay_drawLineOfTextToScreen(MENU_SELECTOR_CHAR, 1, g_MenuData.selectionIndicator.xStartPos, MENU_ITEM_START_Y, screenColourWhite);
     g_MenuData.selectionIndicator.yPosCurrent = MENU_ITEM_START_Y;
     g_MenuData.selectionIndicator.currentItem = 0;
 }
