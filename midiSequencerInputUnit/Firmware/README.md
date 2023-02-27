@@ -34,3 +34,18 @@ The firmware is made up of a set of modules which are stored in the "components"
         end
 
 
+        subgraph guiMenu_task["guiMenu [RTOS Task]"]
+                ipsDisplay[ipsDisplay]
+                rotaryEncoders[rotaryEncoders]
+        end
+
+        guiMenu_task--queue-->system_task
+        system_task--queue-->guiMenu_task
+
+
+         bleClient_task["bleClient [RTOS Task]"]
+
+
+        bleClient_task--queue-->system_task
+        system_task--queue-->bleClient_task
+```
