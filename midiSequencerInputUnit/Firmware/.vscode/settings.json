@@ -39,6 +39,8 @@
         "esp_system.h": "c",
         "*.inc": "c",
         "leddrivers.h": "c",
-        "genericdll.h": "c"
+        "genericdll.h": "c",
+        "gridmanager.h": "c",
+        "guimenu.h": "c"
     }
 }

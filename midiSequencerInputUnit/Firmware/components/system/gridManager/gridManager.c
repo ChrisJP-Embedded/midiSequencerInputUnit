@@ -12,7 +12,6 @@
 #include "esp_task_wdt.h"
 #include "midiHelper.h"
 #include "genericDLL/genericDLL.h"
-#include "gridManager.h"
 
 #define LOG_TAG "sequencerGrid"
 #define TEMPO_IN_MICRO 500000
@@ -37,6 +36,7 @@ struct {
 }  g_GridData;
 
 
+static uint8_t getNumStepsToNextNoteOnAfterCoordinate(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel);
 static GridEventNode_t * getPointerToCorespondingNoteOffEventNode(GridEventNode_t * nodePtr);
 static GridEventNode_t * getPointerToNextNoteOnEventInListIfOneExists(GridEventNode_t * noteOnEventPtr);
 static GridEventNode_t * getPointerToEventNodeIfExists(uint8_t targetStatusByte, uint8_t rowNum, uint16_t columnNum);
@@ -45,8 +45,18 @@ static void generateDeltaTimesForCurrentGrid(void);
 static void freeAllGridData(void);
 
 
-//---- Public Interface
-void resetSequencerGrid(uint8_t quantizationSetting)
+
+//---- Public
+void gridManager_init(void)
+{
+    ledDrivers_init();
+    genericDLL_init(100);
+    gridManager_resetSequencerGrid(4);
+}
+
+
+//---- Public
+void gridManager_resetSequencerGrid(uint8_t quantizationSetting)
 {
     //Should be called at startup and immediately
     //before loading any new projects via 'midiFileToGrid'
@@ -55,14 +65,14 @@ void resetSequencerGrid(uint8_t quantizationSetting)
     //Completely clear the current 
     //grid data cache, automatically
     //frees all nodes/events if any exist
-    freeAllGridData();
+    if(g_GridData.totalGridColumns != 0) freeAllGridData();
     //The grid is now cleared and ready
     //for new nodes/events to be added
 }
 
 
-//---- Public Interface
-void addNewMidiEventToGrid(MidiEventParams_t newEventParams)
+//---- Public
+void gridManager_addNewMidiEventToGrid(MidiEventParams_t newEventParams)
 {
     //This public function is called by the host when 
     //a new event needs to be added to the virtual grid. 
@@ -138,11 +148,13 @@ void addNewMidiEventToGrid(MidiEventParams_t newEventParams)
             //Its the callers responsibility to have checked that the target
             //coordinate does not fall within the duration of an existing note
             //event, so this is considered a system fault.
-            MidiEventParams_t params = getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(newEventParams.gridColumn, newEventParams.gridRow, 0);
+            MidiEventParams_t params = gridManager_getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(newEventParams.gridColumn, 
+                                                                                                            newEventParams.gridRow, 0);
             if(params.statusByte != 0) assert(0);
         }
 
         tempNodePtr = g_GridData.gridLinkedListTailPtrs[newEventParams.gridRow];
+        assert(tempNodePtr != NULL);
 
         //We need to identify the node at or immediately previous
         //to the insertion coordinate within the virtual grid.
@@ -177,16 +189,20 @@ void addNewMidiEventToGrid(MidiEventParams_t newEventParams)
         genericDLL_appendNewNodeOntoLinkedList(newNodePtr, &g_GridData.gridLinkedListHeadPtrs[newEventParams.gridRow], 
                                                &g_GridData.gridLinkedListTailPtrs[newEventParams.gridRow]);
 
+        gridManager_printAllLinkedListEventNodesFromBase(0x34);
         //Update a record of the total columns in the project if required.
         if(newEventParams.gridColumn > g_GridData.totalGridColumns) g_GridData.totalGridColumns = newEventParams.gridColumn;
     }
 
-    if(autoAddNoteOff) addCorrespondingNoteOff(newNodePtr, newEventParams.durationInSteps);
+    if(autoAddNoteOff)
+    {
+        addCorrespondingNoteOff(newNodePtr, newEventParams.durationInSteps);
+    } 
 }
 
 
-//---- Public Interface
-void removeMidiEventFromGrid(MidiEventParams_t midiEventParams)
+//---- Public
+void gridManager_removeMidiEventFromGrid(MidiEventParams_t midiEventParams)
 {
     //This function handles the removal of an
     //existing midi event from the virtual grid.
@@ -229,8 +245,8 @@ void removeMidiEventFromGrid(MidiEventParams_t midiEventParams)
 }
 
 
-//---- Public Interface
-MidiEventParams_t getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel)
+//---- Public
+MidiEventParams_t gridManager_getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel)
 {
     //Notes on the grid can have multiple step durations, so we need
     //to make sure NOT to place a new note-on note-off pair such that 
@@ -286,13 +302,15 @@ MidiEventParams_t getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint1
                 }
             }
 
+
             if(nodePtr->nextPtr == NULL) break;
             nodePtr = nodePtr->nextPtr;
             if(nodePtr->column > columnNum) break;
-        } 
+        }
 
         if(noteOnPtr != NULL)
         {
+            ESP_LOGI(LOG_TAG, "FOUND NOTE ON");
             //We must have found a note-on event node to reach here
             assert(CLEAR_LOWER_NIBBLE(noteOnPtr->statusByte) == MIDI_NOTE_ON_MSG);
             assert(CLEAR_UPPER_NIBBLE(noteOnPtr->statusByte) == midiChannel);
@@ -312,11 +330,14 @@ MidiEventParams_t getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint1
             //corresponding note-off to determine the max allowed duration in
             //steps allowed for the detected note event.
             nodePtr = getPointerToNextNoteOnEventInListIfOneExists(noteOnPtr);
-            if(nodePtr == NULL) eventParams.stepsToNext = 0;
+            if(nodePtr == NULL){
+                eventParams.stepsToNext = 0;
+            }
             else eventParams.stepsToNext = nodePtr->column - noteOnPtr->column;
         }
         else
         {
+            ESP_LOGI(LOG_TAG, "NO NOTE ON FOUND");
             eventParams.stepsToNext = getNumStepsToNextNoteOnAfterCoordinate(columnNum, rowNum, midiChannel);
         }
 
@@ -326,8 +347,8 @@ MidiEventParams_t getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint1
 }
 
 
-//---- Public Interface
-void updateMidiEventParameters(MidiEventParams_t eventParams)
+//---- Public
+void gridManager_updateMidiEventParameters(MidiEventParams_t eventParams)
 {
 
     GridEventNode_t * nodeToUpdatePtr = getPointerToEventNodeIfExists(eventParams.statusByte, eventParams.gridRow, eventParams.gridColumn);
@@ -359,8 +380,8 @@ void updateMidiEventParameters(MidiEventParams_t eventParams)
 }
 
 
-//---- Public Interface
-void printAllLinkedListEventNodesFromBase(uint16_t rowNum)
+//---- Public
+void gridManager_printAllLinkedListEventNodesFromBase(uint16_t rowNum)
 {
     //This helper function provides a quick method
     //to print a list structure to console. Its used
@@ -377,13 +398,10 @@ void printAllLinkedListEventNodesFromBase(uint16_t rowNum)
 
     while(1)
     {
-        ++nodeCount;
-        ESP_LOGI(LOG_TAG, "\n");
-        ESP_LOGI(LOG_TAG, "Event node position in list: %d", nodeCount);
+        ESP_LOGI(LOG_TAG, "Event node position in list: %d", ++nodeCount);
         ESP_LOGI(LOG_TAG, "Event status: %0x", tempNodePtr->statusByte);
         ESP_LOGI(LOG_TAG, "DeltaTime: %ld", tempNodePtr->deltaTime);
         ESP_LOGI(LOG_TAG, "Column: %d", tempNodePtr->column);
-        ESP_LOGI(LOG_TAG, "\n");
         if(tempNodePtr->nextPtr == NULL) break;
         else tempNodePtr = tempNodePtr->nextPtr;
         //TODO: ADD TIMEOUT
@@ -391,8 +409,8 @@ void printAllLinkedListEventNodesFromBase(uint16_t rowNum)
 }
 
 
-//---- Public Interface
-uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
+//---- Public
+uint32_t gridManager_gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
 {
     //This function converts the current grid 
     //data to a valid midi file which can then
@@ -573,8 +591,8 @@ uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
 }
 
 
-//---- Public Interface
-void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
+//---- Public
+void gridManager_midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
 {
     //This function converts an existing midi 
     //file to a grid compatable data structure.
@@ -680,7 +698,7 @@ void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
                         newEventParams.gridColumn = totalColumnCount;
                         newEventParams.durationInSteps = 0;
 
-                        addNewMidiEventToGrid(newEventParams);
+                        gridManager_addNewMidiEventToGrid(newEventParams);
                         
                         //ESP_LOGI(LOG_TAG, "\n");
                         //ESP_LOGI(LOG_TAG, "New %s midi event detected..", (CLEAR_LOWER_NIBBLE(statusByte) == 0x90) ? "Note-On" : "Note-Off");
@@ -764,8 +782,8 @@ void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize)
 }
 
 
-//---- Public Interface 
-void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
+//---- Public 
+void gridManager_updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset)
 {
     //This function updates all rgbs leds of the switch matrix 
 
@@ -1060,6 +1078,7 @@ static void addCorrespondingNoteOff(GridEventNode_t * noteOnNode, uint16_t noteD
 
     if(genericDLL_returnTrueIfLastNodeInList(noteOnNode))
     {
+        assert(g_GridData.gridLinkedListHeadPtrs[noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX]]!=NULL);
         //The note-off event node we want to add will be appended onto a list
         genericDLL_appendNewNodeOntoLinkedList(noteOffNodePtr, &g_GridData.gridLinkedListHeadPtrs[noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX]], 
                                                &g_GridData.gridLinkedListTailPtrs[noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX]]);
@@ -1071,6 +1090,7 @@ static void addCorrespondingNoteOff(GridEventNode_t * noteOnNode, uint16_t noteD
     else
     {
         //The note-off event node we want to add will be inserted into a list
+        assert(g_GridData.gridLinkedListHeadPtrs[noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX]]!=NULL);
         genericDLL_insertNewNodeIntoLinkedList(noteOffNodePtr, noteOnNode, &g_GridData.gridLinkedListHeadPtrs[noteOnNode->dataBytes[MIDI_NOTE_NUM_IDX]]);
     }
 }
@@ -1167,37 +1187,35 @@ static GridEventNode_t * getPointerToNextNoteOnEventInListIfOneExists(GridEventN
 
 
 //---- Private
-uint8_t getNumStepsToNextNoteOnAfterCoordinate(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel)
+static uint8_t getNumStepsToNextNoteOnAfterCoordinate(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel)
 {
     uint8_t numStepsToNext = 0;
-    bool abortSearch = false;
-
     GridEventNode_t * nodePtr = g_GridData.gridLinkedListHeadPtrs[rowNum];
-    if(nodePtr == NULL) abortSearch = true;
 
-    if(!abortSearch)
+    while(nodePtr != NULL)
     {
-        while(nodePtr->nextPtr != NULL)
-        {
-            //TODO: ADD TIMEOUT
-            nodePtr = nodePtr->nextPtr;
-            if(nodePtr->column > columnNum)
-            {
-                //We're only looking for note-on events 
-                //that occur AFTER the input columnNum
-                if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_ON_MSG)
-                {
-                    //We found a note-off event, we now need to see if
-                    //it has the same channel number as the note-on event
-                    if(midiChannel == CLEAR_UPPER_NIBBLE(nodePtr->statusByte))
-                    {
-                        numStepsToNext = nodePtr->column - columnNum;
-                    }
-                } 
-            }
-        }
-    }
+        ESP_LOGI(LOG_TAG, "NEW HEAD AT COLUMN: %d", nodePtr->column);
+        ESP_LOGI(LOG_TAG, "COLUMN: %d ROW: %0x", columnNum, rowNum);
 
+        //TODO: ADD TIMEOUT
+        if(nodePtr->column > columnNum)
+        {
+            //We're only looking for note-on events 
+            //that occur AFTER the input columnNum
+            if(CLEAR_LOWER_NIBBLE(nodePtr->statusByte) == MIDI_NOTE_ON_MSG)
+            {
+                //We found a note-on event, we now need to see if
+                //it has the same channel number as the note-on event
+                if(midiChannel == CLEAR_UPPER_NIBBLE(nodePtr->statusByte))
+                {
+                    numStepsToNext = nodePtr->column - columnNum;
+                    break;
+                }
+            } 
+        }
+        nodePtr = nodePtr->nextPtr;
+    }
+    
     return numStepsToNext;
 }
 

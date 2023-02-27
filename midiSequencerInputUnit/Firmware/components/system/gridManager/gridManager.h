@@ -48,16 +48,14 @@ struct GridEventNode_t {
 };
 
 
-
-void updateMidiEventParameters(MidiEventParams_t eventParams);
-uint8_t getNumStepsToNextNoteOnAfterCoordinate(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel);
-MidiEventParams_t getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel);
-MidiEventParams_t getEventParamsIfEventExistsAtCoordinate(uint8_t targetStatusByte, uint16_t columnNum, uint8_t rowNum);
-void removeMidiEventFromGrid(MidiEventParams_t midiEventParams);
-void addNewMidiEventToGrid(MidiEventParams_t newEventParams);
-void midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
-uint32_t gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
-void updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset);
-void printAllLinkedListEventNodesFromBase(uint16_t midiNoteNum);
-void resetSequencerGrid(uint8_t quantizationSetting);
+void gridManager_init(void);
+void gridManager_updateMidiEventParameters(MidiEventParams_t eventParams);
+MidiEventParams_t gridManager_getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel);
+void gridManager_removeMidiEventFromGrid(MidiEventParams_t midiEventParams);
+void gridManager_addNewMidiEventToGrid(MidiEventParams_t newEventParams);
+void gridManager_midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
+uint32_t gridManager_gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
+void gridManager_updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset);
+void gridManager_printAllLinkedListEventNodesFromBase(uint16_t midiNoteNum);
+void gridManager_resetSequencerGrid(uint8_t quantizationSetting);
 

@@ -14,7 +14,7 @@
 
 //NOTE: This module does not provide any double-linked-list data structure,
 //its simply a group of helper functions for management of a double linked list.
-
+void genericDLL_init(uint32_t numberNodes);
 NODE_TYPE * genericDLL_createNewNode(void);
 void genericDLL_appendNewNodeOntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE ** listHeadPtr, NODE_TYPE ** listTailPtr);
 void genericDLL_insertNewNodeIntoLinkedList(NODE_TYPE * newNodePtr, NODE_TYPE * insertLocationPtr, NODE_TYPE ** listHeadPtr);

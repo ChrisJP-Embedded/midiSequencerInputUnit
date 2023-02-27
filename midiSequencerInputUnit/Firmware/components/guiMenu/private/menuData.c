@@ -10,7 +10,11 @@ static char dispTxt_disk[]        = "DISK OPERATIONS";
 static char dispTxt_projName[]    = "NAME: ";
 static char dispTxt_projTempo[]   = "TEMPO: ";
 static char dispTxt_projQuant[]   = "QUANT: ";
-static char dispTxt_projCreate[]  = "SAVE & CONTINUE: ";
+static char dispTxt_projCreate[]  = "CONTINUE.. ";
+
+static char dispTxt_noteNum[] = "NOTE: ";
+static char dispTxt_noteVelocity[] = "VELOCITY: ";
+static char dispTxt_noteDuration[] = "DURATION: ";
 
 static char * dispTxt_quant[5]    = {"1/1 Note", "1/2 Note", "1/4 Note", "1/8 Note", "1/16 Note" };
 
@@ -25,6 +29,13 @@ param_selection_t paramQuant = {dispTxt_quant, 5, 0, 0};
 param_selection_t nums = {&numberArray, 5, 0, 0};
 
 
+uint8_t noteNum;
+uint8_t noteVelocity;
+uint8_t noteDuration;
+param_t paramNoteNum = {&noteNum, 0, 0, 0, 0};
+param_t paramNoteVelocity = {&noteVelocity, 0, 0, 0, 0};
+param_t paramNoteDuration = {&noteDuration, 0, 0, 0, 0};
+
 menuData_t menuDataArr[] =
 {
 
@@ -38,7 +49,7 @@ menuData_t menuDataArr[] =
       NULL,                 //Pointer to assosiated parameter, if one exists
       0,                    //MENU state to transition to if menu 'back' is pressed  - SET TO ZERO IF NO CHANGE
       state_new_project,    //MENU state to transition to if menu 'enter' is pressed - SET TO ZERO IF NO CHANGE
-      NULL                  //Optional Function to execute
+      NULL                  //Optional Function to execute on select button press
     },
 
     { 
@@ -81,7 +92,7 @@ menuData_t menuDataArr[] =
       &projName,
       state_base,
       0,
-      setProjectNameCallback
+      NULL
     },
 
     { 
@@ -91,7 +102,7 @@ menuData_t menuDataArr[] =
       &paramTempo,
       state_base,
       0,
-      setProjectTempoCallback
+      NULL
     },
 
     { 
@@ -101,7 +112,7 @@ menuData_t menuDataArr[] =
       &paramQuant,
       state_base,
       0,
-      setProjectQuantizationCallback
+      NULL
     },
 
     { 
@@ -115,16 +126,91 @@ menuData_t menuDataArr[] =
     },
 
     //-------------------------------------------------
-    //----------- NOTE EVEVENT ENTRY PAGE  ------------
+    //------------ GRID EDIT MODE PAGE ----------------
     //-------------------------------------------------
-    { 
-      state_note_entry,
-      dispTxt_projCreate,
+
+    {
+      state_grid_edit, //ADD NOTES
+      NULL,
       param_none,
       NULL,
       state_base,
       0,
-      createNewProjectFileCallback
+      NULL
+    },
+
+    {
+      state_grid_edit, //REMOVE NOTES
+      NULL,
+      param_none,
+      NULL,
+      state_base,
+      0,
+      NULL
+    },
+
+    {
+      state_grid_edit, //PLAYBACK PROJECT
+      NULL,
+      param_none,
+      NULL,
+      state_base,
+      0,
+      NULL
+    },
+
+    {
+      state_grid_edit, //SAVE PROJECT
+      NULL,
+      param_none,
+      NULL,
+      state_base,
+      0,
+      NULL
+    },
+
+    {
+      state_grid_edit, //CLOSE PROJECT
+      NULL,
+      param_none,
+      NULL,
+      state_base,
+      0,
+      NULL
+    },
+
+    //-------------------------------------------------
+    //------------ NOTE EVENT ENTRY PAGE  -------------
+    //-------------------------------------------------
+
+    { 
+      state_note_edit,
+      dispTxt_noteNum,
+      param_numeric,
+      &paramNoteNum,
+      state_base,
+      0,
+      NULL
+    },
+
+    { 
+      state_note_edit,
+      dispTxt_noteVelocity,
+      param_numeric,
+      &paramNoteVelocity,
+      state_base,
+      0,
+      updateNoteVelocity
+    },
+
+    { 
+      state_note_edit,
+      dispTxt_noteDuration,
+      param_numeric,
+      &paramNoteDuration,
+      state_base,
+      0,
+      updateNoteDuration
     },
 
 

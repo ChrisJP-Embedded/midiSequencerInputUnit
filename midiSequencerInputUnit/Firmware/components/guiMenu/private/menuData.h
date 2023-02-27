@@ -17,7 +17,8 @@ typedef enum
     state_base = 1,     //The base state for entire menu
     state_new_project,
     state_load_project,
-    state_note_entry,    
+    state_grid_edit,
+    state_note_edit,    
 } menuPageCode_t;
 
 typedef enum 
@@ -66,7 +67,7 @@ typedef struct
 
 extern menuData_t * const menuManagerPtr;
 
-uint8_t setProjectTempoCallback(void * param);
-uint8_t setProjectQuantizationCallback(void * param);
-uint8_t setProjectNameCallback(void * param);
+
 uint8_t createNewProjectFileCallback(void * param);
+uint8_t updateNoteVelocity(void * param);
+uint8_t updateNoteDuration(void * param);

@@ -6,7 +6,7 @@
 #include "memory.h"
 #include "genericDLL.h"
 
-
+#define LOG_TAG "genericDLL"
 static inline void freeNode(NODE_TYPE * nodePtr);
 
 
@@ -28,8 +28,13 @@ void genericDLL_init(uint32_t numberNodes)
     if(g_GenericDLLData.moduleInitialized == false)
     {
         //This only runs once, at system startup. No dynamic allocation at runtime.
-        g_GenericDLLData.nodeArrPtr = heap_caps_calloc(numberNodes, sizeof(**g_GenericDLLData.nodeArrPtr), MALLOC_CAP_SPIRAM);
+        g_GenericDLLData.nodeArrPtr = (NODE_TYPE**)malloc(numberNodes * sizeof(NODE_TYPE *));
         assert(g_GenericDLLData.nodeArrPtr != NULL);
+        for(uint32_t idx = 0; idx < numberNodes; ++ idx)
+        {
+            g_GenericDLLData.nodeArrPtr[idx] = (NODE_TYPE*)heap_caps_calloc(numberNodes, sizeof(NODE_TYPE), MALLOC_CAP_SPIRAM);
+            assert(g_GenericDLLData.nodeArrPtr[idx] != NULL);
+        } 
         g_GenericDLLData.totalNodes = numberNodes;
         g_GenericDLLData.currNodeIdx = 0;
         g_GenericDLLData.moduleInitialized = true;
@@ -52,7 +57,7 @@ NODE_TYPE * genericDLL_createNewNode(void)
 
     if(g_GenericDLLData.currNodeIdx < (g_GenericDLLData.totalNodes - 1))
     {
-        assert(g_GenericDLLData.nodeArrPtr[g_GenericDLLData.currNodeIdx] != NULL);
+        assert(g_GenericDLLData.nodeArrPtr != NULL);
         nodePtr = g_GenericDLLData.nodeArrPtr[g_GenericDLLData.currNodeIdx];
         g_GenericDLLData.nodeArrPtr[g_GenericDLLData.currNodeIdx++] = NULL;
     }
@@ -142,7 +147,7 @@ inline bool genericDLL_returnTrueIfFirstNodeInList(NODE_TYPE * nodePtr)
 //---- Public
 void genericDLL_freeEntireLinkedList(NODE_TYPE ** listHeadPtr, NODE_TYPE ** listTailPtr)
 {
-    assert(g_GenericDLLData.moduleInitialized == false);
+    assert(g_GenericDLLData.moduleInitialized == true);
     assert(*listHeadPtr != NULL);
     assert(*listTailPtr != NULL);
 

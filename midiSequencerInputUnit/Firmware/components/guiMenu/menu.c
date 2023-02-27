@@ -89,13 +89,13 @@ static char g_projectNameArr[MAX_PROJECT_NAME_LENGTH + 1]; //Add one for string 
 
 
 QueueHandle_t g_MenuToSystemQueueHandle;
-
+QueueHandle_t g_SystemToMenuQueueHandle;
 
 //---- Public
 void guiMenu_entryPoint(void * params)
 {
-    uint8_t encoderInputOpcode;
-    //MidiEventParams_t midiEventParams;
+    uint8_t rxEncoderEvent;
+    MenuQueueItem rxQueueItem = {0};
 
 
     //The menu module needs access to the current
@@ -117,8 +117,38 @@ void guiMenu_entryPoint(void * params)
 
         if(uxQueueMessagesWaiting(g_EncodersQueueHandle))
         {
-            xQueueReceive(g_EncodersQueueHandle, &encoderInputOpcode, 0);
-            processMenuUserInput(encoderInputOpcode);
+            xQueueReceive(g_EncodersQueueHandle, &rxEncoderEvent, 0);
+            processMenuUserInput(rxEncoderEvent);
+        }
+
+
+        if(uxQueueMessagesWaiting(g_SystemToMenuQueueHandle))
+        {
+            xQueueReceive(g_SystemToMenuQueueHandle, &rxQueueItem, 0);
+            switch(rxQueueItem.eventOpcode)
+            {
+                case 0:
+                    break;
+
+                case 5:
+                    //This is just temp code we wont 
+                    //have to search each time in final
+                    uint8_t idx = 0;;
+                    while(menuManagerPtr[idx].menuPageCode != state_note_edit) ++idx;
+
+                    *(uint8_t*)(*(param_t*)menuManagerPtr[idx++].paramPtr).valuePtr = rxQueueItem.payload[1];
+                    *(uint8_t*)(*(param_t*)menuManagerPtr[idx++].paramPtr).valuePtr = rxQueueItem.payload[2];
+                    *(uint8_t*)(*(param_t*)menuManagerPtr[idx].paramPtr).valuePtr = rxQueueItem.payload[3];
+                    (*(param_t*)menuManagerPtr[idx].paramPtr).valMax = rxQueueItem.payload[4];
+
+                    g_MenuData.pageCode = state_note_edit;
+                    g_MenuData.updateMenuPageFlag = true;
+                    break;
+
+                default:
+                    assert(0);
+                    break;
+            }
         }
 
         //This flag is set TRUE on system start, after that it is set locally as
@@ -282,6 +312,7 @@ static void updateMenuPage(void)
                     if ((menuManagerPtr[currentMenuItemIdx].paramPtr) == NULL) break;
                     //Grab direct pointer to the parameter struct
                     paramPtr = (param_t *)menuManagerPtr[currentMenuItemIdx].paramPtr;
+                    assert(paramPtr->valuePtr != NULL);
                     //Turn the numeric param into a string to be displayed
                     memset(stringCharArray, 0, MAX_STRING_CHARS);
                     stringLen = snprintf(stringCharArray, MAX_STRING_CHARS, "%d", *(uint8_t*)paramPtr->valuePtr);
@@ -297,6 +328,7 @@ static void updateMenuPage(void)
                     if ((menuManagerPtr[currentMenuItemIdx].paramPtr) == NULL) break;
                     //Grab direct pointer to the parameter struct
                     paramPtr = (param_t *)menuManagerPtr[currentMenuItemIdx].paramPtr;
+                    assert(paramPtr->valuePtr != NULL);
                     //string does exist, so push it to the display
                     stringLen = strlen(((char*)paramPtr->valuePtr));
                     IPSDisplay_drawLineOfTextToScreen(((char*)paramPtr->valuePtr), stringLen, displayPosX, displayPosY, screenColourWhite);
@@ -991,41 +1023,43 @@ void resetMenuIndicator(void)
 
 //MENU CALLBACKS - ONLY FOR TESTING ATM
 
+
 uint8_t createNewProjectFileCallback(void * param)
 {
     if(param != NULL)
     {
-
+        MenuQueueItem queueItem = {
+            .eventOpcode = 4,
+            .payload[0] = *(uint8_t*)param
+        };
     }
     return 0;
 }
 
-uint8_t setProjectTempoCallback(void * param)
+
+uint8_t updateNoteVelocity(void * param)
 {
     if(param != NULL)
     {
-
+        MenuQueueItem queueItem = {
+            .eventOpcode = 2,
+            .payload[0] = *(uint8_t*)param
+        };
+        xQueueSend(g_MenuToSystemQueueHandle, &queueItem, 0);
     }
     return 0;
 }
 
-uint8_t setProjectQuantizationCallback(void * param)
-{
-    static uint8_t quantization;
 
-    if(param != NULL)
-    {
-
-    }
-    return 0;
-}
-
-uint8_t setProjectNameCallback(void * param)
+uint8_t updateNoteDuration(void * param)
 {
     if(param != NULL)
     {
-
+        MenuQueueItem queueItem = {
+            .eventOpcode = 3,
+            .payload[0] = *(uint8_t*)param
+        };
+        xQueueSend(g_MenuToSystemQueueHandle, &queueItem, 0);
     }
     return 0;
 }
-

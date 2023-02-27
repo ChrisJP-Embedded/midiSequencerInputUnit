@@ -5,13 +5,13 @@
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
 #include "guiMenu.h"
-#include "gridManager/gridManager.h"
 #include "switchMatrix.h"
 #include "rotaryEncoders.h"
 #include "bleCentClient.h"
 #include "ipsDisplay.h"
 #include "fileSys.h"
 #include "midiHelper.h"
+#include "gridManager/gridManager.h"
 
 #define LOG_TAG "systemComponent"
 
@@ -37,6 +37,8 @@ typedef struct
     char fileName[MAX_FILENAME_CHARS + 1]; // plus one for termination
     uint8_t projectTempo;
     uint8_t quantization;
+    uint8_t gridDisplayRowOffset;
+    uint8_t gridDisplayColumnOffset;
 } ProjectParameters_t;
 
 
@@ -69,11 +71,14 @@ uint8_t * g_midiFileBufferPtr = NULL;
 
 
 
-
 //---- Public
 void system_EntryPoint(void)
 {
-    uint8_t menuInputOpcode;
+    uint8_t operatingMode = 0;
+    MenuQueueItem menuInputEvent;
+    SwitchMatrixQueueItem_t swMatrixEvent;
+    MidiEventParams_t midiEventParams;
+    ProjectParameters_t projectParams = {0};
 
     bool isGridActive = false;
     bool hasEncoderInput = false;
@@ -92,36 +97,121 @@ void system_EntryPoint(void)
     //Initialize sub-modules
     IPSDisplay_init();
     rotaryEncoders_init();
+    gridManager_init();
 
     //Update system task priority
-    //vTaskPrioritySet(NULL, 3);
+    vTaskPrioritySet(NULL, 1);
 
     //Now we want to initialize the RTOS tasks and assosiated
     //queues that make up the various system runtime processes.
     initRTOSTasks(&FileSysInfo, NULL, NULL);
 
-    ESP_LOGI(LOG_TAG, "ENTERING MAIN SYSTEM LOOP");
 
     while (1)
     {
-        if(xQueueReceive(g_MenuToSystemQueueHandle, &menuInputOpcode, portMAX_DELAY) == pdTRUE)
+        if(xQueueReceive(g_MenuToSystemQueueHandle, &menuInputEvent, 0) == pdTRUE)
         {
-            switch(menuInputOpcode)
+            vTaskPrioritySet(NULL, 3);
+            switch(menuInputEvent.eventOpcode)
             {
-                case 1:
+                //NOTE: Literals will be replaced with enumerations later
+
+                case 1: 
+                    ESP_LOGI(LOG_TAG, "Save current project");
+                    //uint32_t fileSize = gridManager_gridDataToMidiFile(midiFileBufferBASEPtr, FILE_BUFFER_SIZE);
+                    //fileSys_writeFile(char * c, midiFileBufferBASEPtr, fileSize, true);
                     break;
 
                 case 2:
+                    ESP_LOGI(LOG_TAG, "Updated note velocity");
+                    midiEventParams.dataBytes[MIDI_VELOCITY_IDX] = menuInputEvent.payload[0];
+                    gridManager_updateMidiEventParameters(midiEventParams);
                     break;
 
                 case 3:
+                    ESP_LOGI(LOG_TAG, "Updated note duration");
+                    midiEventParams.durationInSteps = menuInputEvent.payload[0];
+                    gridManager_updateMidiEventParameters(midiEventParams);
+                    gridManager_updateGridLEDs(0x34,0);
                     break;
+
+                case 4:
+                    ESP_LOGI(LOG_TAG, "Initialize new project params");
+                    //strcpy(projectParams.fileName, );
+                    //projectParams.projectTempo =
+                    //projectParams.quantization =
+                    //projectParams.gridDisplayColumnOffset = 0;
+                    //projectParams.gridDisplayRowOffset =
+                    break;
+
+                case 5:
+                    ESP_LOGI(LOG_TAG, "Load project");
+                    //strcpy(projectParams.fileName, );
+                    //uint32_t fileSize = fileSys_readFile(projectParams.fileName, midiFileBufferBASEPtr, 0, true);
+                    //gridManager_midiFileToGrid(midiFileBufferBASEPtr, fileSize);
+                    break;
+
+                case 6: 
+                    ESP_LOGI(LOG_TAG, "Start playback");
+                    break;
+
+                case 7: 
+                    ESP_LOGI(LOG_TAG, "Stop playback");
+                    break;
+
 
                 default:
                     assert(0);
                     break;
             }
+            vTaskPrioritySet(NULL, 1);
         }
+
+
+        if(xQueueReceive(g_SwitchMatrixQueueHandle, &swMatrixEvent, 0) == pdTRUE)
+        {
+            vTaskPrioritySet(NULL, 3);
+            //We eneter here when the grid is active and a switch
+            //within the grid has been pressed we must now retreive
+            //details for the grid coordinate.
+            midiEventParams = gridManager_getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(swMatrixEvent.column,  (swMatrixEvent.row + 0x34), 0);
+
+            if(midiEventParams.statusByte == 0)
+            {
+                //We eneter here when the midi event params retireved
+                //from the grid manager show that there is no pre-existing
+                //event at the grid coordinate pressed by the user.
+                //We need to load default settings for the midi event
+                //type and channel currently being edited.
+                //NOTE: CURRENTLY ONLY SUPPORT CHANNEL 0 AND MIDI NOTE EVENTS.
+
+                midiEventParams.gridColumn = swMatrixEvent.column;
+                midiEventParams.gridRow = (swMatrixEvent.row + 0x34);
+                midiEventParams.statusByte = 0x90; //sort later
+                midiEventParams.durationInSteps = 1;
+                midiEventParams.dataBytes[MIDI_NOTE_NUM_IDX] = (swMatrixEvent.row + 0x34);
+                midiEventParams.dataBytes[MIDI_VELOCITY_IDX] = 127;
+                gridManager_addNewMidiEventToGrid(midiEventParams);
+                gridManager_updateGridLEDs(0x34,0);
+            }
+
+            //We need to let the menu task know that a grid coordinate
+            //has been pressed and send the event params for that coord
+            MenuQueueItem txMenuQueueItem = {
+                .eventOpcode = 5, 
+                .payload[0] = midiEventParams.statusByte,
+                .payload[1] = midiEventParams.dataBytes[MIDI_NOTE_NUM_IDX],
+                .payload[2] = midiEventParams.dataBytes[MIDI_VELOCITY_IDX],
+                .payload[3] = midiEventParams.durationInSteps,
+                .payload[4] = ((midiEventParams.stepsToNext == 0) ? 128 : (midiEventParams.stepsToNext))
+            };
+
+            //Send the coordinate parameters to menu to be displayed
+            xQueueSend(g_SystemToMenuQueueHandle, &txMenuQueueItem, 0);
+            vTaskPrioritySet(NULL, 1);
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(30));
     }
 
     assert(0);
@@ -132,10 +222,12 @@ void system_EntryPoint(void)
 
 static void initRTOSTasks(void * menuParams, void * switchMatrixParams, void * bleParams)
 {
+
     //--------------------------------------------------
     //---------------- MENU INTERFACE ------------------
     //--------------------------------------------------
-    g_MenuToSystemQueueHandle = xQueueCreate(1, sizeof(uint8_t));
+    g_MenuToSystemQueueHandle = xQueueCreate(1, sizeof(MenuQueueItem));
+    g_SystemToMenuQueueHandle = xQueueCreate(1, sizeof(MenuQueueItem));
     assert(g_MenuToSystemQueueHandle != NULL);
 
     g_GUIMenuTaskHandle = xTaskCreateStaticPinnedToCore(guiMenu_entryPoint, "guiMenu", GUI_MENU_TASK_STACK_SIZE,
@@ -150,7 +242,7 @@ static void initRTOSTasks(void * menuParams, void * switchMatrixParams, void * b
     g_SwitchMatrixTaskHandle = xTaskCreateStaticPinnedToCore(switchMatrix_TaskEntryPoint, "switchMatrixTask", MATRIX_SCANNER_TASK_STACK_SIZE,
                                                             switchMatrixParams, 1, g_SwitchMatrixTaskStack, &g_SwitchMatrixTaskBuffer, 0);
 
-    vTaskSuspend(g_SwitchMatrixTaskHandle);
+    //vTaskSuspend(g_SwitchMatrixTaskHandle);
 
     //--------------------------------------------------
     //-------------- BLUETOOTH TASK --------------------
