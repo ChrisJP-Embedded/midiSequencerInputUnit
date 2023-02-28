@@ -8,7 +8,7 @@ This project features both custom firmware (written in C) and custom hardware de
 The sequencer input unit features an RGB lit 6 x 8 switch matrix which makes up the sequencer input grid, as well as a small form factor IPS display and rotary encoders in order to provide a GUI interface. The sequencer input unit communicates wirelessly (via Bluetooth low-energy) to a base unit which provides a wireless interface to the MIDI physical layer.
 
 **Note: First stage prototype**
-![Model](https://github.com/ChrisJP-Embedded/midiSequencer/blob/main/images/inputUnitPCB.png)
+![Model](https://github.com/ChrisJP-Embedded/midiSequencerInputUnit/blob/main/images/inputUnitPCB.png)
 
 
 
