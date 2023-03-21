@@ -24,11 +24,11 @@
 #define GUI_MENU_TASK_PRIORITY          2
 #define GRID_MANAGER_TASK_PRIORIRY      1
 #define BLE_CLIENT_TASK_PRIORITY        1
-
-#define FILE_BUFFER_SIZE 1024 * 1024         //1MB (8MB available on this part)
+#define FILE_BUFFER_SIZE                1024 * 1024         //1MB (8MB available on this part)
 
 
 static void initRTOSTasks(void * menuParams, void * switchMatrixParams, void * bleParams);
+
 
 //This type will act as a container for all 
 //settings relating to the current sequencer project
@@ -39,30 +39,7 @@ typedef struct
     uint8_t quantization;
     uint8_t gridDisplayRowOffset;
     uint8_t gridDisplayColumnOffset;
-} ProjectParameters_t;
-
-
-
-//Statically allocate all memory and objects 
-//required for the gui menu RTOS task
-static TaskHandle_t g_GUIMenuTaskHandle;
-static StaticTask_t g_GUIMenuTaskBuffer;
-static StackType_t g_GUIMenuTaskStack[GUI_MENU_TASK_STACK_SIZE];
-
-
-//Statically allocate all memory and objects 
-//required for the BLE gatt client RTOS task
-static TaskHandle_t g_BleClientTaskHandle;
-static StaticTask_t g_BleClientTaskBuffer;
-static StackType_t g_BleClientTaskStack[BLE_CLIENT_TASK_STACK_SIZE];
-
-
-//Statically allocate all memory and objects 
-//required for the switch matrix RTOS task
-static TaskHandle_t g_SwitchMatrixTaskHandle;    
-static StaticTask_t g_SwitchMatrixTaskBuffer; //Private high-level RTOS task data
-static StackType_t g_SwitchMatrixTaskStack[MATRIX_SCANNER_TASK_STACK_SIZE];
-
+} ProjectParameters;
 
 //This pointer is allocated memory from PSRAM at system startup. 
 //The allocated memory is used as the systems midi file buffer,
@@ -71,14 +48,37 @@ uint8_t * g_midiFileBufferPtr = NULL;
 
 
 
+
+//GUI menu RTOS task
+static TaskHandle_t g_GUIMenuTaskHandle;
+static StaticTask_t g_GUIMenuTaskBuffer;
+static StackType_t g_GUIMenuTaskStack[GUI_MENU_TASK_STACK_SIZE];
+
+
+//BLE GATT Client RTOS task
+static TaskHandle_t g_BleClientTaskHandle;
+static StaticTask_t g_BleClientTaskBuffer;
+static StackType_t g_BleClientTaskStack[BLE_CLIENT_TASK_STACK_SIZE];
+
+
+//Switch Matrix RTOS task
+static TaskHandle_t g_SwitchMatrixTaskHandle;    
+static StaticTask_t g_SwitchMatrixTaskBuffer;
+static StackType_t g_SwitchMatrixTaskStack[MATRIX_SCANNER_TASK_STACK_SIZE];
+
+
+
+
+
+
 //---- Public
 void system_EntryPoint(void)
 {
     uint8_t operatingMode = 0;
     MenuQueueItem menuInputEvent;
-    SwitchMatrixQueueItem_t swMatrixEvent;
-    MidiEventParams_t midiEventParams;
-    ProjectParameters_t projectParams = {0};
+    SwitchMatrixQueueItem swMatrixEvent;
+    MidiEventParams midiEventParams;
+    ProjectParameters projectParams = {0};
 
     bool isGridActive = false;
     bool hasEncoderInput = false;
@@ -91,7 +91,7 @@ void system_EntryPoint(void)
     const uint8_t * const midiFileBufferBASEPtr = g_midiFileBufferPtr;
 
     //Initialize and mount the file system
-    FileSysPublicData_t FileSysInfo = fileSys_init();
+    FileSysPublicData FileSysInfo = fileSys_init();
     assert(*FileSysInfo.isPartitionMountedPtr == true);
     
     //Initialize sub-modules
@@ -236,7 +236,7 @@ static void initRTOSTasks(void * menuParams, void * switchMatrixParams, void * b
     //--------------------------------------------------
     //------------- SWITCH MATRIX TASK -----------------
     //--------------------------------------------------
-    g_SwitchMatrixQueueHandle = xQueueCreate(SWITCH_MATRIX_QUEUE_NUM_ITEMS, sizeof(SwitchMatrixQueueItem_t));
+    g_SwitchMatrixQueueHandle = xQueueCreate(SWITCH_MATRIX_QUEUE_NUM_ITEMS, sizeof(SwitchMatrixQueueItem));
     assert(g_SwitchMatrixQueueHandle != NULL);
 
     g_SwitchMatrixTaskHandle = xTaskCreateStaticPinnedToCore(switchMatrix_TaskEntryPoint, "switchMatrixTask", MATRIX_SCANNER_TASK_STACK_SIZE,
@@ -247,7 +247,7 @@ static void initRTOSTasks(void * menuParams, void * switchMatrixParams, void * b
     //--------------------------------------------------
     //-------------- BLUETOOTH TASK --------------------
     //--------------------------------------------------
-    g_HostToBleQueueHandle = xQueueCreate(10, sizeof(HostToBleQueueItem_t));
+    g_HostToBleQueueHandle = xQueueCreate(10, sizeof(HostToBleQueueItem));
     g_BleToHostQueueHandle = xQueueCreate(10, sizeof(uint8_t));
     assert(g_HostToBleQueueHandle != NULL); 
     assert(g_BleToHostQueueHandle != NULL);

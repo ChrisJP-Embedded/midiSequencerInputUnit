@@ -20,11 +20,11 @@ static void updateMenuPage(void);
 static void moveSelectionIndicator(bool isUpOrDown);
 static void resetMenuIndicator(void);
 static void processMenuUserInput(uint8_t eventByte);
-static void editMenuItemParam(parameterType_t paramType);
-static void editNumericSelectionParam(param_selection_t *paramPtr);
-static void editStringSelectionParam(param_selection_t *paramPtr);
-static void editNumericParam(param_t *paramPtr);
-static void editStringParam(param_t *paramPtr);
+static void editMenuItemParam(menuParamType_t paramType);
+static void editNumericSelectionParam(MenuParamSelection *paramPtr);
+static void editStringSelectionParam(MenuParamSelection *paramPtr);
+static void editNumericParam(MenuParam *paramPtr);
+static void editStringParam(MenuParam *paramPtr);
 static uint8_t createDefaultProjectName(void * unusedParam);
 static inline void sleepTask(void);
 
@@ -39,7 +39,7 @@ typedef struct
     uint8_t currentItem;        //Index of the currently selected item within the current menu page
     void (*moveSelectionIndicator)(bool isUpOrDown); //Shifts position of the selector along y axis to next/prev menu item (if exists)
     void (*resetMenuIndicator)(void); //This is called to reset the position of the selector as each new menu page is loaded
-} MenuSelectionIndicator_t;
+} MenuSelectionIndicator;
 
 
 //This struct type holds all menu navigation
@@ -54,12 +54,12 @@ typedef struct
     uint8_t menuPageBaseIdx; //Holds the base array index of the current menu page (determined by looking up the 'pageCode')
     uint8_t selectableItems; //Holds the number of selectable items in the current menu page (determined by number of elements sharing same pageCode)
     bool updateMenuPageFlag; //Set when the 'pageCode' has been updated and the menu needs to be refreshed
-    MenuSelectionIndicator_t selectionIndicator; //Container for all data relating to the selection indicator
-}  MenuRuntimeData_t;
+    MenuSelectionIndicator selectionIndicator; //Container for all data relating to the selection indicator
+}  MenuRuntimeData;
 
 
 //Initialize local menu data cache
-static MenuRuntimeData_t g_MenuData = {
+static MenuRuntimeData g_MenuData = {
     .systemState = 0,
     .pageCode = state_base, 
     .menuPageBaseIdx = 0,
@@ -100,11 +100,11 @@ void guiMenu_entryPoint(void * params)
 
     //The menu module needs access to the current
     //number of files and their respective names
-    if((*(FileSysPublicData_t *)params).isPartitionMountedPtr)
+    if((*(FileSysPublicData *)params).isPartitionMountedPtr)
     {
-        if((*(FileSysPublicData_t *)params).numFilesOnPartitionPtr == NULL) assert(0);
-        g_numFileNamesPtr = (*(FileSysPublicData_t *)params).numFilesOnPartitionPtr;
-        g_fileNamesPtr = (const char **)(*(FileSysPublicData_t *)params).filenamesPtr;
+        if((*(FileSysPublicData *)params).numFilesOnPartitionPtr == NULL) assert(0);
+        g_numFileNamesPtr = (*(FileSysPublicData *)params).numFilesOnPartitionPtr;
+        g_fileNamesPtr = (const char **)(*(FileSysPublicData *)params).filenamesPtr;
     } else assert(0); //System fault condition
 
 
@@ -136,10 +136,10 @@ void guiMenu_entryPoint(void * params)
                     uint8_t idx = 0;;
                     while(menuManagerPtr[idx].menuPageCode != state_note_edit) ++idx;
 
-                    *(uint8_t*)(*(param_t*)menuManagerPtr[idx++].paramPtr).valuePtr = rxQueueItem.payload[1];
-                    *(uint8_t*)(*(param_t*)menuManagerPtr[idx++].paramPtr).valuePtr = rxQueueItem.payload[2];
-                    *(uint8_t*)(*(param_t*)menuManagerPtr[idx].paramPtr).valuePtr = rxQueueItem.payload[3];
-                    (*(param_t*)menuManagerPtr[idx].paramPtr).valMax = rxQueueItem.payload[4];
+                    *(uint8_t*)(*(MenuParam*)menuManagerPtr[idx++].paramPtr).valuePtr = rxQueueItem.payload[1];
+                    *(uint8_t*)(*(MenuParam*)menuManagerPtr[idx++].paramPtr).valuePtr = rxQueueItem.payload[2];
+                    *(uint8_t*)(*(MenuParam*)menuManagerPtr[idx].paramPtr).valuePtr = rxQueueItem.payload[3];
+                    (*(MenuParam*)menuManagerPtr[idx].paramPtr).valMax = rxQueueItem.payload[4];
 
                     g_MenuData.pageCode = state_note_edit;
                     g_MenuData.updateMenuPageFlag = true;
@@ -183,8 +183,8 @@ static void processMenuUserInput(uint8_t eventByte)
     //the event queue - the event is processed accordingly
 
     bool callItemFuncPtr = false;
-    param_t *paramPtr = NULL;
-    parameterType_t paramType = menuManagerPtr[g_MenuData.menuPageBaseIdx + g_MenuData.selectionIndicator.currentItem].paramType;
+    MenuParam *paramPtr = NULL;
+    menuParamType_t paramType = menuManagerPtr[g_MenuData.menuPageBaseIdx + g_MenuData.selectionIndicator.currentItem].paramType;
 
     switch (eventByte)
     {
@@ -245,7 +245,7 @@ static void processMenuUserInput(uint8_t eventByte)
     {
         callItemFuncPtr = false;
 
-        paramPtr = (param_t *)menuManagerPtr[g_MenuData.menuPageBaseIdx + g_MenuData.selectionIndicator.currentItem].paramPtr;
+        paramPtr = (MenuParam *)menuManagerPtr[g_MenuData.menuPageBaseIdx + g_MenuData.selectionIndicator.currentItem].paramPtr;
 
         if(paramPtr != NULL)
         {
@@ -272,8 +272,8 @@ static void updateMenuPage(void)
     uint16_t displayPosX;                               //Display x coordinate store
     uint8_t stringLen;                                  //Store for calculated string lengths
 
-    param_t * paramPtr = NULL;                          //Used to reference any assosiated menu item parameters
-    param_selection_t *paramSelectionPtr = NULL;        //Used to reference any assosiated meny item selection parameters
+    MenuParam * paramPtr = NULL;                          //Used to reference any assosiated menu item parameters
+    MenuParamSelection *paramSelectionPtr = NULL;        //Used to reference any assosiated meny item selection parameters
 
     //We need to lookup the base idx for the requested menu page, we do this by
     //searching for the first entry in the array which has a matching page code
@@ -283,7 +283,8 @@ static void updateMenuPage(void)
     while(menuManagerPtr[currentMenuItemIdx].menuPageCode != g_MenuData.pageCode)
     {
         currentMenuItemIdx++;
-        assert(currentMenuItemIdx <= MAX_MENU_DATA_ITEMS);
+        //If we cant find the request page then system fault condition
+        assert(menuManagerPtr[currentMenuItemIdx].menuPageCode != endOfPages);
     } 
  
     //Store the base IDX for the menus page data
@@ -311,7 +312,7 @@ static void updateMenuPage(void)
                     //If param pointer is NULL then abort!!
                     if ((menuManagerPtr[currentMenuItemIdx].paramPtr) == NULL) break;
                     //Grab direct pointer to the parameter struct
-                    paramPtr = (param_t *)menuManagerPtr[currentMenuItemIdx].paramPtr;
+                    paramPtr = (MenuParam *)menuManagerPtr[currentMenuItemIdx].paramPtr;
                     assert(paramPtr->valuePtr != NULL);
                     //Turn the numeric param into a string to be displayed
                     memset(stringCharArray, 0, MAX_STRING_CHARS);
@@ -327,7 +328,7 @@ static void updateMenuPage(void)
                     //If param pointer is NULL then abort!!
                     if ((menuManagerPtr[currentMenuItemIdx].paramPtr) == NULL) break;
                     //Grab direct pointer to the parameter struct
-                    paramPtr = (param_t *)menuManagerPtr[currentMenuItemIdx].paramPtr;
+                    paramPtr = (MenuParam *)menuManagerPtr[currentMenuItemIdx].paramPtr;
                     assert(paramPtr->valuePtr != NULL);
                     //string does exist, so push it to the display
                     stringLen = strlen(((char*)paramPtr->valuePtr));
@@ -342,7 +343,7 @@ static void updateMenuPage(void)
                     //If param pointer is NULL then abort!!
                     if ((menuManagerPtr[currentMenuItemIdx].paramPtr) == NULL) break;
                     //Grab direct pointer to the parameter struct
-                    paramSelectionPtr = (param_selection_t *)menuManagerPtr[currentMenuItemIdx].paramPtr;
+                    paramSelectionPtr = (MenuParamSelection *)menuManagerPtr[currentMenuItemIdx].paramPtr;
                     //Turn the numeric param into a string to be displayed
                     memset(stringCharArray, 0, MAX_STRING_CHARS);
                     assert(stringCharArray != NULL); //ERROR CONDITION//
@@ -356,7 +357,7 @@ static void updateMenuPage(void)
                     //If param pointer is NULL then abort!!
                     if ((menuManagerPtr[currentMenuItemIdx].paramPtr) == NULL) break;
                     //Grab direct pointer to the parameter struct
-                    paramSelectionPtr = (param_selection_t *)menuManagerPtr[currentMenuItemIdx].paramPtr;
+                    paramSelectionPtr = (MenuParamSelection *)menuManagerPtr[currentMenuItemIdx].paramPtr;
                     //For selections, we always init to the 0 idx of the selection
                     paramSelectionPtr->currIdx = 0;
                     stringLen = strlen(((char **)paramSelectionPtr->valuePtr)[paramSelectionPtr->currIdx]);
@@ -381,7 +382,7 @@ static void updateMenuPage(void)
 
 
 //---- Private
-void editMenuItemParam(parameterType_t paramType)
+void editMenuItemParam(menuParamType_t paramType)
 {
     //This function is called when a menu item with an editable assosiated parameter
     //has been selected for edit. It acts to provide a direct pointer to the parameter
@@ -422,7 +423,7 @@ void editMenuItemParam(parameterType_t paramType)
 
 
 //---- Private
-void editNumericSelectionParam(param_selection_t *paramPtr)
+void editNumericSelectionParam(MenuParamSelection *paramPtr)
 {
 
     //This function allows the user to edit a numeric selection, which is a pre-defined selection of numeric values.
@@ -517,7 +518,7 @@ void editNumericSelectionParam(param_selection_t *paramPtr)
 
 
 //---- private
-void editStringSelectionParam(param_selection_t *paramPtr)
+void editStringSelectionParam(MenuParamSelection *paramPtr)
 {
     
     //This function allows the user to edit a string selection, which is a pre-defined selection of strings.
@@ -612,7 +613,7 @@ void editStringSelectionParam(param_selection_t *paramPtr)
 
 
 //---- Private 
-void editNumericParam(param_t *paramPtr)
+void editNumericParam(MenuParam *paramPtr)
 {
     //This function handles editing of a menu numeric parameter, such that the used can dial in integer values.
     //The numeric edit process loop is driven by queued user input events, sent from the 'RotaryEncoders' component.
@@ -705,7 +706,7 @@ void editNumericParam(param_t *paramPtr)
 
 
 //---- Private
-void editStringParam(param_t *paramPtr)
+void editStringParam(MenuParam *paramPtr)
 {
     //This function handles editing of a menu string parameter, such that the user can enter/edit project names etc. 
     //The string edit process loop is driven by queued user input events, sent from the 'RotaryEncoders' component.
@@ -912,7 +913,7 @@ static uint8_t createDefaultProjectName(void * unusedParam)
 
     uint8_t uniqueID = 0;
     uint16_t idx = 0;
-    param_t *paramPtr = NULL;
+    MenuParam *paramPtr = NULL;
     bool doneFlag = true;
 
     //Clear out any previous data that may be lurking
@@ -948,7 +949,7 @@ static uint8_t createDefaultProjectName(void * unusedParam)
     }
 
     //Grab direct pointer to the parameter
-    paramPtr = (param_t *)menuManagerPtr[idx].paramPtr;
+    paramPtr = (MenuParam *)menuManagerPtr[idx].paramPtr;
 
     if(paramPtr == NULL) return 1;
 

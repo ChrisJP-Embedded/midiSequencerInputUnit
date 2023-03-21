@@ -33,13 +33,13 @@ typedef struct
     uint8_t  dataBytes[MAX_DATA_BYTES];
     uint8_t  durationInSteps;
     uint8_t  stepsToNext;
-} MidiEventParams_t;
+} MidiEventParams;
 
 
-typedef struct GridEventNode_t GridEventNode_t;
-struct GridEventNode_t {
-    GridEventNode_t * prevPtr;
-    GridEventNode_t * nextPtr;
+typedef struct GridEventNode GridEventNode;
+struct GridEventNode {
+    GridEventNode * prevPtr;
+    GridEventNode * nextPtr;
     uint32_t rgbColourCode;
     uint32_t deltaTime;
     uint8_t  statusByte;
@@ -49,10 +49,10 @@ struct GridEventNode_t {
 
 
 void gridManager_init(void);
-void gridManager_updateMidiEventParameters(MidiEventParams_t eventParams);
-MidiEventParams_t gridManager_getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel);
-void gridManager_removeMidiEventFromGrid(MidiEventParams_t midiEventParams);
-void gridManager_addNewMidiEventToGrid(MidiEventParams_t newEventParams);
+void gridManager_updateMidiEventParameters(MidiEventParams eventParams);
+MidiEventParams gridManager_getNoteParamsIfCoordinateFallsWithinExistingNoteDuration(uint16_t columnNum, uint8_t rowNum, uint8_t midiChannel);
+void gridManager_removeMidiEventFromGrid(MidiEventParams midiEventParams);
+void gridManager_addNewMidiEventToGrid(MidiEventParams newEventParams);
 void gridManager_midiFileToGrid(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
 uint32_t gridManager_gridDataToMidiFile(uint8_t * midiFileBufferPtr, uint32_t bufferSize);
 void gridManager_updateGridLEDs(uint8_t rowOffset, uint16_t columnOffset);

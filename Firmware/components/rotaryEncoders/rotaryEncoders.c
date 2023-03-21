@@ -203,7 +203,7 @@ static void IRAM_ATTR encoderSwitchEvent_ISR(void * eventParam)
         //Handle debounce timer
         g_isWaitingForDebounceTimer = true;
         gptimer_alarm_config_t alarm_config = {
-            .alarm_count = 200000, // 100ms @ 1Mhz
+            .alarm_count = 199999, // 200ms @ 1Mhz
         };
         gptimer_set_alarm_action(g_debounceTimerHandle, &alarm_config);
         gptimer_start(g_debounceTimerHandle);

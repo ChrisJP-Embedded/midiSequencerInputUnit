@@ -12,13 +12,13 @@ typedef struct
     //The host system requires access to an
     //up to date record of file system data.
     //These pointers provide read-only access
-    const bool * const isPartitionMountedPtr;
-    const uint8_t * const numFilesOnPartitionPtr;
-    const char *filenamesPtr[MAX_NUM_FILES];
-} FileSysPublicData_t;
+    bool * const isPartitionMountedPtr;
+    uint8_t * const numFilesOnPartitionPtr;
+    char *filenamesPtr[MAX_NUM_FILES];
+} FileSysPublicData;
 
 
-FileSysPublicData_t fileSys_init(void);
+FileSysPublicData fileSys_init(void);
 void fileSys_deinit(void);
 
 uint8_t fileSys_writeFile(char * fileName, uint8_t * data, uint32_t numBytes, bool createFileIfDoesntExist);

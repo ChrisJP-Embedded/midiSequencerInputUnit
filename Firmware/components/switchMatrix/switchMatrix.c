@@ -67,7 +67,7 @@ static volatile uint8_t g_switchEventRowNumISR;
 void switchMatrix_TaskEntryPoint(void * taskParams)
 {
     int8_t currentColumn = KEY_MATRIX_START_COLUMN;
-    SwitchMatrixQueueItem_t SwitchEventQueueItem = {0};
+    SwitchMatrixQueueItem SwitchEventQueueItem = {0};
 
     switchMatrixSetup();
 

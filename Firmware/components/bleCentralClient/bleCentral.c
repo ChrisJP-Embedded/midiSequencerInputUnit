@@ -90,7 +90,7 @@ void bleCentAPI_task(void * param)
 
 
     //Used for ALL app to BLE comms
-    HostToBleQueueItem_t g_HostToBleQueueHandleItem;
+    HostToBleQueueItem g_HostToBleQueueHandleItem;
 
     uint8_t responseForApp;
 

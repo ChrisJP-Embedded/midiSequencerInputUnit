@@ -13,8 +13,8 @@
 
 typedef enum
 {
-    endOfPages = 0,
-    state_base = 1,     //The base state for entire menu
+    endOfPages,
+    state_base,
     state_new_project,
     state_load_project,
     state_grid_edit,
@@ -28,10 +28,7 @@ typedef enum
     param_numeric_selection,    //An array of hardcoded integer values, the user makes a selection from the available existing options
     param_string_selection,     //An array of hardcoded strings, the user makes a selection from the avaiable existing options
     param_none                  //Used to identify a selectable menu item which has no assosiated parameter
-}parameterType_t;
-
-
-
+} menuParamType_t;
 
 
 typedef struct
@@ -41,7 +38,8 @@ typedef struct
     uint8_t valMax;
     uint16_t posX;
     uint16_t posY;
-} param_t;
+} MenuParam;
+
 
 typedef struct
 {
@@ -50,20 +48,20 @@ typedef struct
     uint8_t currIdx;
     uint16_t posX;
     uint16_t posY;
-} param_selection_t;
+} MenuParamSelection;
 
-typedef uint8_t (*functionPtr)(void*);
 
 typedef struct 
 {
     menuPageCode_t menuPageCode;
     char * textPtr;
-    parameterType_t paramType;
+    menuParamType_t paramType;
     void * paramPtr;
     menuPageCode_t prevPageCode;
     menuPageCode_t nextPageCode;
-    functionPtr funcPtr;
+    uint8_t (*funcPtr)(void*);
 } menuData_t;
+
 
 extern menuData_t * const menuManagerPtr;
 

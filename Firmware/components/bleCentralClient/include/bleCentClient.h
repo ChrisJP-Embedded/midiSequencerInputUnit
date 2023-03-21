@@ -16,7 +16,7 @@ typedef struct {
     uint8_t opcode;
     uint32_t dataLength;
     uint8_t * dataPtr;
-} HostToBleQueueItem_t;
+} HostToBleQueueItem;
 
 void bleCentAPI_task(void * param);
 

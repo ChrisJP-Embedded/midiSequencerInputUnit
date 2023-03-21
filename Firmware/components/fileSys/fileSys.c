@@ -46,7 +46,7 @@ struct fileSys_PrivateRuntimeDataCache
 
 
 //---- Public
-FileSysPublicData_t fileSys_init(void)
+FileSysPublicData fileSys_init(void)
 {
     //This function mounts the file system if not already mounted.
     //It populates a structure containing a set pointers that act to provide
@@ -54,7 +54,7 @@ FileSysPublicData_t fileSys_init(void)
 
     assert(g_FileSysPrivateData.isPartitionMounted == false);
 
-    FileSysPublicData_t FileSysDataInterface =
+    FileSysPublicData FileSysDataInterface =
     {
 
         &g_FileSysPrivateData.isPartitionMounted,

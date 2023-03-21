@@ -6,35 +6,31 @@ static char dispTxt_newProj[]     = "NEW PROJECT";
 static char dispTxt_loadProj[]    = "LOAD PROJECT";
 static char dispTxt_system[]      = "SYSTEM CONFIG";
 static char dispTxt_disk[]        = "DISK OPERATIONS";
-
+//
 static char dispTxt_projName[]    = "NAME: ";
 static char dispTxt_projTempo[]   = "TEMPO: ";
 static char dispTxt_projQuant[]   = "QUANT: ";
 static char dispTxt_projCreate[]  = "CONTINUE.. ";
-
-static char dispTxt_noteNum[] = "NOTE: ";
+//
+static char dispTxt_noteNum[]      = "NOTE: ";
 static char dispTxt_noteVelocity[] = "VELOCITY: ";
 static char dispTxt_noteDuration[] = "DURATION: ";
 
 static char * dispTxt_quant[5]    = {"1/1 Note", "1/2 Note", "1/4 Note", "1/8 Note", "1/16 Note" };
 
-static char numberArray[5] = {1,2,3,4,5};
 
 uint8_t initTempo;
-
-param_t paramTempo = {&initTempo, 60, 240, 0, 0};
-param_t projName = {NULL, 0,0,0,0};
-
-param_selection_t paramQuant = {dispTxt_quant, 5, 0, 0};
-param_selection_t nums = {&numberArray, 5, 0, 0};
-
-
 uint8_t noteNum;
 uint8_t noteVelocity;
 uint8_t noteDuration;
-param_t paramNoteNum = {&noteNum, 0, 0, 0, 0};
-param_t paramNoteVelocity = {&noteVelocity, 0, 0, 0, 0};
-param_t paramNoteDuration = {&noteDuration, 0, 0, 0, 0};
+
+MenuParamSelection paramQuant = {dispTxt_quant, 5, 0, 0, 0};
+
+MenuParam paramTempo = {&initTempo, 60, 240, 0, 0};
+MenuParam projName = {NULL, 0,0,0,0};
+MenuParam paramNoteNum = {&noteNum, 0, 0, 0, 0};
+MenuParam paramNoteVelocity = {&noteVelocity, 0, 0, 0, 0};
+MenuParam paramNoteDuration = {&noteDuration, 0, 0, 0, 0};
 
 menuData_t menuDataArr[] =
 {
