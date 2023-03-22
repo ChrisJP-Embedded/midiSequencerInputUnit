@@ -88,7 +88,6 @@ void switchMatrix_TaskEntryPoint(void * taskParams)
         vTaskDelay(pdMS_TO_TICKS(30));  //---- Sets switch matrix scan rate and debounces switches ----//
         gpio_set_level(KEY_MATRIX_SCAN_CLK_IO, false);
 
-       
         if(currentColumn > 0) currentColumn--; //Cycle through columns sequentially, then wrap around
         else currentColumn = KEY_MATRIX_START_COLUMN;
     }
@@ -144,10 +143,6 @@ static void switchMatrixSetup(void)
     err |= gpio_set_level(KEY_MATRIX_COUNTER_RESET_IO, true);
     vTaskDelay(pdMS_TO_TICKS(10));
     err |= gpio_set_level(KEY_MATRIX_COUNTER_RESET_IO, false);
-
-    //We no longer need to reset pin as the decade
-    //counter will reset itself as required
-    err |= gpio_reset_pin(KEY_MATRIX_COUNTER_RESET_IO);
     assert(err == ESP_OK);
 }
 
