@@ -27,7 +27,7 @@
 
 
 //The switch matrix runs as a standalone RTOS task.
-//The sequencer has 96 switches, that make up the sequencer input grid.
+//The sequencer has 96 switches that make up the sequencer input grid.
 //In order to gather input from all switches, while minimizing IO usage the following approach is used:
 
 //The switches are arranged in a 6x8 (row x column) switch matrix (the system considers the top left switch as column 0, row 0).
@@ -44,7 +44,6 @@
 //---- IMPORTANT NOTE ----//
 //Due to PCB routing counter outputs Q0 - Q7 are connected to columns C7 - C0  
 //respectfully, so the columns are scanned through in reverse order (right to left).
-
 
 
 //---- Private ----//
@@ -66,7 +65,7 @@ static volatile uint8_t g_switchEventRowNumISR;
 //---- Public
 void switchMatrix_TaskEntryPoint(void * taskParams)
 {
-    int8_t currentColumn = KEY_MATRIX_START_COLUMN;
+    uint8_t currentColumn = KEY_MATRIX_START_COLUMN;
     SwitchMatrixQueueItem SwitchEventQueueItem = {0};
 
     switchMatrixSetup();
@@ -77,7 +76,7 @@ void switchMatrix_TaskEntryPoint(void * taskParams)
         {   
             SwitchEventQueueItem.row = g_switchEventRowNumISR;
             g_switchEventFlagISR = false;
-            SwitchEventQueueItem.column = (uint8_t)currentColumn;
+            SwitchEventQueueItem.column = currentColumn;
             //Queue item is copied across to queue IDF implmented
             //queue storage area, item can be overwritten after 'xQueueSend'
             xQueueSend(g_SwitchMatrixQueueHandle, &SwitchEventQueueItem, 0);
@@ -89,8 +88,9 @@ void switchMatrix_TaskEntryPoint(void * taskParams)
         vTaskDelay(pdMS_TO_TICKS(30));  //---- Sets switch matrix scan rate and debounces switches ----//
         gpio_set_level(KEY_MATRIX_SCAN_CLK_IO, false);
 
-        currentColumn--; //Cycle through columns sequentially, then wrap around
-        if(currentColumn < 0) currentColumn = KEY_MATRIX_START_COLUMN;
+       
+        if(currentColumn > 0) currentColumn--; //Cycle through columns sequentially, then wrap around
+        else currentColumn = KEY_MATRIX_START_COLUMN;
     }
 }
 
