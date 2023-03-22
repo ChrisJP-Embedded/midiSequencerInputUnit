@@ -6,8 +6,30 @@
 
 #define MIDI_FILE_MAX_DELTA_TIME_NUM_BYTES 4
 
-#define MIDI_FILE_TRACK_SIZE_FIELD_NUM_BYTES 4
 
+#define MIDI_FILE_TRACK_CHUNK_BYTE0 0x4D
+#define MIDI_FILE_TRACK_CHUNK_BYTE1 0x54
+#define MIDI_FILE_TRACK_CHUNK_BYTE2 0x72
+#define MIDI_FILE_TRACK_CHUNK_BYTE3 0x6B
+
+#define MIDI_FILE_HEADER_CHUNK_BYTE0 0x4D
+#define MIDI_FILE_HEADER_CHUNK_BYTE1 0x54
+#define MIDI_FILE_HEADER_CHUNK_BYTE2 0x68
+#define MIDI_FILE_HEADER_CHUNK_BYTE3 0x64
+
+#define MIDI_FILE_HEADER_LENGTH_BYTE0 0
+#define MIDI_FILE_HEADER_LENGTH_BYTE1 0
+#define MIDI_FILE_HEADER_LENGTH_BYTE2 0
+#define MIDI_FILE_HEADER_LENGTH_BYTE3 1
+
+#define MIDI_FILE_HEADER_FILE_FORMAT0_BYTE0 0
+#define MIDI_FILE_HEADER_FILE_FORMAT0_BYTE1 0
+
+#define MIDI_FILE_NUM_TRACKS_BYTE0 0
+#define MIDI_FILE_NUM_TRACKS_BYTE1 1
+
+
+#define MIDI_FILE_TRACK_SIZE_FIELD_NUM_BYTES 4
 #define MIDI_FILE_HEADER_NUM_BYTES 4
 #define MIDI_TRACK_HEADER_NUM_BYTES 4
 
@@ -59,11 +81,9 @@ enum metaEventType
 extern const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES];
 extern const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES];
 extern const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES];
-extern const uint8_t setTimeSignatureMetaEventBytes[MIDI_TIME_SIG_MSG_NUM_BYTES];
-extern const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES];
 
 
-uint8_t generateEmptyMidiFile(uint8_t * filePtr, uint16_t ppq, uint8_t tempo);
+void generateMidiFileTemplate(uint8_t * filePtr, uint16_t ppq, uint8_t tempo);
 int8_t processMidiFileMetaMessage(uint8_t *metaMsgPtr);
 uint32_t processMidiFileDeltaTime(uint8_t * midiFilePtr);
 uint8_t getDeltaTimeVariableLengthNumBytes(uint32_t deltaTime);

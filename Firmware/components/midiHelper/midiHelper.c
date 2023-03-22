@@ -1,71 +1,55 @@
 #include <stdio.h>
 #include "esp_err.h"
 #include "esp_log.h"
+#include "genericMacros.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "midiHelper.h"
 
 #define LOG_TAG "MidiHelper"
-#define NUM_BITS_IN_BYTE 8
-#define GET_MSBIT_IN_BYTE(x)    (x & 0x80)
 
-const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x68, 0x64};          // A midi file ALWAYS starts with these four bytes
-const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x72, 0x6B};        // Midi file track data ALWAYS starts with these four bytes
-const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES] = {0xFF, 0x2F, 0x00};                // A track chunk is always expected to be terminated with endOfTrackBytes
-const uint8_t setTimeSignatureMetaEventBytes[MIDI_TIME_SIG_MSG_NUM_BYTES] = {0xFF, 0x51, 0x03};     // Set time signature preamble, followed by setTimeSignatureMetaEventBytes[2] time signature bytes
-const uint8_t setTempoMetaEventBytes[MIDI_SET_TEMPO_MSG_NUM_BYTES] = {0xFF, 0x58, 0x04};            // Set tempo preamble, followed by setTempMetaEventBytes[2] tempo bytes
+const uint8_t MThd_fileHeaderBytes[MIDI_FILE_HEADER_NUM_BYTES]   = {0x4D, 0x54, 0x68, 0x64}; //A midi file ALWAYS starts with these four bytes
+const uint8_t MTtk_trackHeaderBytes[MIDI_TRACK_HEADER_NUM_BYTES] = {0x4D, 0x54, 0x72, 0x6B}; //Midi file track data ALWAYS starts with these four bytes
+const uint8_t endOfTrackBytes[MIDI_END_OF_TRACK_MSG_NUM_BYTES]   = {0xFF, 0x2F, 0x00}; //A track chunk is always terminated with endOfTrackBytes
 
-
-uint8_t generateEmptyMidiFile(uint8_t * filePtr, uint16_t ppq, uint8_t tempo)
+ void generateMidiFileTemplate(uint8_t * filePtr, uint16_t ppq, uint8_t tempo)
 {
     //This function expects a pointer to a file buffer,
-    //it will write a default midi file template with a
-    //single track that contains a single midi event,
-    //an EOF meta event.
-    
-    //TODO: Add tempo meta message (currentlY)
+    //it will write a default midi file template to the
+    //base index of the file pointer.
 
-    if(filePtr == NULL) return 0;
-
+    assert(filePtr != NULL);
     uint8_t writeAddr = 0;
 
-    //Write midi file header (4 bytes)
-    for(uint8_t a = 0; a < MIDI_FILE_HEADER_NUM_BYTES; ++a)
+    //Write midi file header chunk 'MThd' identifier
+    for(uint8_t a = 0; a < sizeof(MThd_fileHeaderBytes); ++a)
     {
         filePtr[writeAddr++] = MThd_fileHeaderBytes[a];
     }
+  
+    //Header length field (always fixed)
+    filePtr[writeAddr++] = MIDI_FILE_HEADER_LENGTH_BYTE0;
+    filePtr[writeAddr++] = MIDI_FILE_HEADER_LENGTH_BYTE1;
+    filePtr[writeAddr++] = MIDI_FILE_HEADER_LENGTH_BYTE2;
+    filePtr[writeAddr++] = MIDI_FILE_HEADER_LENGTH_BYTE3;
 
-    //Write header length (4 bytes - always equal to 6)
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 6;
+    //Header file format field (sequencer only supports format 0, single track)
+    filePtr[writeAddr++] = MIDI_FILE_HEADER_FILE_FORMAT0_BYTE0;
+    filePtr[writeAddr++] = MIDI_FILE_HEADER_FILE_FORMAT0_BYTE1;
 
-    //Write format (2 bytes - always format 0 - single track format)
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
+    //Header number of tracks field (always a single track for format 0)
+    filePtr[writeAddr++] = MIDI_FILE_NUM_TRACKS_BYTE0;
+    filePtr[writeAddr++] = MIDI_FILE_NUM_TRACKS_BYTE1;
 
-    //Write number of tracks that follow (2 bytes - always equal 1 for format 0)
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 1;
-
-    //Write division (ppq) (2 bytes)
-    filePtr[writeAddr++] = (uint8_t)(ppq >> 8);
+    //Header division field (ppq - pulses per quater note)
+    filePtr[writeAddr++] = (uint8_t)(ppq >> NUM_BITS_IN_BYTE);
     filePtr[writeAddr++] = (uint8_t)(ppq);
 
-    //Write midi track header (4 bytes)
+    //Write midi FILE track chunk identifier 'MTtk'
     for(uint8_t a = 0; a < sizeof(MTtk_trackHeaderBytes); ++a)
     {
         filePtr[writeAddr++] = MTtk_trackHeaderBytes[a];
     }
-
-    //Write track length in bytes (4 bytes)
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 0;
-    filePtr[writeAddr++] = 4;
-
-    return writeAddr;
 }
 
 
@@ -74,16 +58,12 @@ uint8_t getDeltaTimeVariableLengthNumBytes(uint32_t deltaTime)
     //This function takes in a 32-bit deltaTime value
     //and returns the number of bytes required to 
     //represent it in when converted to a variable length
-    //value (as a delta times appear in a midi file)
+    //value (as delta times appear in a midi file)
     
     assert(deltaTime <= MIDI_FILE_MAX_DELTA_TIME_VALUE);
 
-    //Delta-time min one byte
-    unsigned char count = 1;
-    while(deltaTime >>= (NUM_BITS_IN_BYTE - 1))
-    {
-        ++count;
-    } 
+    uint8_t count = 1; //Delta-time min one byte
+    while(deltaTime >>= NUM_BITS_IN_BYTE) count++;
     return count;
 }
 
@@ -99,7 +79,7 @@ uint32_t processMidiFileDeltaTime(uint8_t * midiFilePtr)
     //A delta-time is variable length value, between 1 and 4 
     //bytes in length, it specifies (in midi ticks) the time
     //that must pass before the event it is assosiated with
-    //should be transmitted.
+    //should be transmitted on the physical midi layer.
 
     //Delta-time bytes appear in MSB first order, the MSBIT
     //in each byte is a flag which indicates that there are
@@ -112,51 +92,19 @@ uint32_t processMidiFileDeltaTime(uint8_t * midiFilePtr)
 
     assert(midiFilePtr != NULL);
 
-    uint32_t rawDeltaTimeBuffer = 0;
-    uint32_t finaDeltaTimeResult = 0;
-    uint8_t zeroBaseByteCount = 0;
-    bool stillHasBytesToRead = true;
+    uint32_t deltaTimeResult = 0;
+    uint8_t bytesProcessed = 0;
 
-    while(stillHasBytesToRead)
+    do
     {
-        stillHasBytesToRead = false; //May only have a single byte
-        rawDeltaTimeBuffer |= *midiFilePtr; //Get first delta-time byte
+        if(bytesProcessed > (MIDI_FILE_MAX_DELTA_TIME_NUM_BYTES - 1)) assert(0);
+        deltaTimeResult <<= (NUM_BITS_IN_BYTE - 1);
+        deltaTimeResult |= *midiFilePtr & 0x7F;
+        bytesProcessed++;
 
-        //If MSBIT is SET then delta-time has more bytes
-        if(GET_MSBIT_IN_BYTE(*midiFilePtr)) 
-        {
-            //We get here if bit 8 of the current delta-time byte
-            //is SET (meaning at least one more delta-time byte)
+    }while(*midiFilePtr++ & (1 << (NUM_BITS_IN_BYTE - 1)));
 
-            //Delta-times are FOUR BYTES max in length
-            if(zeroBaseByteCount < MIDI_FILE_MAX_DELTA_TIME_NUM_BYTES) 
-            {
-                rawDeltaTimeBuffer <<= NUM_BITS_IN_BYTE;
-                ++zeroBaseByteCount;
-                midiFilePtr += 1;
-                stillHasBytesToRead = true;
-            }
-            else
-            {
-                //The final byte of a midi file
-                //delta-time should always have 
-                //its MSBIT CLEAR.
-                //If that bit is SET then we're
-                //dealing with a system fault.
-                assert(0);
-            }
-        }
-    }
-
-    //Finished reading all midi file format delta-time bytes, 
-    //we now need to construct the final concatenated result
-    for (uint8_t a = 0; a <= zeroBaseByteCount; ++a)
-    {
-        //For each delta-time byte we need to remove bit 8 and concatenate the result
-        finaDeltaTimeResult |= ((rawDeltaTimeBuffer & (0x0000007F << (a * NUM_BITS_IN_BYTE))) >> ((a ? 1 : 0) * a));
-    }
-
-    return finaDeltaTimeResult;
+    return deltaTimeResult;
 }
 
 
@@ -176,20 +124,16 @@ uint8_t getMidiFileFormatType(uint8_t * midiFilePtr)
     //TYPE 1: The file has multiple tracks chunks to be processed simultaneously.
     //TYPE 2: The file contains multiple independent tracks.
 
-    //RETURNS: An unsigned byte with value of either 0, 1, 2.
-
     assert(midiFilePtr != NULL);
 
     //Confirm the file header byte signature before continuing 
-    for(uint8_t a = 0; a < MIDI_FILE_HEADER_NUM_BYTES; ++a)
+    for(uint8_t a = 0; a < sizeof(MThd_fileHeaderBytes); ++a)
     {
         if(midiFilePtr[a] != MThd_fileHeaderBytes[a])
         { assert(0); }
     }
 
     uint8_t midiFileFormatType = *(midiFilePtr + MIDI_FILE_FORMAT_TYPE_OFFSET);
-
-    assert(midiFileFormatType <= MIDI_FILE_MAX_FORMAT_TYPE);
 
     switch(midiFileFormatType)
     {
@@ -204,6 +148,10 @@ uint8_t getMidiFileFormatType(uint8_t * midiFilePtr)
         case MIDI_FILE_FORMAT_TYPE2: //---NOT SUPPORTED ---//
             ESP_LOGE(LOG_TAG, "ERROR: Format 2 midi file detected - UNSUPPORTED");
             break;
+
+        default:
+            assert(0);
+            break;
     }
 
     return midiFileFormatType;
@@ -211,37 +159,34 @@ uint8_t getMidiFileFormatType(uint8_t * midiFilePtr)
 
 
 
-int8_t processMidiFileMetaMessage(uint8_t * metaMsgPtr)
+int8_t processMidiFileMetaMessage(uint8_t * midiFilePtr)
 {
-    //This function processes a midi file meta message,
-    //it expects a pointer to the base of a meta message
-
-    //This function is called when converting 
-    //an existing midi file to grid data. 
+    //NOT FULLY IMPLEMENTED, CURRENTLY ONLY EXPECTS
+    //META MESSAGES WHICH ARE A SINGLE BYTE IN LENGTH
+    //BARE BONES TO GET SYSTEM GOING.
 
     //A meta message has the follow byte structure:
-    //meta_message[0] = 0xFF (indicates meta message)  <- *metaMsgPtr
+    //meta_message[0] = 0xFF (indicates meta message)  <- *midiFilePtr
     //meta_message[1] = meta status byte
     //meta_message[2] = length byte (number of bytes that follow)
     
     //RETURNS:
 
-    //ON SUCCESS: the length of the meta message (an EOF meta
-    //message is the only meta message with a length of zero)
+    //ON SUCCESS: the single byte length of the meta message
 
     //ON FAILURE: if the meta message is not recognized the
     //return value will be -1, indicating corrupt data.
 
-    assert(metaMsgPtr != NULL);
-    assert(*metaMsgPtr == 0xFF);
+    assert(midiFilePtr != NULL);
+    assert(*midiFilePtr == 0xFF);
 
     uint8_t metaMsgLengthInBytes;
     uint8_t metaStatusByte;
 
-    metaMsgPtr += 1;
-    metaStatusByte = *metaMsgPtr;
-    metaMsgPtr += 1; 
-    metaMsgLengthInBytes = *metaMsgPtr;
+    midiFilePtr++;
+    metaStatusByte = *midiFilePtr;
+    midiFilePtr++; 
+    metaMsgLengthInBytes = *midiFilePtr;
 
 
     //Check meta message status byte
@@ -267,8 +212,7 @@ int8_t processMidiFileMetaMessage(uint8_t * metaMsgPtr)
         case metaEvent_trackName:
         case metaEvent_copyright:
         case metaEvent_textField:
-            //All meta events of variable length
-            //Not bothered about any of these so just increment file pointer
+            //All meta events of variable length, not yet supported
             ESP_LOGI(LOG_TAG, "Ignored variable-length meta message");
             break;
 
@@ -303,7 +247,7 @@ int8_t processMidiFileMetaMessage(uint8_t * metaMsgPtr)
             break;
 
         case metaEvent_sequencerSpecific:
-            //Custom meta messages for the sequencer
+            //Custom meta message - device specific
             //Variable length
             ESP_LOGE(LOG_TAG, "metaEvent_sequencerSpecific detected");
             break;
